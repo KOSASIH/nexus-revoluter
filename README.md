@@ -1,3 +1,10 @@
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub issues](https://img.shields.io/github/issues/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/issues)
+[![GitHub stars](https://img.shields.io/github/stars/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/graphs/contributors)
+[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/KOSASIH/nexus-revoluter/releases)
+[![API Documentation](https://img.shields.io/badge/API-Documentation-blue.svg)](https://github.com/KOSASIH/nexus-revoluter/wiki)
+
 [![IMF Certified](https://img.shields.io/badge/IMF-Certified-007bff.svg)](https://www.imf.org/en/Data)
 [![World Bank Certified](https://img.shields.io/badge/World%20Bank-Certified-009688.svg)](https://www.worldbank.org/en/about/certifications)
 [![OECD Approved](https://img.shields.io/badge/OECD-Approved-FF9800.svg)](https://www.oecd.org)
