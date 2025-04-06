@@ -1,0 +1,40 @@
+# FastAPI framework
+fastapi==0.95.0
+
+# ASGI server for running FastAPI
+uvicorn==0.22.0
+
+# JWT for authentication
+pyjwt==2.6.0
+
+# Password hashing
+passlib[bcrypt]==1.7.4
+
+# CORS middleware
+fastapi[all]==0.95.0
+
+# Rate limiting
+fastapi-limiter==0.2.0
+
+# Testing framework
+pytest==7.2.0
+httpx==0.23.0
+
+# For JSON handling
+pydantic==1.10.2
+
+# For logging
+loguru==0.6.0
+
+# Optional: For database interactions (if using SQLAlchemy)
+sqlalchemy==1.4.47
+databases==0.6.4
+
+# Optional: For WebSocket support
+websockets==10.4
+
+# Optional: For background tasks
+aiofiles==0.8.0
+
+# Optional: For environment variable management
+python-dotenv==0.20.0
