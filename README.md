@@ -3,7 +3,7 @@ Nexus Revoluter is a blockchain node application that enables decentralized tran
 
 # Nexus Revoluter
 
-Nexus Revoluter is a cutting-edge, decentralized, and open-source project that aims to revolutionize the way we interact with blockchain technology. This project provides a comprehensive suite of tools and services for building, deploying, and managing blockchain-based applications.
+Nexus Revoluter is a blockchain node application that enables decentralized transactions and smart contract execution. With a modular design, it offers a robust API for integration, advanced consensus algorithms for security, and a user-friendly wallet for managing digital assets. Ideal for developers looking to innovate in the blockchain space.
 
 ## Table of Contents
 
@@ -36,9 +36,18 @@ To get started with Nexus Revoluter, follow these steps:
 
 Nexus Revoluter provides a range of APIs for interacting with the blockchain. Here are some examples of how to use the APIs:
 
-* Create a new transaction: `curl -X POST -H "Content-Type: application/json" -d '{"from": "0x1234567890", "to": "0x9876543210", "amount": 10}' http://localhost:8000/transactions`
-* Get the balance of an address: `curl -X GET http://localhost:8000/balance/0x1234567890`
-* Deploy a new smart contract: `curl -X POST -H "Content-Type: application/json" -d '{"contract": "0x1234567890", "abi": "0x9876543210"}' http://localhost:8000/contracts`
+* Create a new transaction: 
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{"from": "your_pi_wallet_address", "to": "recipient_pi_wallet_address", "amount": 10}' http://localhost:8000/transactions
+  ```
+* Get the balance of an address: 
+  ```bash
+  curl -X GET http://localhost:8000/balance/your_pi_wallet_address
+  ```
+* Deploy a new smart contract: 
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{"contract": "your_contract_address", "abi": "your_contract_abi"}' http://localhost:8000/contracts
+  ```
 
 ## API Documentation
 
