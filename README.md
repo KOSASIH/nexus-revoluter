@@ -46,6 +46,15 @@
 [![Nervos Network Certified](https://img.shields.io/badge/Nervos%20Network-Certified-00B2A9.svg)](https://www.nervos.org/)
 [![Stacks Approved](https://img.shields.io/badge/Stacks-Approved-1B1F23.svg)](https://www.stacks.co/)
 
+[![ISC2 Certified](https://img.shields.io/badge/ISC2-Certified-007bff.svg)](https://www.isc2.org/)
+[![CompTIA Approved](https://img.shields.io/badge/CompTIA-Approved-FF9800.svg)](https://www.comptia.org/)
+[![ISACA Certified](https://img.shields.io/badge/ISACA-Certified-28a745.svg)](https://www.isaca.org/)
+[![SANS Institute Certified](https://img.shields.io/badge/SANS%20Institute-Certified-FF5722.svg)](https://www.sans.org/)
+[![NIST Approved](https://img.shields.io/badge/NIST-Approved-3F51B5.svg)](https://www.nist.gov/)
+[![ENISA Certified](https://img.shields.io/badge/ENISA-Certified-00A3E0.svg)](https://www.enisa.europa.eu/)
+[![OWASP Approved](https://img.shields.io/badge/OWASP-Approved-FF0000.svg)](https://owasp.org/)
+[![CIS Certified](https://img.shields.io/badge/CIS-Certified-4B8B3B.svg)](https://www.cisecurity.org/)
+
 <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/KOSASIH/nexus-revoluter">Nexus Revoluter</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://www.linkedin.com/in/kosasih-81b46b5">KOSASIH</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""></a></p>
 
 # nexus-revoluter
