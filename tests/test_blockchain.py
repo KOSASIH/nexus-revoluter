@@ -1,78 +1,67 @@
 import unittest
-from blockchain import Block, Blockchain
-
-class TestBlock(unittest.TestCase):
-    def test_block_initialization(self):
-        """Test the initialization of a Block."""
-        block = Block(1, "0", 1633072800.0, "Test Block Data", "abc123")
-        self.assertEqual(block.index, 1)
-        self.assertEqual(block.previous_hash, "0")
-        self.assertEqual(block.timestamp, 1633072800.0)
-        self.assertEqual(block.data, "Test Block Data")
-        self.assertEqual(block.hash, "abc123")
-
-    def test_block_to_dict(self):
-        """Test the conversion of a Block to a dictionary."""
-        block = Block(1, "0", 1633072800.0, "Test Block Data", "abc123")
-        expected_dict = {
-            "index": 1,
-            "previous_hash": "0",
-            "timestamp": 1633072800.0,
-            "data": "Test Block Data",
-            "hash": "abc123"
-        }
-        self.assertEqual(block.to_dict(), expected_dict)
+import time
+from blockchain import Blockchain, Block  # Assuming your blockchain implementation is in a file named blockchain.py
 
 class TestBlockchain(unittest.TestCase):
     def setUp(self):
         """Set up a new Blockchain instance for testing."""
         self.blockchain = Blockchain()
 
-    def test_genesis_block(self):
-        """Test that the genesis block is created correctly."""
-        genesis_block = self.blockchain.get_block(0)
-        self.assertIsNotNone(genesis_block)
-        self.assertEqual(genesis_block.index, 0)
-        self.assertEqual(genesis_block.previous_hash, "0")
-        self.assertEqual(genesis_block.data, "Genesis Block")
-        self.assertEqual(len(self.blockchain.chain), 1)
+    def test_initialization(self):
+        """Test the initialization of the Blockchain."""
+        self.assertEqual(len(self.blockchain), 1)  # Should have the genesis block
+        self.assertEqual(self.blockchain.get_latest_block().data, "Genesis Block")
 
     def test_add_block(self):
         """Test adding a new block to the blockchain."""
-        new_block = self.blockchain.add_block("First block data")
-        self.assertEqual(new_block.index, 1)
-        self.assertEqual(new_block.data, "First block data")
-        self.assertEqual(len(self.blockchain.chain), 2)
+        self.blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
+        new_block = self.blockchain.add_block(self.blockchain.current_transactions)
+        self.assertEqual(len(self.blockchain), 2)  # One more block should be added
+        self.assertEqual(new_block.data, self.blockchain.current_transactions)
+
+    def test_add_transaction(self):
+        """Test adding a transaction to the current transactions pool."""
+        transaction = {"sender": "Alice", "recipient": "Bob", "amount": 10.0}
+        self.blockchain.add_transaction(transaction)
+        self.assertIn(transaction, self.blockchain.current_transactions)
+
+    def test_add_transaction_invalid_amount(self):
+        """Test adding a transaction with an invalid amount."""
+        with self.assertRaises(ValueError) as context:
+            self.blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": -10.0})
+        self.assertEqual(str(context.exception), "Transaction amount must be positive.")
 
     def test_validate_chain(self):
-        """Test that the blockchain validates correctly."""
-        self.blockchain.add_block("First block data")
-        self.blockchain.add_block("Second block data")
+        """Test validating the blockchain."""
+        self.blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
+        self.blockchain.add_block(self.blockchain.current_transactions)
         self.assertTrue(self.blockchain.validate_chain())
 
-    def test_invalid_chain(self):
-        """Test that an invalid chain is detected."""
-        self.blockchain.add_block("First block data")
-        self.blockchain.add_block("Second block data")
-        
-        # Tamper with the blockchain
-        self.blockchain.chain[1].data = "Tampered data"
+    def test_validate_chain_invalid_hash(self):
+        """Test validating the blockchain with an invalid hash."""
+        self.blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
+        self.blockchain.add_block(self.blockchain.current_transactions)
+        # Tamper with the last block's hash
+        self.blockchain.chain[-1].hash = "invalid_hash"
         self.assertFalse(self.blockchain.validate_chain())
 
-    def test_get_chain(self):
-        """Test getting the blockchain as a list of dictionaries."""
-        self.blockchain.add_block("First block data")
-        chain_data = self.blockchain.get_chain()
-        self.assertEqual(len(chain_data), 2)  # Genesis + 1 new block
-        self.assertEqual(chain_data[1]["data"], "First block data")
-
     def test_get_block(self):
-        """Test getting a specific block by index."""
-        self.blockchain.add_block("First block data")
+        """Test getting a block by its index."""
+        self.blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
+        self.blockchain.add_block(self.blockchain.current_transactions)
         block = self.blockchain.get_block(1)
         self.assertIsNotNone(block)
-        self.assertEqual(block.data, "First block data")
-        self.assertIsNone(self.blockchain.get_block(2))  # Out of range
+        self.assertEqual(block.index, 1)
+
+    def test_get_block_invalid_index(self):
+        """Test getting a block with an invalid index."""
+        block = self.blockchain.get_block(10)  # Out of range
+        self.assertIsNone(block)
+
+    def test_print_chain(self):
+        """Test printing the blockchain."""
+        # This is a simple test to ensure no exceptions are raised
+        self.blockchain.print_chain()
 
 if __name__ == '__main__':
     unittest.main()
