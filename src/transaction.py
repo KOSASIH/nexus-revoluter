@@ -21,7 +21,7 @@ class Transaction:
 
     def calculate_value_in_usd(self) -> float:
         """Calculate the value of the transaction in USD based on the stablecoin value."""
-        return self.amount * Config.STABLECOIN_VALUE
+        return self.amount * Config.STABLECOIN_VALUE  # Pi Coin as stablecoin
 
     def create_transaction_id(self) -> str:
         """Create a unique transaction ID based on the transaction details."""
