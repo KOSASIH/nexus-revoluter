@@ -24,6 +24,7 @@ class Block:
 class Blockchain:
     def __init__(self):
         self.chain: List[Block] = []
+        self.current_transactions: List[Dict[str, Any]] = []  # Initialize the current transactions pool
         self.create_genesis_block()
 
     def create_genesis_block(self):
@@ -50,6 +51,15 @@ class Blockchain:
         new_block = Block(index, previous_block.hash, timestamp, data, hash_value)
         self.chain.append(new_block)
         return new_block
+
+    def add_transaction(self, transaction: Dict[str, Any]) -> None:
+        """Add a transaction to the current transactions pool."""
+        # Validate the transaction
+        if transaction['amount'] <= 0:
+            raise ValueError("Transaction amount must be positive.")
+        
+        # Add the transaction to the current transactions pool
+        self.current_transactions.append(transaction)
 
     def validate_chain(self) -> bool:
         """Validate the entire blockchain to ensure integrity."""
@@ -83,13 +93,29 @@ class Blockchain:
         """Return the length of the blockchain."""
         return len(self.chain)
 
+    def get_latest_block(self) -> Block:
+        """Get the latest block in the blockchain."""
+        return self.chain[-1] if self.chain else None
+
+    def print_chain(self) -> None:
+        """Print the entire blockchain in a readable format."""
+        for block in self.chain:
+            print(json.dumps(block.to_dict(), indent=4))
+
 # Example usage
 if __name__ == "__main__":
     blockchain = Blockchain()
-    blockchain.add_block("First block data")
-    blockchain.add_block("Second block data")
+    
+    # Adding transactions
+    blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
+    blockchain.add_transaction({"sender": "Bob", "recipient": "Charlie", "amount": 5.0})
+
+    # Add a block with the current transactions
+    blockchain.add_block(blockchain.current_transactions)
+    blockchain.current_transactions = []  # Clear the transaction pool after adding to the block
 
     print("Blockchain valid:", blockchain.validate_chain())
-    print("Blockchain:", blockchain.get_chain())
+    print("Blockchain:")
+    blockchain.print_chain()
     print("Total blocks in blockchain:", len(blockchain))
     print("Block at index 1:", blockchain.get_block(1).to_dict() if blockchain.get_block(1) else "Block not found")
