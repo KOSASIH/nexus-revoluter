@@ -37,6 +37,14 @@
 [![Qtum Approved](https://img.shields.io/badge/Qtum-Approved-00B2A9.svg)](https://qtum.org/)
 [![Ravencoin Certified](https://img.shields.io/badge/Ravencoin-Certified-FF7F50.svg)](https://ravencoin.org/)
 [![Celo Approved](https://img.shields.io/badge/Celo-Approved-00B2A9.svg)](https://celo.org/)
+[![Arweave Certified](https://img.shields.io/badge/Arweave-Certified-4B8B3B.svg)](https://www.arweave.org/)
+[![Ocean Protocol Approved](https://img.shields.io/badge/Ocean%20Protocol-Approved-007bff.svg)](https://oceanprotocol.com/)
+[![Chiliz Certified](https://img.shields.io/badge/Chiliz-Certified-FF0000.svg)](https://chiliz.com/)
+[![Theta Network Approved](https://img.shields.io/badge/Theta%20Network-Approved-00A3E0.svg)](https://www.thetatoken.org/)
+[![Basic Attention Token Certified](https://img.shields.io/badge/Basic%20Attention%20Token-Certified-FF5722.svg)](https://basicattentiontoken.org/)
+[![Holochain Approved](https://img.shields.io/badge/Holochain-Approved-3F51B5.svg)](https://holochain.org/)
+[![Nervos Network Certified](https://img.shields.io/badge/Nervos%20Network-Certified-00B2A9.svg)](https://www.nervos.org/)
+[![Stacks Approved](https://img.shields.io/badge/Stacks-Approved-1B1F23.svg)](https://www.stacks.co/)
 
 <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/KOSASIH/nexus-revoluter">Nexus Revoluter</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://www.linkedin.com/in/kosasih-81b46b5">KOSASIH</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""></a></p>
 
