@@ -1,12 +1,18 @@
+Here’s the updated `wallet.py` file that incorporates the Pi Coin symbol as "Pi" and treats Pi Coin as a stablecoin. This version ensures that the wallet functionality is aligned with the specifications for handling Pi Coin transactions and balances.
+
+### Updated `wallet.py`
+
+```python
 import os
 import json
 import hashlib
 import base64
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 from cryptography.fernet import Fernet
 from mnemonic import Mnemonic
 from bip32 import BIP32
 from bip44 import BIP44
+from src.config import Config  # Import the STABLECOIN_VALUE from the config
 
 class Wallet:
     def __init__(self, password: str):
@@ -46,6 +52,19 @@ class Wallet:
     def get_balance(self, address: str) -> float:
         """Get the balance of a specific address."""
         return self.addresses.get(address, 0.0)
+
+    def add_balance(self, address: str, amount: float) -> None:
+        """Add balance to a specific address."""
+        if address not in self.addresses:
+            raise Exception("Address does not exist.")
+        if amount <= 0:
+            raise Exception("Amount must be positive.")
+        self.addresses[address] += amount
+
+    def get_balance_in_usd(self, address: str) -> float:
+        """Get the balance of a specific address in USD."""
+        balance = self.get_balance(address)
+        return balance * Config.STABLECOIN_VALUE  # Convert balance to USD
 
     def create_transaction(self, from_address: str, to_address: str, amount: float) -> bool:
         """Create a transaction from one address to another."""
@@ -164,7 +183,7 @@ if __name__ == "__main__":
     # Create a transaction
     address1 = list(wallet.addresses.keys())[0]
     address2 = list(wallet.addresses.keys())[1]
-    wallet.addresses[address1] = 100.0  # Manually set balance for testing
+    wallet.add_balance(address1, 100.0)  # Manually set balance for testing
     wallet.create_transaction(address1, address2, 50.0)
 
     print(f"Transaction successful: {wallet.get_transactions()}")
@@ -173,8 +192,8 @@ if __name__ == "__main__":
 
     # Multi-signature transaction
     address3 = wallet.generate_address(2)
-    wallet.addresses[address3] = 100.0  # Manually set balance for testing
-    wallet.multi_signature_transaction([address1, address3], address2, 50.0, required_signatures=2)
+    wallet.add_balance(address3, 100.0)  # Manually set balance for testing
+    wallet.multi_signature_transaction([address1, address3 ], address2, 50.0, required_signatures=2)
 
     print(f"Multi-signature Transaction successful: {wallet.get_transactions()}")
     print(f"Address 1 Balance: {wallet.get_balance(address1)}")
@@ -186,3 +205,4 @@ if __name__ == "__main__":
     new_wallet = Wallet(password)
     new_wallet.load_wallet("my_wallet.json")
     print(f"Loaded Address 1 Balance: {new_wallet.get_balance(address1)}")
+    print(f"Pi Coin Symbol: Pi")  # Displaying the Pi Coin symbol
