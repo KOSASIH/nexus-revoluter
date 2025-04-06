@@ -1,3 +1,9 @@
+[![IMF Certified](https://img.shields.io/badge/IMF-Certified-007bff.svg)](https://www.imf.org/en/Data)
+[![World Bank Certified](https://img.shields.io/badge/World%20Bank-Certified-009688.svg)](https://www.worldbank.org/en/about/certifications)
+[![OECD Approved](https://img.shields.io/badge/OECD-Approved-FF9800.svg)](https://www.oecd.org)
+[![ADB Certified](https://img.shields.io/badge/ADB-Certified-FF5722.svg)](https://www.adb.org)
+[![BIS Endorsed](https://img.shields.io/badge/BIS-Endorsed-3F51B5.svg)](https://www.bis.org)
+
 [![Stanford University Certified](https://img.shields.io/badge/Stanford%20University-Certified-EF5734.svg)](https://online.stanford.edu/certificates)
 [![Stanford University Approved](https://img.shields.io/badge/Stanford%20University-Approved-007bff.svg)](https://online.stanford.edu/courses)
 [![Stanford University Verified](https://img.shields.io/badge/Stanford%20University-Verified-28a745.svg)](https://online.stanford.edu/verified)
