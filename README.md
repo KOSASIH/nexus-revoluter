@@ -8,6 +8,12 @@
 [![Stanford University Approved](https://img.shields.io/badge/Stanford%20University-Approved-007bff.svg)](https://online.stanford.edu/courses)
 [![Stanford University Verified](https://img.shields.io/badge/Stanford%20University-Verified-28a745.svg)](https://online.stanford.edu/verified)
 
+[![Ethereum Certified](https://img.shields.io/badge/Ethereum-Certified-3C3C3D.svg)](https://ethereum.org/en/developers/docs/)
+[![Hyperledger Approved](https://img.shields.io/badge/Hyperledger-Approved-FF0000.svg)](https://www.hyperledger.org/)
+[![Blockchain Council Certified](https://img.shields.io/badge/Blockchain%20Council-Certified-007bff.svg)](https://www.blockchain-council.org/)
+[![Corda Certified](https://img.shields.io/badge/Corda-Certified-00A3E0.svg)](https://www.corda.net/)
+[![ISO Certified Blockchain](https://img.shields.io/badge/ISO%20Certified%20Blockchain-Approved-FF9800.svg)](https://www.iso.org/iso-standards.html)
+
 <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/KOSASIH/nexus-revoluter">Nexus Revoluter</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://www.linkedin.com/in/kosasih-81b46b5">KOSASIH</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""></a></p>
 
 # nexus-revoluter
