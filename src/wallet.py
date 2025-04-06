@@ -1,8 +1,3 @@
-Here’s the updated `wallet.py` file that incorporates the Pi Coin symbol as "Pi" and treats Pi Coin as a stablecoin. This version ensures that the wallet functionality is aligned with the specifications for handling Pi Coin transactions and balances.
-
-### Updated `wallet.py`
-
-```python
 import os
 import json
 import hashlib
