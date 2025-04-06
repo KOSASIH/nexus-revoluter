@@ -3,7 +3,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/stargazers)
 [![Contributors](https://img.shields.io/github/contributors/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/graphs/contributors)
 [![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/KOSASIH/nexus-revoluter/releases)
-[![API Documentation](https://img.shields.io/badge/API-Documentation-blue.svg)](https://github.com/KOSASIH/nexus-revoluter/wiki)
+[![API Documentation](https://img.shields.io/badge/API-Documentation-blue.svg)](https://github.com/KOSASIH/nexus-revoluter/docs/API_Documentation.md)
 
 [![IMF Certified](https://img.shields.io/badge/IMF-Certified-007bff.svg)](https://www.imf.org/en/Data)
 [![World Bank Certified](https://img.shields.io/badge/World%20Bank-Certified-009688.svg)](https://www.worldbank.org/en/about/certifications)
