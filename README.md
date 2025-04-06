@@ -42,11 +42,11 @@ Nexus Revoluter provides a range of APIs for interacting with the blockchain. He
 
 ## API Documentation
 
-For more information on the available APIs, please refer to the [API Documentation](API_Documentation.md).
+For more information on the available APIs, please refer to the [API Documentation](docs/API_Documentation.md).
 
 ## Contributing
 
-We welcome contributions to Nexus Revoluter. Please refer to the [Contributing Guidelines](CONTRIBUTING.md) for more information.
+We welcome contributions to Nexus Revoluter. Please refer to the [Contributing Guidelines](docs/CONTRIBUTING.md) for more information.
 
 ## License
 
