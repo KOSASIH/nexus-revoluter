@@ -1,114 +1,117 @@
 import os
 import pytest
 from fastapi.testclient import TestClient
-from api import app  # Assuming your FastAPI app is in a file named api.py
+from api import app  # Assuming your FastAPI implementation is in a file named api.py
 from wallet import Wallet
 
-# Set up a test client
+# Initialize the test client
 client = TestClient(app)
 
-# Test data
-TEST_USERNAME = "testuser"
-TEST_PASSWORD = "testpassword"
-TEST_EMAIL = "testuser@example.com"
-TEST_FULL_NAME = "Test User"
-
-# Create a wallet for testing
-PASSWORD = "test_wallet_password"
+# Mock wallet for testing
+PASSWORD = "test_password"
 wallet = Wallet(PASSWORD)
 
+# Create a test user
+test_user = {
+    "username": "testuser",
+    "email": "testuser@example.com",
+    "full_name": "Test User",
+    "password": "testpassword"
+}
+
 @pytest.fixture(scope="module", autouse=True)
-def setup_module():
-    """Setup for the entire module."""
+def setup_wallet():
+    """Setup the wallet before running tests."""
     if not os.path.exists("my_wallet.json"):
         wallet.create_wallet()  # Create a new wallet if it doesn't exist
+    yield
+    # Cleanup after tests
+    if os.path.exists("my_wallet.json"):
+        os.remove("my_wallet.json")
 
-def test_register():
-    """Test user registration."""
-    response = client.post("/register", json={
-        "username": TEST_USERNAME,
-        "email": TEST_EMAIL,
-        "full_name": TEST_FULL_NAME,
-        "password": TEST_PASSWORD
-    })
+@pytest.fixture
+def register_user():
+    """Register a test user."""
+    response = client.post("/register", json=test_user)
     assert response.status_code == 200
-    assert response.json()["username"] == TEST_USERNAME
+    return response.json()
 
-def test_login():
+@pytest.fixture
+def login_user(register_user):
+    """Login the test user and return the access token."""
+    response = client.post("/token", data={"username": test_user["username"], "password": test_user["password"]})
+    assert response.status_code == 200
+    return response.json()["access_token"]
+
+def test_register_user():
+    """Test user registration."""
+    response = client.post("/register", json=test_user)
+    assert response.status_code == 200
+    assert response.json()["username"] == test_user["username"]
+
+def test_login_user():
     """Test user login."""
-    response = client.post("/token", data={
-        "username": TEST_USERNAME,
-        "password": TEST_PASSWORD
-    })
+    response = client.post("/token", data={"username": test_user["username"], "password": test_user["password"]})
     assert response.status_code == 200
     assert "access_token" in response.json()
 
-def test_create_address():
+def test_create_address(login_user):
     """Test creating a new wallet address."""
-    response = client.post("/addresses", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
+    headers = {"Authorization": f"Bearer {login_user}"}
+    response = client.post("/addresses", headers=headers)
     assert response.status_code == 200
     assert "address" in response.json()
 
-def test_get_addresses():
+def test_get_addresses(login_user):
     """Test getting all wallet addresses."""
-    response = client.get("/addresses", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
+    headers = {"Authorization": f"Bearer {login_user}"}
+    response = client.get("/addresses", headers=headers)
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_create_transaction():
-    """Test creating a transaction."""
-    # First, create two addresses
-    address1_response = client.post("/addresses", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
-    address2_response = client.post("/addresses", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
+def test_get_balance(login_user):
+    """Test getting the balance of a specific address."""
+    headers = {"Authorization": f"Bearer {login_user}"}
+    address_response = client.post("/addresses", headers=headers)
+    address = address_response.json()["address"]
+    response = client.get(f"/balance/{address}", headers=headers)
+    assert response.status_code == 200
+    assert response.json() == 0.0  # Initial balance should be 0.0
+
+def test_create_transaction(login_user):
+    """Test creating a new transaction."""
+    headers = {"Authorization": f"Bearer {login_user}"}
+    address_response_1 = client.post("/addresses", headers=headers)
+    address_response_2 = client.post("/addresses", headers=headers)
+    from_address = address_response_1.json()["address"]
+    to_address = address_response_2.json()["address"]
     
-    address1 = address1_response.json()["address"]
-    address2 = address2_response.json()["address"]
+    # Fund the from_address for testing
+    wallet.addresses[from_address] = 100.0  # Set balance for testing
 
-    # Fund the first address
-    wallet.addresses[address1] = 100.0
-
-    # Create a transaction
-    response = client.post("/transactions", json={
-        "from_address": address1,
-        "to_address": address2,
+    transaction_data = {
+        "from_address": from_address,
+        "to_address": to_address,
         "amount": 50.0
-    }, headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
+    }
+    response = client.post("/transactions", json=transaction_data, headers=headers)
     assert response.status_code == 200
     assert response.json()["success"] is True
 
-def test_get_balance():
-    """Test getting the balance of an address."""
-    response = client.get("/balance/{address}", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
-    assert response.status_code == 200
-    assert isinstance(response.json(), float)
-
-def test_delete_address():
+def test_delete_address(login_user):
     """Test deleting a wallet address."""
-    response = client.delete("/addresses/{address}", headers={
-        "Authorization": f"Bearer {get_access_token()}"
-    })
+    headers = {"Authorization": f"Bearer {login_user}"}
+    address_response = client.post("/addresses", headers=headers)
+    address = address_response.json()["address"]
+    response = client.delete(f"/addresses/{address}", headers=headers)
     assert response.status_code == 200
-    assert response.json()["success"] is True
+    assert response.json()["message"] == "Address deleted successfully"
 
-def get_access_token():
-    """Helper function to get access token for authenticated requests."""
-    response = client.post("/token", data={
-        "username": TEST_USERNAME,
-        "password": TEST_PASSWORD
-    })
-    return response.json()["access_token"]
+def test_health_check():
+    """Test the health check endpoint."""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
 
 if __name__ == "__main__":
     pytest.main()
