@@ -1,20 +1,35 @@
 import hashlib
 import json
 from typing import Any, Dict, List
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+from src.config import Config  # Import the Config class to access STABLECOIN_VALUE
 
 class Transaction:
     def __init__(self, sender: str, recipient: str, amount: float):
+        if amount <= 0:
+            raise ValueError("Transaction amount must be positive.")
+        
         self.sender = sender
         self.recipient = recipient
         self.amount = amount
+        self.value_in_usd = self.calculate_value_in_usd()  # Calculate USD value
         self.transaction_id = self.create_transaction_id()
+        self.signature = None  # Placeholder for the transaction signature
+
+    def calculate_value_in_usd(self) -> float:
+        """Calculate the value of the transaction in USD based on the stablecoin value."""
+        return self.amount * Config.STABLECOIN_VALUE
 
     def create_transaction_id(self) -> str:
         """Create a unique transaction ID based on the transaction details."""
         transaction_string = json.dumps({
             "sender": self.sender,
             "recipient": self.recipient,
-            "amount": self.amount
+            "amount": self.amount,
+            "value_in_usd": self.value_in_usd  # Include USD value in the transaction ID
         }, sort_keys=True).encode()
         return hashlib.sha256(transaction_string).hexdigest()
 
@@ -24,14 +39,53 @@ class Transaction:
             "transaction_id": self.transaction_id,
             "sender": self.sender,
             "recipient": self.recipient,
-            "amount": self.amount
+            "amount": self.amount,
+            "value_in_usd": self.value_in_usd,  # Include USD value in the dictionary
+            "signature": self.signature  # Include signature in the dictionary
         }
 
-    def sign_transaction(self, private_key: str) -> str:
+    def sign_transaction(self, private_key: str) -> None:
         """Sign the transaction with the sender's private key."""
-        # In a real implementation, you would use a cryptographic library to sign the transaction
-        # Here we just return a placeholder for the signature
-        return hashlib.sha256((self.transaction_id + private_key).encode()).hexdigest()
+        private_key_obj = serialization.load_pem_private_key(
+            private_key.encode(),
+            password=None,
+            backend=default_backend()
+        )
+        self.signature = private_key_obj.sign(
+            self.transaction_id.encode(),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        ).hex()  # Store the signature as a hex string
+
+    def verify_signature(self) -> bool:
+        """Verify the transaction signature using the sender's public key."""
+        public_key = self.get_public_key(self.sender)  # Placeholder for public key retrieval
+        public_key_obj = serialization.load_pem_public_key(
+            public_key.encode(),
+            backend=default_backend()
+        )
+        try:
+            public_key_obj.verify(
+                bytes.fromhex(self.signature),
+                self.transaction_id.encode(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            return True
+        except Exception:
+            return False
+
+    def get_public_key(self, sender: str) -> str:
+        """Retrieve the public key for the sender (placeholder implementation)."""
+        # In a real implementation, you would retrieve the public key from a secure storage
+        # Here we return a placeholder public key for demonstration purposes
+        return "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
 
 class TransactionPool:
     def __init__(self):
@@ -70,12 +124,20 @@ if __name__ == "__main__":
 
     # Create a new transaction
     transaction = Transaction(sender="Alice", recipient="Bob", amount=10.0)
-    transaction_pool.add_transaction(transaction)
+    
+    # Sign the transaction (using a placeholder private key)
+    private_key = """-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----"""
+    
+    transaction.sign_transaction(private_key)
 
-    # Sign the transaction (placeholder for actual signing)
-    private_key = "Alice's private key"
-    signature = transaction.sign_transaction(private_key)
-    print(f"Transaction signed with signature: {signature}")
+    # Verify the transaction signature
+    if transaction.verify_signature():
+        transaction_pool.add_transaction(transaction)
+        print("Transaction added to the pool.")
+    else:
+        print("Transaction signature verification failed.")
 
     # Print the transaction pool
     print("Transaction Pool:", transaction_pool.get_transactions())
