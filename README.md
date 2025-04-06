@@ -56,7 +56,7 @@ Nexus Revoluter is licensed under the [MIT License](LICENSE).
 
 We would like to thank the following individuals and organizations for their contributions to Nexus Revoluter:
 
-* [KOSASIH]
+* [KOSASIH](https://www.linkedin.com/in/kosasih-81b46b5a)
 * [GALACTIC UNION](https://github.com/GALACTIC-UNION) 
 
 ## Contact Us
