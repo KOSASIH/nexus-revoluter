@@ -107,8 +107,8 @@ if __name__ == "__main__":
     blockchain = Blockchain()
     
     # Adding transactions
-    blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0})
-    blockchain.add_transaction({"sender": "Bob", "recipient": "Charlie", "amount": 5.0})
+    blockchain.add_transaction({"sender": "Alice", "recipient": "Bob", "amount": 10.0, "currency": "Pi"})
+    blockchain.add_transaction({"sender": "Bob", "recipient": "Charlie", "amount": 5.0, "currency": "Pi"})
 
     # Add a block with the current transactions
     blockchain.add_block(blockchain.current_transactions)
