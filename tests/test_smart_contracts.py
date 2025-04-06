@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import json
 import os
-from smart_contract import SmartContract, SmartContractManager  # Assuming your classes are in a file named smart_contract.py
+from smart_contracts import SmartContract, SmartContractManager  # Assuming your classes are in a file named smart_contracts.py
 
 class TestSmartContract(unittest.TestCase):
     def setUp(self):
