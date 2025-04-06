@@ -21,6 +21,22 @@
 [![Polkadot Certified](https://img.shields.io/badge/Polkadot-Certified-E6007E.svg)](https://polkadot.network/)
 [![NEO Certified](https://img.shields.io/badge/NEO-Certified-00A86B.svg)](https://neo.org/)
 [![EOSIO Approved](https://img.shields.io/badge/EOSIO-Approved-000000.svg)](https://eos.io/)
+[![Solana Certified](https://img.shields.io/badge/Solana-Certified-65AEDD.svg)](https://solana.com/)
+[![Avalanche Approved](https://img.shields.io/badge/Avalanche-Approved-EB5757.svg)](https://www.avax.network/)
+[![Algorand Certified](https://img.shields.io/badge/Algorand-Certified-00B2A9.svg)](https://www.algorand.com/)
+[![Stellar Approved](https://img.shields.io/badge/Stellar-Approved-1B1F23.svg)](https://www.stellar.org/)
+[![VeChain Certified](https://img.shields.io/badge/VeChain-Certified-4B8B3B.svg)](https://www.vechain.org/)
+[![Zilliqa Approved](https://img.shields.io/badge/Zilliqa-Approved-1D1D1B.svg)](https://zilliqa.com/)
+[![Hedera Certified](https://img.shields.io/badge/Hedera-Certified-00B2A9.svg)](https://hedera.com/)
+[![IOTA Approved](https://img.shields.io/badge/IOTA-Approved-4B8B3B.svg)](https://www.iota.org/)
+[![Fantom Certified](https://img.shields.io/badge/Fantom-Certified-1967FF.svg)](https://fantom.foundation/)
+[![Terra Approved](https://img.shields.io/badge/Terra-Approved-000000.svg)](https://terra.money/)
+[![Kusama Certified](https://img.shields.io/badge/Kusama-Certified-6C6C6C.svg)](https://kusama.network/)
+[![Waves Approved](https://img.shields.io/badge/Waves-Approved-1C1C1C.svg)](https://waves.tech/)
+[![NEM Certified](https://img.shields.io/badge/NEM-Certified-4B8B3B.svg)](https://nem.io/)
+[![Qtum Approved](https://img.shields.io/badge/Qtum-Approved-00B2A9.svg)](https://qtum.org/)
+[![Ravencoin Certified](https://img.shields.io/badge/Ravencoin-Certified-FF7F50.svg)](https://ravencoin.org/)
+[![Celo Approved](https://img.shields.io/badge/Celo-Approved-00B2A9.svg)](https://celo.org/)
 
 <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/KOSASIH/nexus-revoluter">Nexus Revoluter</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://www.linkedin.com/in/kosasih-81b46b5">KOSASIH</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">Creative Commons Attribution 4.0 International<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""></a></p>
 
