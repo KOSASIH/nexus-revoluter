@@ -23,6 +23,8 @@ nexus-revoluter/
 │   ├── governance.py             # Governance features for community decision-making
 │   ├── rewards.py               # Reward distribution mechanisms for network participants
 │   ├── staking.py               # Staking functionalities for users to earn rewards
+│   ├── event_emitter.py         # Event handling for significant actions in the network
+│   ├── notifications.py          # User notifications for transactions and events
 │   └── tests/                   # Unit tests for all components
 │       ├── __init__.py          # Makes the tests directory a package
 │       ├── test_blockchain.py   # Unit tests for blockchain logic
@@ -45,7 +47,8 @@ nexus-revoluter/
 │   ├── ARCHITECTURE.md          # Overview of system architecture and design decisions
 │   ├── SECURITY.md              # Security practices and considerations
 │   ├── USER_GUIDE.md            # User guide for interacting with the wallet and API
-│   └── LAUNCH_GUIDE.md          # Instructions for launching and participating in the mainnet
+│   ├── LAUNCH_GUIDE.md          # Instructions for launching and participating in the mainnet
+│   └── FAQ.md                   # Frequently Asked Questions about the project
 │
 ├── requirements.txt             # List of dependencies for the project
 ├── Dockerfile                   # Docker configuration for containerization
