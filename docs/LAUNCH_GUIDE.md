@@ -169,7 +169,7 @@ Before you begin, ensure you have the following:
 
 For further assistance, join our community:
 
-- **Discord**: [Join our Discord](https://discord.gg/yourdiscordlink)
+- **Discord**: [Join our Discord](https://discord.gg/Ss25wKhb)
 - **Telegram**: [Join our Telegram](https://t.me/yourtelegramlink)
 - **GitHub Issues**: [Report an issue](https://github.com/KOSASIH/nexus-revoluter/issues)
 
