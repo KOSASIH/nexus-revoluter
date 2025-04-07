@@ -6,7 +6,7 @@ nexus-revoluter/
 │   ├── blockchain.py            # Blockchain logic (block creation, validation)
 │   ├── transaction.py            # Transaction handling (creation, validation, broadcasting)
 │   ├── node.py                  # Node management (peer discovery, connection handling)
-│   ├── consensus.py             # Consensus algorithm implementation
+│   ├── consensus.py             # Consensus algorithm implementation (e.g., Proof of Stake)
 │   ├── smart_contracts.py       # Smart contract functionality (if applicable)
 │   ├── wallet.py                # Wallet management (address generation, balance tracking)
 │   ├── api.py                   # REST API for external interactions
@@ -20,6 +20,9 @@ nexus-revoluter/
 │   ├── dao.py                   # Decentralized Autonomous Organization (DAO) features
 │   ├── privacy.py               # Privacy features (zk-SNARKs, confidential transactions)
 │   ├── defi.py                  # Decentralized Finance (DeFi) functionalities
+│   ├── governance.py             # Governance features for community decision-making
+│   ├── rewards.py               # Reward distribution mechanisms for network participants
+│   ├── staking.py               # Staking functionalities for users to earn rewards
 │   └── tests/                   # Unit tests for all components
 │       ├── __init__.py          # Makes the tests directory a package
 │       ├── test_blockchain.py   # Unit tests for blockchain logic
@@ -32,7 +35,8 @@ nexus-revoluter/
 │       ├── test_interoperability.py # Unit tests for cross-chain functionality
 │       ├── test_layer2.py       # Unit tests for Layer 2 solutions
 │       ├── test_ai_analysis.py   # Unit tests for AI-powered analysis
-│       └── test_defi.py         # Unit tests for DeFi functionalities
+│       ├── test_governance.py    # Unit tests for governance features
+│       └── test_rewards.py       # Unit tests for rewards distribution
 │
 ├── docs/
 │   ├── README.md                # Project overview and setup instructions
@@ -40,7 +44,8 @@ nexus-revoluter/
 │   ├── CONTRIBUTING.md          # Guidelines for contributing to the project
 │   ├── ARCHITECTURE.md          # Overview of system architecture and design decisions
 │   ├── SECURITY.md              # Security practices and considerations
-│   └── USER_GUIDE.md            # User guide for interacting with the wallet and API
+│   ├── USER_GUIDE.md            # User guide for interacting with the wallet and API
+│   └── LAUNCH_GUIDE.md          # Instructions for launching and participating in the mainnet
 │
 ├── requirements.txt             # List of dependencies for the project
 ├── Dockerfile                   # Docker configuration for containerization
