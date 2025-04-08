@@ -28,6 +28,10 @@ nexus-revoluter/
 │   ├── analytics.py             # Analytics and reporting features (transaction metrics, user engagement)
 │   ├── compliance.py            # Compliance features (KYC/AML integration, regulatory reporting)
 │   ├── testing.py               # Comprehensive testing framework (unit tests, integration tests, and end-to-end tests)
+│   ├── smart_contracts/          # Directory for smart contract files
+│   │   ├── PiCoinSmartContract.sol # Smart contract for Pi Coin
+│   ├── cross_chain/             # Directory for cross-chain functionality
+│   │   ├── CrossChainModule.js   # Cross-chain communication logic
 │   └── tests/                   # Unit tests for all components
 │       ├── __init__.py          # Makes the tests directory a package
 │       ├── test_blockchain.py   # Unit tests for blockchain logic
@@ -42,7 +46,9 @@ nexus-revoluter/
 │       ├── test_ai_analysis.py   # Unit tests for AI-powered analysis
 │       ├── test_governance.py    # Unit tests for governance features
 │       ├── test_rewards.py       # Unit tests for rewards distribution
-│       └── test_compliance.py    # Unit tests for compliance features
+│       ├── test_compliance.py    # Unit tests for compliance features
+│       ├── test_smart_contracts.py # Unit tests for smart contracts
+│       └── test_cross_chain.py   # Unit tests for cross-chain functionality
 │
 ├── docs/
 │   ├── README.md                # Project overview and setup instructions
