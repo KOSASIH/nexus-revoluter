@@ -46,8 +46,8 @@ To use the dApps, follow these steps:
 
 ## Contributing
 
-Contributions to the dApps are welcome! Please follow the guidelines outlined in the `CONTRIBUTING.md` file located in the `docs/` directory for more information on how to contribute to the project.
+Contributions to the dApps are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file located in the `docs/` directory for more information on how to contribute to the project.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+This project is licensed under the MIT License. See the [LICENSE](src/dapps/LICENSE) file for more details.
