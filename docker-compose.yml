@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # Main application service
+  app:
+    image: nexus-revoluter:latest
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: nexus_revoluter_app
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://user:password@db:3306/nexus_db
+      - REDIS_URL=redis://cache:6379
+      - API_KEY=your_api_key_here
+      - SECRET_KEY=your_secret_key_here
+    ports:
+      - "8000:8000"  # Expose the application on port 8000
+    depends_on:
+      - db
+      - cache
+    networks:
+      - nexus_network
+    volumes:
+      - ./src:/app  # Mount the source code for live updates (optional)
+
+  # MySQL database service
+  db:
+    image: mysql:8.0
+    container_name: nexus_revoluter_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: nexus_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"  # Expose MySQL on port 3306
+    volumes:
+      - db_data:/var/lib/mysql  # Persist database data
+    networks:
+      - nexus_network
+
+  # Redis caching service
+  cache:
+    image: redis:6.0
+    container_name: nexus_revoluter_cache
+    ports:
+      - "6379:6379"  # Expose Redis on port 6379
+    networks:
+      - nexus_network
+
+  # Monitoring service using Prometheus
+  prometheus:
+    image: prom/prometheus
+    container_name: nexus_revoluter_prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"  # Expose Prometheus on port 9090
+    networks:
+      - nexus_network
+
+  # Grafana for visualizing metrics
+  grafana:
+    image: grafana/grafana
+    container_name: nexus_revoluter_grafana
+    ports:
+      - "3000:3000"  # Expose Grafana on port 3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Default admin password
+    depends_on:
+      - prometheus
+    networks:
+      - nexus_network
+
+networks:
+  nexus_network:
+    driver: bridge
+
+volumes:
+  db_data:
