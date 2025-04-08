@@ -3,17 +3,19 @@ import json
 import hashlib
 import base64
 import logging
+import time
 from typing import Dict, Any, List
 from cryptography.fernet import Fernet
 from mnemonic import Mnemonic
 from bip32 import BIP32
 from bip44 import BIP44
 from src.config import Config  # Import the STABLECOIN_VALUE from the config
+import requests  # For API integration
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-class Wallet:
+class PiWallet:
     def __init__(self, password: str):
         self.password = password
         self.addresses: Dict[str, float] = {}  # Address to balance mapping
@@ -21,6 +23,7 @@ class Wallet:
         self.mnemonic = Mnemonic("english")
         self.bip32 = None
         self.load_or_create_wallet()
+        self.two_factor_enabled = False  # Placeholder for 2FA status
 
     def load_or_create_wallet(self):
         """Load existing wallet or create a new one."""
@@ -66,8 +69,11 @@ class Wallet:
         balance = self.get_balance(address)
         return balance * Config.STABLECOIN_VALUE  # Convert balance to USD
 
-    def create_transaction(self, from_address: str, to_address: str, amount: float, fee: float = 0.0) -> bool:
+    def create_transaction(self, from_address: str, to_address: str, amount: float, fee: float = 0.0, require_2fa: bool = False) -> bool:
         """Create a transaction from one address to another."""
+        if require_2fa and not self.verify_2fa():
+            raise Exception("2FA verification failed.")
+        
         if from_address not in self.addresses:
             raise Exception("From address does not exist.")
         if to_address not in self.addresses:
@@ -82,7 +88,8 @@ class Wallet:
             "amount": amount,
             "fee": fee,
             "hash": self.hash_transaction(from_address, to_address, amount, fee),
-            "timestamp": self.get_current_timestamp()
+            "timestamp": self.get_current_timestamp(),
+            "status": "pending"  # Transaction status
         }
         self.transactions.append(transaction)
 
@@ -97,7 +104,7 @@ class Wallet:
         transaction_string = f"{from_address}->{to_address}:{amount}+{fee}"
         return hashlib.sha256(transaction_string.encode()).hexdigest()
 
-    def get_current_timestamp def get_current_timestamp(self) -> str:
+    def get_current_timestamp(self) -> str:
         """Get the current timestamp."""
         from datetime import datetime
         return datetime.utcnow().isoformat()
@@ -187,10 +194,45 @@ class Wallet:
             raise Exception("Password must contain at least one lowercase letter.")
         return True
 
+    def enable_two_factor_authentication(self):
+        """Enable two-factor authentication for added security."""
+        self.two_factor_enabled = True
+        logging.info("Two-factor authentication enabled.")
+
+    def verify_2fa(self) -> bool:
+        """Simulate 2FA verification process."""
+        # In a real implementation, this would involve sending a code to the user
+        code = input("Enter the 2FA code: ")
+        # Here we would verify the code against a stored value
+        return code == "123456"  # Placeholder for the actual verification logic
+
+    def backup_wallet(self, backup_filename: str):
+        """Backup the wallet to a specified file."""
+        self.save_wallet(backup_filename)
+        logging.info(f"Wallet backed up to {backup_filename}")
+
+    def restore_wallet(self, backup_filename: str):
+        """Restore the wallet from a backup file."""
+        self.load_wallet(backup_filename)
+        logging.info(f"Wallet restored from {backup_filename}")
+
+    def fetch_real_time_price(self, currency: str) -> float:
+        """Fetch the real-time price of the stablecoin in USD."""
+        response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={currency}&vs_currencies=usd")
+        if response.status_code == 200:
+            price_data = response.json()
+            return price_data[currency]['usd']
+        else:
+            raise Exception("Failed to fetch price data.")
+
+    def log_transaction(self, transaction: Dict[str, Any]):
+        """Log transaction details for monitoring."""
+        logging.info(f"Transaction logged: {transaction}")
+
 # Example usage
 if __name__ == "__main__":
-    password = input("Enter a password for your wallet: ")
-    wallet = Wallet(password)
+    password = input("Enter a password for your PiWallet: ")
+    wallet = PiWallet(password)
 
     # Validate password strength
     try:
@@ -198,6 +240,9 @@ if __name__ == "__main__":
         logging.info("Password is strong.")
     except Exception as e:
         logging.error(f"Password validation error: {e}")
+
+    # Enable 2FA
+    wallet.enable_two_factor_authentication()
 
     # Generate addresses
     for i in range(5):
@@ -208,7 +253,7 @@ if __name__ == "__main__":
     address1 = list(wallet.addresses.keys())[0]
     address2 = list(wallet.addresses.keys())[1]
     wallet.add_balance(address1, 100.0)  # Manually set balance for testing
-    wallet.create_transaction(address1, address2, 50.0, fee=1.0)
+    wallet.create_transaction(address1, address2, 50.0, fee=1.0, require_2fa=True)
 
     print(f"Transaction successful: {wallet.get_transactions()}")
     print(f" Address 1 Balance: {wallet.get_balance(address1)}")
@@ -224,10 +269,17 @@ if __name__ == "__main__":
     print(f"Address 2 Balance: {wallet.get_balance(address2)}")
     print(f"Address 3 Balance: {wallet.get_balance(address3)}")
 
-    # Save and load wallet
-    wallet.save_wallet("my_wallet.json")
-    new_wallet = Wallet(password)
-    new_wallet.load_wallet("my_wallet.json")
+    # Backup and restore wallet
+    wallet.backup_wallet("my_pi_wallet_backup.json")
+    new_wallet = PiWallet(password)
+    new_wallet.restore_wallet("my_pi_wallet_backup.json")
     print(f"Loaded Address 1 Balance: {new_wallet.get_balance(address1)}")
     print(f"Loaded Address 2 Balance: {new_wallet.get_balance(address2)}")
     print(f"Loaded Address 3 Balance: {new_wallet.get_balance(address3)}")
+
+    # Fetch real-time price
+    try:
+        price = wallet.fetch_real_time_price("usd-coin")  # Example for USD Coin
+        print(f"Current price of USD Coin: ${price}")
+    except Exception as e:
+        logging.error(f"Error fetching price: {e}")
