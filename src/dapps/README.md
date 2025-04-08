@@ -46,7 +46,7 @@ To use the dApps, follow these steps:
 
 ## Contributing
 
-Contributions to the dApps are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file located in the `docs/` directory for more information on how to contribute to the project.
+Contributions to the dApps are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file located in the `docs/` directory for more information on how to contribute to the project.
 
 ## License
 
