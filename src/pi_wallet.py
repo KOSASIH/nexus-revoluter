@@ -3,7 +3,6 @@ import json
 import hashlib
 import base64
 import logging
-import time
 from typing import Dict, Any, List
 from cryptography.fernet import Fernet
 from mnemonic import Mnemonic
@@ -106,8 +105,7 @@ class PiWallet:
 
     def get_current_timestamp(self) -> str:
         """Get the current timestamp."""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
+        from datetime import datetime return datetime.utcnow().isoformat()
 
     def get_transactions(self) -> List[Dict[str, Any]]:
         """Get the list of transactions."""
@@ -201,9 +199,7 @@ class PiWallet:
 
     def verify_2fa(self) -> bool:
         """Simulate 2FA verification process."""
-        # In a real implementation, this would involve sending a code to the user
         code = input("Enter the 2FA code: ")
-        # Here we would verify the code against a stored value
         return code == "123456"  # Placeholder for the actual verification logic
 
     def backup_wallet(self, backup_filename: str):
@@ -218,7 +214,7 @@ class PiWallet:
 
     def fetch_real_time_price(self, currency: str) -> float:
         """Fetch the real-time price of the stablecoin in USD."""
-        response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={currency}&vs_currencies=usd")
+        response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={currency}&vs_c urrencies=usd")
         if response.status_code == 200:
             price_data = response.json()
             return price_data[currency]['usd']
