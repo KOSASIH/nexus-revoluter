@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome, {{ username }}!</h1>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Your IoT Devices</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for device in iot_devices %}
+                                <li class="list-group-item">
+                                    <strong>{{ device.device_id }}</strong> - {{ device.device_type }} ({{ device.location }})
+                                    <div class="float-right">
+                                        <button class="btn btn-info btn-sm" onclick="fetchDeviceData('{{ device.device_id }}')">Fetch Data</button>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Your Tokenized Assets</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for asset in tokenized_assets %}
+                                <li class="list-group-item">
+                                    <strong>{{ asset.asset_id }}</strong> - Owner: {{ asset.owner }}, Value: {{ asset.tokenized_value }} tokens
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="device-data" class="alert alert-info" style="display: none;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        function fetchDeviceData(deviceId) {
+            $.getJSON(`/api/iot_data`, function(data) {
+                const deviceData = data[deviceId];
+                if (deviceData) {
+                    $('#device-data').html(`<strong>${deviceId} Data:</strong> ${JSON.stringify(deviceData)}`).show();
+                } else {
+                    $('#device-data').html(`<strong>Error:</strong> No data found for ${deviceId}`).show();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
