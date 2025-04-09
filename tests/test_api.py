@@ -49,11 +49,23 @@ def test_register_user():
     assert response.status_code == 200
     assert response.json()["username"] == test_user["username"]
 
+def test_register_user_duplicate():
+    """Test duplicate user registration."""
+    response = client.post("/register", json=test_user)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Username already registered"
+
 def test_login_user():
     """Test user login."""
     response = client.post("/token", data={"username": test_user["username"], "password": test_user["password"]})
     assert response.status_code == 200
     assert "access_token" in response.json()
+
+def test_login_user_invalid_password():
+    """Test login with invalid password."""
+    response = client.post("/token", data={"username": test_user["username"], "password": "wrongpassword"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Incorrect username or password"
 
 def test_create_address(login_user):
     """Test creating a new wallet address."""
@@ -98,6 +110,26 @@ def test_create_transaction(login_user):
     assert response.status_code == 200
     assert response.json()["success"] is True
 
+def test_create_transaction_insufficient_funds(login_user):
+    """Test creating a transaction with insufficient funds."""
+    headers = {"Authorization": f"Bearer {login_user}"}
+    address_response_1 = client.post("/addresses", headers=headers)
+    address_response_2 = client.post("/addresses", headers=headers)
+    from_address = address_response_1.json()["address"]
+    to_address = address_response_2.json()["address"]
+    
+    # Set balance to 10.0 for testing
+    wallet.addresses[from_address] = 10.0
+
+    transaction_data = {
+        "from_address": from_address,
+        "to_address": to_address,
+        "amount": 50.0  # Attempt to send more than available
+    }
+    response = client.post("/transactions", json=transaction_data, headers=headers)
+    assert response.status_code == 400
+    assert "detail" in response.json()  # Check for error message
+
 def test_delete_address(login_user):
     """Test deleting a wallet address."""
     headers = {"Authorization": f"Bearer {login_user}"}
@@ -106,6 +138,13 @@ def test_delete_address(login_user):
     response = client.delete(f"/addresses/{address}", headers=headers)
     assert response.status_code == 200
     assert response.json()["message"] == "Address deleted successfully"
+
+def test_delete_address_not_found(login_user):
+    """Test deleting a non-existent wallet address."""
+    headers = {"Authorization": f"Bearer {login_user}"}
+    response = client.delete("/addresses/nonexistent_address", headers=headers)
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Address not found"
 
 def test_health_check():
     """Test the health check endpoint."""
