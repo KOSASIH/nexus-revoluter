@@ -12,16 +12,9 @@ class IoTDevice:
 
     def collect_data(self):
         """Simulate data collection from the IoT device."""
-        if self.device_type == 'solar_panel':
+        if self.device_type in ['solar_panel', 'wind_turbine']:
             self.data = {
                 "energy_produced": self.simulate_energy_production(),
-                "temperature": self.simulate_temperature(),
-                "timestamp": datetime.now().isoformat()
-            }
-        elif self.device_type == 'wind_turbine':
-            self.data = {
-                "energy_produced": self.simulate_energy_production(),
-                "wind_speed": self.simulate_wind_speed(),
                 "timestamp": datetime.now().isoformat()
             }
         elif self.device_type == 'smart_meter':
@@ -38,14 +31,6 @@ class IoTDevice:
     def simulate_energy_consumption(self):
         """Simulate energy consumption for smart meters."""
         return round(random.uniform(0.1, 3.0), 2)  # Simulated energy consumption in kWh
-
-    def simulate_temperature(self):
-        """Simulate temperature for solar panels."""
-        return round(random.uniform(15.0, 35.0), 2)  # Simulated temperature in Celsius
-
-    def simulate_wind_speed(self):
-        """Simulate wind speed for wind turbines."""
-        return round(random.uniform(0.0, 25.0), 2)  # Simulated wind speed in m/s
 
 class TokenizedAsset:
     def __init__(self, asset_id, asset_type, owner):
@@ -106,29 +91,19 @@ class RealWorldIntegration:
         else:
             print(f"Asset {asset_id} not found.")
 
-    def record_transaction_on_blockchain(self, asset_id, new_owner ):
-        """Record the transaction on a blockchain for transparency."""
-        transaction_data = {
+    def record_transaction_on_blockchain(self, asset_id, new_owner):
+        """Record the asset transfer on the blockchain."""
+        payload = {
             "asset_id": asset_id,
             "new_owner": new_owner,
             "timestamp": datetime.now().isoformat()
         }
-        # Simulate sending transaction data to a blockchain
-        response = requests.post("https://blockchain.api/record_transaction", json=transaction_data)
-        if response.status_code == 200:
-            print(f"Transaction for asset {asset_id} recorded on blockchain.")
-        else:
-            print(f"Failed to record transaction for asset {asset_id}.")
-
-    def visualize_data(self):
-        """Visualize the collected IoT data."""
         try:
-            with open("iot_data_log.json", "r") as log_file:
-                data_entries = [json.loads(line) for line in log_file.readlines()]
-            # Here you can implement a visualization library like matplotlib or seaborn
-            print("Data visualization is ready to be implemented.")
-        except Exception as e:
-            print(f"Error visualizing data: {e}")
+            response = requests.post("https://api.blockchain.com/v3/transaction", json=payload)
+            response.raise_for_status()  # Raise an error for bad responses
+            print(f"Successfully recorded transaction for asset {asset_id} to new owner {new_owner}.")
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to record transaction on blockchain: {e}")
 
 # Example usage
 if __name__ == "__main__":
@@ -164,6 +139,3 @@ if __name__ == "__main__":
     # Log the final state of tokenized assets
     for asset in integration.tokenized_assets:
         print(f"Asset ID: {asset.asset_id}, Owner: {asset.owner}, Value: {asset.tokenized_value} tokens")
-
-    # Visualize the collected data
-    integration.visualize_data()
