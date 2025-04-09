@@ -41,6 +41,10 @@ nexus-revoluter/
 │   ├── user_engagement.py        # Features for enhancing user engagement and retention
 │   ├── crowdfunding.py           # Decentralized crowdfunding mechanisms for community projects
 │   ├── charity_integration.py    # Features for integrating charitable donations
+│   ├── green_mining.py           # Eco-friendly mining solutions and carbon credit integration
+│   ├── advanced_security.py       # Advanced security features (multi-signature wallets, decentralized insurance)
+│   ├── real_world_integration.py  # Integration with IoT and tokenized assets
+│   ├── user_experience.py        # Enhancements for user interface and mobile-first design
 │   └── tests/                   # Unit tests for all components
 │       ├── __init__.py          # Makes the tests directory a package
 │       ├── test_blockchain.py   # Unit tests for blockchain logic
@@ -61,7 +65,8 @@ nexus-revoluter/
 │       ├── test_tokenomics.py    # Unit tests for tokenomics model
 │       ├── test_liquidity_management.py # Unit tests for liquidity management
 │       ├── test_user_engagement.py # Unit tests for user engagement features
-│       └── test_crowdfunding.py   # Unit tests for crowdfunding mechanisms
+│       ├── test_crowdfunding.py   # Unit tests for crowdfunding mechanisms
+│       └── test_green_mining.py   # Unit tests for green mining solutions
 │
 ├── docs/
 │   ├── README.md                # Project overview and setup instructions
@@ -74,7 +79,8 @@ nexus-revoluter/
 │   ├── FAQ.md                   # Frequently Asked Questions about the project
 │   ├── TROUBLESHOOTING.md       # Common issues and solutions
 │   ├── ROADMAP.md               # Future plans and feature enhancements
-│   └── USER_PRIVACY.md          # Guidelines on privacy features and user data protection
+│   ├── USER_PRIVACY.md          # Guidelines on privacy features and user data protection
+│   └── SUSTAINABILITY.md         # Information on sustainability initiatives and eco-friendly practices
 │
 ├── requirements.txt             # List of dependencies for the project
 ├── Dockerfile                   # Docker configuration for containerization
