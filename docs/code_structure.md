@@ -35,6 +35,12 @@ nexus-revoluter/
 │   │   ├── PiCoinSmartContract.sol # Smart contract for Pi Coin
 │   ├── cross_chain/             # Directory for cross-chain functionality
 │   │   ├── CrossChainModule.js   # Cross-chain communication logic
+│   ├── tokenomics.py            # Tokenomics model for Pi Coin (supply, distribution, and incentives)
+│   ├── governance_models.py      # Various governance models for community decision-making
+│   ├── liquidity_management.py    # Mechanisms for managing liquidity pools and market-making
+│   ├── user_engagement.py        # Features for enhancing user engagement and retention
+│   ├── crowdfunding.py           # Decentralized crowdfunding mechanisms for community projects
+│   ├── charity_integration.py    # Features for integrating charitable donations
 │   └── tests/                   # Unit tests for all components
 │       ├── __init__.py          # Makes the tests directory a package
 │       ├── test_blockchain.py   # Unit tests for blockchain logic
@@ -52,7 +58,10 @@ nexus-revoluter/
 │       ├── test_compliance.py    # Unit tests for compliance features
 │       ├── test_smart_contracts.py # Unit tests for smart contracts
 │       ├── test_cross_chain.py   # Unit tests for cross-chain functionality
-│       └── test_example_dapp.py   # Unit tests for the example dApp
+│       ├── test_tokenomics.py    # Unit tests for tokenomics model
+│       ├── test_liquidity_management.py # Unit tests for liquidity management
+│       ├── test_user_engagement.py # Unit tests for user engagement features
+│       └── test_crowdfunding.py   # Unit tests for crowdfunding mechanisms
 │
 ├── docs/
 │   ├── README.md                # Project overview and setup instructions
@@ -64,7 +73,8 @@ nexus-revoluter/
 │   ├── LAUNCH_GUIDE.md          # Instructions for launching and participating in the mainnet
 │   ├── FAQ.md                   # Frequently Asked Questions about the project
 │   ├── TROUBLESHOOTING.md       # Common issues and solutions
-│   └── ROADMAP.md               # Future plans and feature enhancements
+│   ├── ROADMAP.md               # Future plans and feature enhancements
+│   └── USER_PRIVACY.md          # Guidelines on privacy features and user data protection
 │
 ├── requirements.txt             # List of dependencies for the project
 ├── Dockerfile                   # Docker configuration for containerization
