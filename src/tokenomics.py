@@ -89,7 +89,7 @@ if __name__ == "__main__":
     # Simulate price stabilization
     tokenomics.stabilize_price(market_price=300000.00)
 
- # Print tokenomics summary
+    # Print tokenomics summary
     summary = tokenomics.get_tokenomics_summary()
     for key, value in summary.items():
         print(f"{key}: {value}")
