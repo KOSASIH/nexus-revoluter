@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 import smtplib
 from email.mime.text import MIMEText
+from cryptography.fernet import Fernet
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,12 +22,14 @@ class AutomatedCompliance:
             "AML": ["Customer Due Diligence", "Transaction Monitoring"],
             "KYC": ["Identity Verification", "Risk Assessment"]
         }
+        self.encryption_key = Fernet.generate_key()  # Generate a key for encryption
+        self.cipher = Fernet(self.encryption_key)
 
     def hash_password(self, password):
         """Hash a password for secure storage."""
         return hashlib.sha256(password.encode()).hexdigest()
 
-    def register_user(self, username, email, password):
+    def register_user(self, username, email, password, role="compliance_officer"):
         """Register a new user in the system."""
         if username in self.users:
             logging.error("Username already exists.")
@@ -36,7 +39,7 @@ class AutomatedCompliance:
             "user_id": user_id,
             "email": email,
             "password": self.hash_password(password),
-            "role": "compliance_officer"  # Default role
+            "role": role  # User role can be specified
         }
         logging.info(f"User  registered: {username}")
         return user_id
@@ -71,33 +74,40 @@ class AutomatedCompliance:
         # Implement monitoring logic here
         return True
 
-    def generate_report(self, report_type):
+    def generate_report(self, report_type, filters=None):
         """Generate a compliance report based on collected data."""
         if report_type not in self.compliance_framework:
             logging.error("Invalid report type.")
             return None
         report_id = str(uuid4())
+        report_data = self.compliance_data  # Apply filters if provided
+        if filters:
+            report_data = {k: v for k, v in self.compliance_data.items() if self._apply_filters(v, filters)}
         report = {
             "report_id": report_id,
             "type": report_type,
-            "data": self.compliance_data,
+            "data": report_data,
             "generated_at": datetime.now().isoformat()
         }
         self.reports[report_id] = report
         logging.info(f"Report generated: {report_id} of type {report_type}")
         return report
 
+    def _apply_filters(self, data, filters):
+        """Apply filters to the data for report generation."""
+        # Implement filtering logic based on the filters provided
+        return True  # Placeholder for actual filtering logic
+
     def send_alert(self, message, recipient_email):
         """Send an alert for compliance breaches or required actions."""
         logging.warning(f"Compliance Alert: {message}")
-        # Implement alert sending logic (e.g., email)
         self._send_email_alert(message, recipient_email)
         return True
 
     def _send_email_alert(self, message, recipient_email):
         """Send an email alert."""
         try:
-            msg = MIMEText(message)
+            msg = MIMEText(message, 'html')  # Use HTML for better formatting
             msg['Subject'] = 'Compliance Alert'
             msg['From'] = 'noreply@compliance.com'
             msg['To'] = recipient_email
@@ -109,6 +119,16 @@ class AutomatedCompliance:
             logging.info("Alert email sent successfully.")
         except Exception as e:
             logging.error(f"Failed to send alert email: {e}")
+
+    def encrypt_data(self, data):
+        """Encrypt sensitive data before storage."""
+        encrypted_data = self.cipher.encrypt(data.encode())
+        return encrypted_data
+
+    def decrypt_data(self, encrypted_data):
+        """Decrypt sensitive data."""
+        decrypted_data = self.cipher.decrypt(encrypted_data).decode()
+        return decrypted_data
 
     def get_compliance_metrics(self):
         """Get compliance metrics and trends."""
