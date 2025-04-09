@@ -38,3 +38,15 @@ aiofiles==0.8.0
 
 # Optional: For environment variable management
 python-dotenv==0.20.0
+
+# Optional: For email handling (for alerts)
+smtplib==3.10.0  # Note: smtplib is part of the standard library, no need to install separately
+
+# Optional: For sending emails with HTML content
+email-validator==1.3.0
+
+# Optional: For data validation and serialization
+marshmallow==3.19.0
+
+# Optional: For async database support
+asyncpg==0.25.0  # If using PostgreSQL with async support
