@@ -99,13 +99,13 @@ def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] 
     return encoded_jwt
 
 # User registration endpoint
-@app.post("/register", response_model=User )
+@app.post("/register", response_model=User)
 async def register(user: User):
     if user.username in fake_users_db:
         raise HTTPException(status_code=400, detail="Username already registered")
     hashed_password = get_password_hash(user.password)
     fake_users_db[user.username] = UserInDB(**user.dict(), hashed_password=hashed_password)
-    logger.info(f"User  registered: {user.username}")
+    logger.info(f"User registered: {user.username}")
     return user
 
 # Authentication endpoint
@@ -140,7 +140,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 @app.get("/addresses", response_model=List[AddressResponse])
 async def get_addresses(current_user: User = Depends(get_current_user)):
     """Get all wallet addresses and their balances."""
-    logger.info(f"User  {current_user.username} requested addresses.")
+    logger.info(f"User {current_user.username} requested addresses.")
     return [{"address": address, "balance": wallet.get_balance(address)} for address in wallet.addresses]
 
 @app.post("/addresses", response_model=AddressResponse)
@@ -148,7 +148,7 @@ async def create_address(current_user: User = Depends(get_current_user)):
     """Create a new wallet address."""
     address = wallet.generate_address(len(wallet.addresses))
     wallet.addresses[address] = 0.0  # Initialize balance to 0
-    logger.info(f"User  {current_user.username} created address: {address}.")
+    logger.info(f"User {current_user.username} created address: {address}.")
     return {"address": address, "balance": 0.0}
 
 @app.get("/balance/{address}", response_model=float)
@@ -157,7 +157,7 @@ async def get_balance(address: str, current_user: User = Depends(get_current_use
     balance = wallet.get_balance(address)
     if balance is None:
         raise HTTPException(status_code=404, detail="Address not found")
-    logger.info(f"User  {current_user.username} requested balance for address: {address}.")
+    logger.info(f"User {current_user.username} requested balance for address: {address}.")
     return balance
 
 @app.post("/transactions", response_model=TransactionResponse)
@@ -165,7 +165,7 @@ async def create_transaction(transaction: TransactionRequest, current_user: User
     """Create a new transaction."""
     try:
         success = wallet.create_transaction(transaction.from_address, transaction.to_address, transaction.amount)
-        logger.info(f"User  {current_user.username} created transaction: {transaction}.")
+        logger.info(f"User {current_user.username} created transaction: {transaction}.")
         return {"success": success, "message": "Transaction successful"}
     except Exception as e:
         logger.error(f"Transaction failed: {str(e)}")
@@ -174,14 +174,14 @@ async def create_transaction(transaction: TransactionRequest, current_user: User
 @app.get("/transactions", response_model=List[Dict[str, str]])
 async def get_transactions(current_user: User = Depends(get_current_user)):
     """Get the list of transactions."""
-    logger.info(f"User  {current_user.username} requested transactions.")
+    logger.info(f"User {current_user.username} requested transactions.")
     return wallet.get_transactions()
 
 @app.post("/save")
 async def save_wallet(current_user: User = Depends(get_current_user), background_tasks: BackgroundTasks):
     """Save the wallet to a file."""
     background_tasks.add_task(wallet.save_wallet, "my_wallet.json")
-    logger.info(f"User  {current_user.username} initiated wallet save.")
+    logger.info(f"User {current_user.username} initiated wallet save.")
     return {"message": "Wallet save initiated."}
 
 @app.post("/load")
@@ -189,7 +189,7 @@ async def load_wallet(current_user: User = Depends(get_current_user)):
     """Load the wallet from a file."""
     try:
         wallet.load_wallet("my_wallet.json")
-        logger.info(f"User  {current_user.username} loaded the wallet.")
+        logger.info(f"User {current_user.username} loaded the wallet.")
         return {"message": "Wallet loaded successfully"}
     except Exception as e:
         logger.error(f"Failed to load wallet: {str(e)}")
@@ -201,7 +201,7 @@ async def delete_address(address: str, current_user: User = Depends(get_current_
     if address not in wallet.addresses:
         raise HTTPException(status_code=404, detail="Address not found")
     del wallet.addresses[address]
-    logger.info(f"User  {current_user.username} deleted address: {address}.")
+    logger.info(f"User {current_user.username} deleted address: {address}.")
     return {"success": True, "message": "Address deleted successfully"}
 
 @app.get("/health")
