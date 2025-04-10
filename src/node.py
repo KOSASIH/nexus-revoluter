@@ -5,6 +5,7 @@ import logging
 import time
 import hashlib
 from typing import List, Dict, Any
+from planetary_mesh import PlanetaryMeshNetwork  # Import the planetary mesh network
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,7 +32,7 @@ class Block:
         logging.info(f"Block mined: {self.hash}")
 
 class Node:
-    def __init__(self, host: str, port: int, difficulty: int = 2):
+    def __init__(self, host: str, port: int, difficulty: int = 2, config: Dict[str, Any] = None):
         self.host = host
         self.port = port
         self.difficulty = difficulty
@@ -44,6 +45,9 @@ class Node:
         self.server_socket.listen(5)
         logging.info(f"Node started at {self.host}:{self.port}")
 
+        # Initialize the planetary mesh network
+        self.mesh_network = PlanetaryMeshNetwork(config) if config else None
+
     def create_genesis_block(self):
         """Create the first block in the blockchain."""
         genesis_block = Block(0, "0", [], time.time())
@@ -53,6 +57,8 @@ class Node:
     def start(self):
         """Start the node and listen for incoming connections."""
         threading.Thread(target=self.accept_connections, daemon=True).start()
+        if self.mesh_network:
+            self.mesh_network.deploy_network()  # Deploy the mesh network
         logging.info("Node is listening for connections...")
 
     def accept_connections(self):
@@ -100,9 +106,9 @@ class Node:
 
     def add_peer(self, peer: str):
         """Add a new peer to the list of peers."""
-        if peer not in self.peers :
+        if peer not in self.peers:
             self.peers.append(peer)
-            logging.info(f"Added new peer: {peer}")
+            logging.info(f"Added new peer : {peer}")
             self.broadcast_peer_discovery(peer)
 
     def broadcast_peer_discovery(self, peer: str):
@@ -121,7 +127,6 @@ class Node:
 
     def validate_transaction(self, transaction: Dict[str, Any]) -> bool:
         """Validate the transaction (placeholder for actual validation logic)."""
-        # Implement your validation logic here
         return True
 
     def broadcast_transaction(self, transaction: Dict[str, Any]):
@@ -139,7 +144,6 @@ class Node:
 
     def validate_block(self, block: Dict[str, Any]) -> bool:
         """Validate the block (placeholder for actual validation logic)."""
-        # Implement your validation logic here
         return True
 
     def send_chain(self, peer: str):
@@ -185,7 +189,9 @@ class Node:
 
 # Example usage
 if __name__ == "__main__":
-    node = Node(host='127.0.0.1', port=5000, difficulty=2)
+    with open('config.json') as config_file:
+        config = json.load(config_file)
+    node = Node(host='127.0.0.1', port=5000, difficulty=2, config=config)
     node.start()
 
     # Simulate peer discovery
