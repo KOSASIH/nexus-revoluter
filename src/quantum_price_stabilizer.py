@@ -6,7 +6,6 @@ from real_time_analytics import fetch_global_economic_data
 from smart_contracts.PiCoinSmartContract import PiCoinSmartContract
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
 import time
 
 # Configure logging
@@ -16,8 +15,9 @@ class QuantumPriceStabilizer:
     def __init__(self):
         self.quantum_predictor = QuantumPredictor()
         self.smart_contract = PiCoinSmartContract()
+        self.total_supply = 100_000_000_000  # Total supply of Pi Coin
         self.current_supply = self.smart_contract.get_current_supply()
-        self.target_value = 314159.00
+        self.target_value = 314159.00  # Target value for Pi Coin
         self.model = RandomForestRegressor(n_estimators=100, random_state=42)
         self.scaler = StandardScaler()
         self.history = []
@@ -25,7 +25,7 @@ class QuantumPriceStabilizer:
     def analyze_market(self):
         # Fetch global economic data
         economic_data = fetch_global_economic_data()
-        logging.info("Fetched economic data.")
+        logging.info("Fetched economic data for Pi Coin.")
         return economic_data
 
     def preprocess_data(self, economic_data):
@@ -38,26 +38,28 @@ class QuantumPriceStabilizer:
     def train_model(self, features, target):
         # Train the machine learning model
         self.model.fit(features, target)
-        logging.info("Trained the price prediction model.")
+        logging.info("Trained the price prediction model for Pi Coin.")
 
     def predict_price_fluctuations(self, economic_data):
         # Use quantum model and machine learning model to predict price fluctuations
         features, target = self.preprocess_data(economic_data)
         self.train_model(features, target)
         predicted_fluctuations = self.model.predict(features[-1].reshape(1, -1))[0]
-        logging.info(f"Predicted price fluctuations: {predicted_fluctuations}")
+        logging.info(f"Predicted price fluctuations for Pi Coin: {predicted_fluctuations}")
         return predicted_fluctuations
 
     def adjust_supply(self, predicted_fluctuations):
         # Adjust supply based on predictions
         if predicted_fluctuations > self.target_value:
-            amount_to_burn = predicted_fluctuations - self.target_value
+            amount_to_burn = min(predicted_fluctuations - self.target_value, self.current_supply)
             self.smart_contract.burn_tokens(amount_to_burn)
-            logging.info(f"Burned {amount_to_burn} tokens to stabilize price.")
+            self.current_supply -= amount_to_burn  # Update current supply
+            logging.info(f"Burned {amount_to_burn} Pi Coins to stabilize price.")
         elif predicted_fluctuations < self.target_value:
-            amount_to_mint = self.target_value - predicted_fluctuations
+            amount_to_mint = min(self.target_value - predicted_fluctuations, self.total_supply - self.current_supply)
             self.smart_contract.mint_tokens(amount_to_mint)
-            logging.info(f"Minted {amount_to_mint} tokens to stabilize price.")
+            self.current_supply += amount_to_mint  # Update current supply
+            logging.info(f"Minted {amount_to_mint} Pi Coins to stabilize price.")
 
     def run(self):
         # Main process to maintain price stability
