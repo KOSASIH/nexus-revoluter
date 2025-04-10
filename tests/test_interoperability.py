@@ -3,82 +3,98 @@ from unittest.mock import patch, MagicMock
 from interoperability import CrossChainInteroperability
 
 class TestCrossChainInteroperability(unittest.TestCase):
-    def setUp(self):
-        """Set up a new CrossChainInteroperability instance for testing."""
+
+    @patch('interoperability.requests.post')
+    def setUp(self, mock_requests_post):
+        # Mock the response for sending assets
+        self.mock_send_response = MagicMock()
+        self.mock_send_response.json.return_value = {
+            "status": "success",
+            "transaction_id": "tx12345"
+        }
+        self.mock_send_response.status_code = 200
+        mock_requests_post.return_value = self.mock_send_response
+
+        # Initialize the CrossChainInteroperability class
         self.interoperability = CrossChainInteroperability()
-        self.from_chain = "Ethereum"
-        self.to_chain = "BinanceSmartChain"
-        self.amount = 1.5
-        self.recipient_address = "recipient_bsc_address"
-        self.sender_address = "sender_btc_address"
-        self.transaction_id = "tx123456789"
 
-    @patch('interoperability.requests.post')
-    def test_send_asset_success(self, mock_post):
-        """Test sending an asset successfully."""
-        mock_post.return_value = MagicMock(status_code=200, json=lambda: {"status": "success", "transaction_id": self.transaction_id})
-        
-        response = self.interoperability.send_asset(self.from_chain, self.to_chain, self.amount, self.recipient_address)
+    def test_send_asset_success(self):
+        response = self.interoperability.send_asset("Ethereum", "BinanceSmartChain", 1.5, "recipient_bsc_address")
         self.assertEqual(response["status"], "success")
-        self.assertEqual(response["transaction_id"], self.transaction_id)
+        self.assertEqual(response["transaction_id"], "tx12345")
 
-    @patch('interoperability.requests.post')
-    def test_send_asset_failure(self, mock_post):
-        """Test sending an asset failure due to API error."""
-        mock_post.return_value = MagicMock(status_code=400, json=lambda: {"status": "error", "error": "Insufficient funds"})
-        
+    @patch('interoperability.logging.error')
+    def test_send_asset_failure(self, mock_logging_error):
+        # Mock a failed response
+        self.mock_send_response.json.return_value = {
+            "status": "error",
+            "error": "Insufficient funds"
+        }
+        self.mock_send_response.status_code = 400
+
         with self.assertRaises(Exception) as context:
-            self.interoperability.send_asset(self.from_chain, self.to_chain, self.amount, self.recipient_address)
+            self.interoperability.send_asset("Ethereum", "BinanceSmartChain", 1.5, "recipient_bsc_address")
+        
         self.assertTrue("Asset transfer failed." in str(context.exception))
+        mock_logging_error.assert_called_with("Failed to send asset: Insufficient funds")
 
-    @patch('interoperability.requests.post')
-    def test_receive_asset_success(self, mock_post):
-        """Test receiving an asset successfully."""
-        mock_post.return_value = MagicMock(status_code=200, json=lambda: {"status": "success", "transaction_id": self.transaction_id})
-        
-        response = self.interoperability.receive_asset(self.from_chain, self.amount, self.sender_address)
+    def test_receive_asset_success(self):
+        # Mock the receive request
+        self.interoperability.mock_receive_request = MagicMock(return_value={"status": "success", "transaction_id": "rx12345"})
+        response = self.interoperability.receive_asset("Bitcoin", 0.5, "sender_btc_address")
         self.assertEqual(response["status"], "success")
-        self.assertEqual(response["transaction_id"], self.transaction_id)
+        self.assertEqual(response["transaction_id"], "rx12345")
 
-    @patch('interoperability.requests.post')
-    def test_receive_asset_failure(self, mock_post):
-        """Test receiving an asset failure due to API error."""
-        mock_post.return_value = MagicMock(status_code=400, json=lambda: {"status": "error", "error": "Invalid sender address"})
+    @patch('interoperability.logging.error')
+    def test_receive_asset_failure(self, mock_logging_error):
+        # Mock a failed receive request
+        self.interoperability.mock_receive_request = MagicMock(return_value={"status": "error", "error": "Transfer failed"})
         
         with self.assertRaises(Exception) as context:
-            self.interoperability.receive_asset(self.from_chain, self.amount, self.sender_address)
-        self.assertTrue("Asset reception failed." in str(context.exception))
-
-    @patch('interoperability.requests.post')
-    def test_get_chain_balance(self, mock_post):
-        """Test getting the balance of an address."""
-        mock_post.return_value = MagicMock(status_code=200, json=lambda: {"balance": 100.0})
+            self.interoperability.receive_asset("Bitcoin", 0.5, "sender_btc_address")
         
-        balance = self.interoperability.get_chain_balance(self.from_chain, self.recipient_address)
+        self.assertTrue("Asset reception failed." in str(context.exception))
+        mock_logging_error.assert_called_with("Failed to receive asset: Transfer failed")
+
+    def test_get_chain_balance(self):
+        # Mock the balance retrieval
+        self.interoperability.mock_get_balance = MagicMock(return_value=100.0)
+        balance = self.interoperability.get_chain_balance("Ethereum", "user_eth_address")
         self.assertEqual(balance, 100.0)
 
-    @patch('interoperability.requests.post')
-    def test_get_chain_balance_failure(self, mock_post):
-        """Test getting the balance failure due to API error."""
-        mock_post.return_value = MagicMock(status_code=400, json=lambda: {"status": "error", "error": "Address not found"})
-        
+    @patch('interoperability.logging.error')
+    def test_get_chain_balance_unsupported_chain(self, mock_logging_error):
         with self.assertRaises(ValueError) as context:
-            self.interoperability.get_chain_balance(self.from_chain, "invalid_address")
+            self.interoperability.get_chain_balance("UnsupportedChain", "user_address")
+        
         self.assertTrue("Unsupported blockchain." in str(context.exception))
+        mock_logging_error.assert_called_with("Unsupported blockchain.")
 
-    @patch('interoperability.time.sleep', return_value=None)  # Mock sleep to speed up tests
-    @patch('interoperability.CrossChainInteroperability.mock_check_transaction_status', return_value=True)
-    def test_confirm_transaction_success(self, mock_check_status, mock_sleep):
-        """Test confirming a transaction successfully."""
-        confirmed = self.interoperability.confirm_transaction(self.from_chain, self.transaction_id)
+    def test_validate_data_success(self):
+        is_valid = self.interoperability.validate_data(314200, 314159)
+        self.assertTrue(is_valid)
+
+    def test_validate_data_failure(self):
+        is_valid = self.interoperability.validate_data(300000, 314159)
+        self.assertFalse(is_valid)
+
+    def test_validate_data_invalid_type(self):
+        is_valid = self.interoperability.validate_data("invalid_price", 314159)
+        self.assertFalse(is_valid)
+
+    def test_confirm_transaction_success(self):
+        # Mock the transaction status check
+        self.interoperability.mock_check_transaction_status = MagicMock(return_value=True)
+        confirmed = self.interoperability.confirm_transaction("Ethereum", "tx12345")
         self.assertTrue(confirmed)
 
-    @patch('interoperability.time.sleep', return_value=None)  # Mock sleep to speed up tests
-    @patch('interoperability.CrossChainInteroperability.mock_check_transaction_status', return_value=False)
-    def test_confirm_transaction_timeout(self, mock_check_status, mock_sleep):
-        """Test confirming a transaction with timeout."""
-        confirmed = self.interoperability.confirm_transaction(self.from_chain, self.transaction_id, timeout=1)
+    @patch('interoperability.logging.warning')
+    def test_confirm_transaction_timeout(self, mock_logging_warning):
+        # Mock the transaction status check to always return False
+        self.interoperability.mock_check_transaction_status = MagicMock(return_value=False)
+        confirmed = self.interoperability.confirm_transaction("Ethereum", "tx12345", timeout=1)
         self.assertFalse(confirmed)
+        mock_logging_warning.assert_called_with("Transaction tx12345 not confirmed within timeout.")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
