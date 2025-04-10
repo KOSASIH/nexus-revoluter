@@ -111,6 +111,23 @@ class CrossChainInteroperability:
         # In a real implementation, this would interact with the respective blockchain APIs.
         return True  # Mock confirmation
 
+    def validate_data(self, price_data: float, target_value: float, tolerance: float = 0.05) -> bool:
+        """Validate price data against a target value with a specified tolerance."""
+        if not isinstance(price_data, (int, float)):
+            logging.error("Invalid price data type. Must be a number.")
+            return False
+        if price_data < 0:
+            logging.error("Price data cannot be negative.")
+            return False
+        lower_bound = target_value * (1 - tolerance)
+        upper_bound = target_value * (1 + tolerance)
+        is_valid = lower_bound <= price_data <= upper_bound
+        if is_valid:
+            logging.info(f"Price data {price_data} is valid within the range of {lower_bound} and {upper_bound}.")
+        else:
+            logging.warning(f"Price data {price_data} is out of the valid range.")
+        return is_valid
+
 # Example usage of the CrossChainInteroperability class
 if __name__ == "__main__":
     interoperability = CrossChainInteroperability()
@@ -137,3 +154,9 @@ if __name__ == "__main__":
         print(f"Ethereum Balance: {balance}")
     except Exception as e:
         print(f"Error: {e}")
+
+    # Validate price data
+    price_data = 314200
+    target_value = 314000
+    is_valid = interoperability.validate_data(price_data, target_value)
+    print(f"Is the price data valid? {is_valid}")
