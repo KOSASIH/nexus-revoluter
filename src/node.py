@@ -3,10 +3,23 @@ import threading
 import json
 import logging
 import time
+import hashlib
 from typing import List, Dict, Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+class Block:
+    def __init__(self, index: int, previous_hash: str, transactions: List[Dict[str, Any]], timestamp: float):
+        self.index = index
+        self.previous_hash = previous_hash
+        self.transactions = transactions
+        self.timestamp = timestamp
+        self.hash = self.calculate_hash()
+
+    def calculate_hash(self) -> str:
+        block_string = json.dumps(self.__dict__, sort_keys=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
 
 class Node:
     def __init__(self, host: str, port: int):
@@ -14,10 +27,18 @@ class Node:
         self.port = port
         self.peers: List[str] = []  # List of peer nodes
         self.transactions: List[Dict[str, Any]] = []  # Transaction pool
+        self.chain: List[Block] = []  # Blockchain
+        self.create_genesis_block()  # Create the genesis block
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         logging.info(f"Node started at {self.host}:{self.port}")
+
+    def create_genesis_block(self):
+        """Create the first block in the blockchain."""
+        genesis_block = Block(0, "0", [], time.time())
+        self.chain.append(genesis_block)
+        logging.info("Genesis block created.")
 
     def start(self):
         """Start the node and listen for incoming connections."""
@@ -56,10 +77,10 @@ class Node:
                 self.add_peer(data['peer'])
             elif message_type == 'transaction':
                 self.handle_transaction(data['transaction'])
-            elif message_type == 'broadcast':
-                self.handle_broadcast(data['message'])
-            elif message_type == 'request_transactions':
-                self.send_transactions(data['peer'])
+            elif message_type == 'block':
+                self.handle_block(data['block'])
+            elif message_type == 'request_chain':
+                self.send_chain(data['peer'])
             else:
                 logging.warning(f"Unknown message type: {message_type}")
         except json.JSONDecodeError:
@@ -98,13 +119,22 @@ class Node:
         message = json.dumps({"type": "transaction", "transaction": transaction})
         self.broadcast(message)
 
-    def handle_broadcast(self, message: str):
-        """Handle a broadcast message from a peer."""
-        logging.info(f"Broadcast message received: {message}")
+    def handle_block(self, block: Dict[str, Any]):
+        """Handle a new block received from a peer."""
+        if self.validate_block(block):
+            self.chain.append(Block(**block))
+            logging.info(f"New block added to the chain: {block}")
+        else:
+            logging.warning(f"Invalid block received: {block}")
 
-    def send_transactions(self, peer: str):
-        """Send the current transaction pool to a peer."""
-        message = json.dumps({"type": "transaction_pool", "transactions": self.transactions})
+    def validate_block(self, block: Dict[str, Any]) -> bool:
+        """Validate the block (placeholder for actual validation logic)."""
+        # Implement your validation logic here
+        return True
+
+    def send_chain(self, peer: str):
+        """Send the current blockchain to a peer."""
+        message = json.dumps({"type": "blockchain", "chain": [block.__dict__ for block in self.chain]})
         self.send_message(peer, message)
 
     def broadcast(self, message: str):
@@ -116,7 +146,7 @@ class Node:
         """Send a message to a specific peer."""
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                sock .connect((peer.split(':')[0], int(peer.split(':')[1])))
+                sock.connect((peer.split(':')[0], int(peer.split(':')[1])))
                 sock.sendall(message.encode())
                 logging.info(f"Sent message to {peer}")
         except Exception as e:
