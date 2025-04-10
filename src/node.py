@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 import logging
+import time
 from typing import List, Dict, Any
 
 # Configure logging
@@ -12,6 +13,7 @@ class Node:
         self.host = host
         self.port = port
         self.peers: List[str] = []  # List of peer nodes
+        self.transactions: List[Dict[str, Any]] = []  # Transaction pool
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
@@ -56,6 +58,8 @@ class Node:
                 self.handle_transaction(data['transaction'])
             elif message_type == 'broadcast':
                 self.handle_broadcast(data['message'])
+            elif message_type == 'request_transactions':
+                self.send_transactions(data['peer'])
             else:
                 logging.warning(f"Unknown message type: {message_type}")
         except json.JSONDecodeError:
@@ -77,23 +81,46 @@ class Node:
 
     def handle_transaction(self, transaction: Dict[str, Any]):
         """Handle a new transaction received from a peer."""
-        logging.info(f"Received transaction: {transaction}")
-        # Here you would typically validate and add the transaction to the pool
+        if self.validate_transaction(transaction):
+            self.transactions.append(transaction)
+            logging.info(f"Received and validated transaction: {transaction}")
+            self.broadcast_transaction(transaction)
+        else:
+            logging.warning(f"Invalid transaction received: {transaction}")
+
+    def validate_transaction(self, transaction: Dict[str, Any]) -> bool:
+        """Validate the transaction (placeholder for actual validation logic)."""
+        # Implement your validation logic here
+        return True
+
+    def broadcast_transaction(self, transaction: Dict[str, Any]):
+        """Broadcast a new transaction to all peers."""
+        message = json.dumps({"type": "transaction", "transaction": transaction})
+        self.broadcast(message)
 
     def handle_broadcast(self, message: str):
         """Handle a broadcast message from a peer."""
         logging.info(f"Broadcast message received: {message}")
 
+    def send_transactions(self, peer: str):
+        """Send the current transaction pool to a peer."""
+        message = json.dumps({"type": "transaction_pool", "transactions": self.transactions})
+        self.send_message(peer, message)
+
     def broadcast(self, message: str):
         """Broadcast a message to all connected peers."""
         for peer in self.peers:
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                    sock.connect((peer.split(':')[0], int(peer.split(':')[1])))
-                    sock.sendall(message.encode())
-                    logging.info(f"Broadcasted message to {peer}")
-            except Exception as e:
-                logging.error(f"Could not send message to {peer}: {e}")
+            self.send_message(peer, message)
+
+    def send_message(self, peer: str, message: str):
+        """Send a message to a specific peer."""
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock .connect((peer.split(':')[0], int(peer.split(':')[1])))
+                sock.sendall(message.encode())
+                logging.info(f"Sent message to {peer}")
+        except Exception as e:
+            logging.error(f"Could not send message to {peer}: {e}")
 
     def discover_peers(self, peer_list: List[str]):
         """Discover and add peers from a given list."""
@@ -116,6 +143,6 @@ if __name__ == "__main__":
     try:
         # Keep the main thread alive
         while True:
-            pass
+            time.sleep(1)  # Sleep to prevent busy waiting
     except KeyboardInterrupt:
         node.shutdown()
