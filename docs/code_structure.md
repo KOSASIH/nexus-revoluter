@@ -80,8 +80,9 @@ nexus-revoluter/
 │       ├── test_liquidity_management.py # Unit tests for liquidity management
 │       ├── test_user_engagement.py # Unit tests for user engagement features
 │       ├── test_crowdfunding.py   # Unit tests for crowdfunding mechanisms
-│       └── test_green_mining.py   # Unit tests for green mining solutions
-│
+│       ├── test_green_mining.py   # Unit tests for green mining solutions
+│       └── test_sustainability_tracking.py # Unit tests for sustainability tracking
+
 ├── docs/
 │   ├── README.md                # Project overview and setup instructions
 │   ├── API_Documentation.md     # API usage and endpoints (with examples)
