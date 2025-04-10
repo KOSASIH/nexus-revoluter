@@ -10,21 +10,31 @@ from typing import List, Dict, Any
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Block:
-    def __init__(self, index: int, previous_hash: str, transactions: List[Dict[str, Any]], timestamp: float):
+    def __init__(self, index: int, previous_hash: str, transactions: List[Dict[str, Any]], timestamp: float, nonce: int = 0):
         self.index = index
         self.previous_hash = previous_hash
         self.transactions = transactions
         self.timestamp = timestamp
+        self.nonce = nonce
         self.hash = self.calculate_hash()
 
     def calculate_hash(self) -> str:
         block_string = json.dumps(self.__dict__, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
+    def mine_block(self, difficulty: int):
+        """Mine a block by finding a hash that starts with a number of zeros equal to the difficulty."""
+        prefix_str = '0' * difficulty
+        while not self.hash.startswith(prefix_str):
+            self.nonce += 1
+            self.hash = self.calculate_hash()
+        logging.info(f"Block mined: {self.hash}")
+
 class Node:
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int, difficulty: int = 2):
         self.host = host
         self.port = port
+        self.difficulty = difficulty
         self.peers: List[str] = []  # List of peer nodes
         self.transactions: List[Dict[str, Any]] = []  # Transaction pool
         self.chain: List[Block] = []  # Blockchain
@@ -90,7 +100,7 @@ class Node:
 
     def add_peer(self, peer: str):
         """Add a new peer to the list of peers."""
-        if peer not in self.peers:
+        if peer not in self.peers :
             self.peers.append(peer)
             logging.info(f"Added new peer: {peer}")
             self.broadcast_peer_discovery(peer)
@@ -162,9 +172,20 @@ class Node:
         logging.info("Shutting down the node...")
         self.server_socket.close()
 
+    def mine_pending_transactions(self):
+        """Mine all pending transactions and create a new block."""
+        if not self.transactions:
+            logging.info("No transactions to mine.")
+            return
+        new_block = Block(len(self.chain), self.chain[-1].hash, self.transactions, time.time())
+        new_block.mine_block(self.difficulty)
+        self.chain.append(new_block)
+        self.transactions = []  # Clear the transaction pool
+        logging.info(f"New block mined and added to the chain: {new_block.hash}")
+
 # Example usage
 if __name__ == "__main__":
-    node = Node(host='127.0.0.1', port=5000)
+    node = Node(host='127.0.0.1', port=5000, difficulty=2)
     node.start()
 
     # Simulate peer discovery
