@@ -17,8 +17,9 @@
      - [Create Transaction](#create-transaction)
      - [Get Transaction Status](#get-transaction-status)
      - [Get Wallet Balance](#get-wallet-balance)
-5. [Troubleshooting](#troubleshooting)
-6. [Support](#support)
+5. [Edukasi Pengguna](#edukasi-pengguna)
+6. [Troubleshooting](#troubleshooting)
+7. [Support](#support)
 
 ## Introduction
 Nexus Revoluter is a decentralized application that allows users to manage their digital assets, interact with smart contracts, and perform transactions on the blockchain. This guide provides instructions on how to use the wallet and API effectively.
@@ -134,6 +135,45 @@ The Nexus Revoluter API allows external applications to interact with the blockc
     "balance": <amount>
   }
   ```
+
+## user Education
+
+### Understanding the Value of Pi Coin
+
+#### What is Pi Coin?
+Pi Coin is a digital currency that operates on a decentralizednetwork, allowing users to mine and transact without the need for traditional banking systems. It is designed to be user-friendly and accessible to everyone, promoting financial inclusion.
+
+#### The Significance of $314,159.00
+The value of **$314,159.00** is not just a number; it represents a significant milestone for Pi Coin. This value is inspired by the mathematical constant **π (pi)**, which is approximately **3.14159**. Here’s how this value enhances the utility of Pi Coin:
+
+1. **Symbolic Representation**:
+   - The value of **$314,159.00** symbolizes the mathematical elegance and stability associated with the constant π. It reflects the vision of Pi Coin as a stable and reliable digital currency.
+
+2. **Market Perception**:
+   - A high value like **$314,159.00** can positively influence market perception. It positions Pi Coin as a serious contender in the cryptocurrency market, attracting potential investors and users.
+
+3. **Increased Usability**:
+   - With a value of **$314,159.00**, Pi Coin can be used for larger transactions, making it more practical for everyday use. Users can leverage Pi Coin for significant purchases, investments, and transactions, enhancing its utility.
+
+4. **Encouraging Adoption**:
+   - A well-defined value encourages users to adopt Pi Coin as a medium of exchange. As more users recognize its value, the demand for Pi Coin increases, further stabilizing its price and usability.
+
+5. **Facilitating Partnerships**:
+   - The established value of **$314,159.00** can facilitate partnerships with businesses and merchants. Companies are more likely to accept Pi Coin as a payment method if it has a recognized and stable value.
+
+### How to Leverage the Value of Pi Coin
+
+1. **Mining Pi Coin**:
+   - Users can mine Pi Coin through the mobile app, contributing to the network's security and stability. As the value increases, the rewards for mining become more significant.
+
+2. **Transacting with Pi Coin**:
+   - Users can transact with Pi Coin for goods and services within the Pi Network ecosystem. The higher value allows for larger transactions, making it a viable option for various purchases.
+
+3. **Investing in Pi Coin**:
+   - Users can consider holding Pi Coin as an investment. With its value set at **$314,159.00**, it has the potential for appreciation, providing users with financial benefits over time.
+
+4. **Participating in the Community**:
+   - Engage with the Pi Network community to stay updated on developments, partnerships, and opportunities. Community involvement can enhance the overall experience and utility of Pi Coin.
 
 ## Troubleshooting
 - **Common Issues**:
