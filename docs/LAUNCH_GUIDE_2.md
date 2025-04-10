@@ -1,4 +1,4 @@
-**LAUNCH_GUIDE.md**
+# LAUNCH_GUIDE 2
 
 **Nexus Revoluter Launch Guide: Pi Network Global Mainnet**
 
@@ -75,6 +75,11 @@ Before launching or joining the mainnet, ensure you have:
    - Via Neuro-Onboarding (Optional):
      - Connect BCI device (e.g., Neuralink).
      - Run:
+
+     ```bash
+     python src/neuro_onboarding.py
+     ```
+     
        - Think "Join Pi Network" – a wallet will be created based on your brain fingerprint.
 
 4. **Monitoring and Interacting**
