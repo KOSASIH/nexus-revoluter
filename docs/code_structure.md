@@ -48,17 +48,17 @@ nexus-revoluter/
 │   ├── sustainability_tracking.py          # Tools for tracking and reporting environmental impact
 │   ├── decentralized_economy.py           # Framework for a decentralized autonomous economy
 │   ├── adaptive_consensus.py              # Adaptive consensus mechanism implementation
-│   ├── ai_smart_contracts.py               # AI-driven smart contracts functionality
-│   ├── quantum_resistant_crypto.py          # Quantum-resistant cryptography features
-│   ├── privacy_preserving_data.py           # Privacy-preserving data sharing features
-│   ├── dynamic_fee_structure.py              # Dynamic fee structure implementation
-│   ├── liquid_democracy.py                  # Liquid democracy governance model
-│   ├── real_time_analytics.py               # Real-time analytics and insights
-│   ├── tokenized_real_world_assets.py        # Tokenization of real-world assets
-│   ├── ar_vr_integration.py                 # AR/VR integration for dApps
-│   ├── decentralized_insurance.py            # Decentralized insurance protocols
-│   ├── ai_fraud_detection.py                 # AI-powered fraud detection
-│   └── ...
+│   ├── ai_smart_contracts.py              # AI-driven smart contracts functionality
+│   ├── quantum_resistant_crypto.py         # Quantum-resistant cryptography features
+│   ├── privacy_preserving_data.py          # Privacy-preserving data sharing features
+│   ├── dynamic_fee_structure.py            # Dynamic fee structure implementation
+│   ├── liquid_democracy.py                 # Liquid democracy governance model
+│   ├── real_time_analytics.py              # Real-time analytics and insights
+│   ├── tokenized_real_world_assets.py      # Tokenization of real-world assets
+│   ├── ar_vr_integration.py                # AR/VR integration for dApps
+│   ├── decentralized_insurance.py           # Decentralized insurance protocols
+│   ├── ai_fraud_detection.py                # AI-powered fraud detection
+│   └── social_impact.py                    # Features promoting social good and community initiatives
 │
 └── tests/                                   # Unit tests for all components
 │       ├── __init__.py                      # Makes the tests directory a package
@@ -88,7 +88,7 @@ nexus-revoluter/
 │       ├── test_quantum_resistant_crypto.py  # Unit tests for quantum-resistant features
 │       ├── test_dynamic_fee_structure.py     # Unit tests for dynamic fee structures
 │       ├── test_liquid_democracy.py          # Unit tests for liquid democracy
-│       └── ...
+│       └── test_social_impact.py             # Unit tests for social impact features
 │ 
 ├── docs/                                     # Documentation for the project
 │   ├── README.md                             # Project overview and setup instructions
