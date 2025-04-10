@@ -4,6 +4,7 @@
 [![Contributors](https://img.shields.io/github/contributors/KOSASIH/nexus-revoluter.svg)](https://github.com/KOSASIH/nexus-revoluter/graphs/contributors)
 [![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/KOSASIH/nexus-revoluter/releases)
 [![API Documentation](https://img.shields.io/badge/API-Documentation-blue.svg)](https://github.com/KOSASIH/nexus-revoluter/docs/API_Documentation.md)
+[![CodeQL Advanced](https://github.com/KOSASIH/nexus-revoluter/actions/workflows/codeql.yml/badge.svg)](https://github.com/KOSASIH/nexus-revoluter/actions/workflows/codeql.yml)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/KOSASIH/nexus-revoluter/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/KOSASIH/nexus-revoluter/tree/main)
 
 [![IMF Certified](https://img.shields.io/badge/IMF-Certified-007bff.svg)](https://www.imf.org/en/Data)
