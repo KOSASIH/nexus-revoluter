@@ -2,26 +2,20 @@ import json
 import requests
 import logging
 import time
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class CrossChainInteroperability:
-    def __init__(self):
-        self.blockchain_apis = {
-            "Ethereum": {
-                "url": "https://api.ethereum.org",
-                "api_key": "YOUR_ETHEREUM_API_KEY"  # Replace with your actual API key
-            },
-            "Bitcoin": {
-                "url": "https://api.bitcoin.org",
-                "api_key": "YOUR_BITCOIN_API_KEY"  # Replace with your actual API key
-            },
-            "BinanceSmartChain": {
-                "url": "https://api.bsc.org",
-                "api_key": "YOUR_BSC_API_KEY"  # Replace with your actual API key
-            }
-        }
+    def __init__(self, config_file='config.json'):
+        self.blockchain_apis = self.load_config(config_file)
+
+    def load_config(self, config_file):
+        """Load blockchain API configuration from a JSON file."""
+        with open(config_file, 'r') as file:
+            config = json.load(file)
+        return config['blockchain_apis']
 
     def send_asset(self, from_chain: str, to_chain: str, amount: float, recipient_address: str) -> dict:
         """Send assets from one blockchain to another."""
@@ -51,8 +45,20 @@ class CrossChainInteroperability:
             "recipient": recipient_address
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = self.make_request(url, headers, payload)
         return self.handle_response(response)
+
+    def make_request(self, url: str, headers: dict, payload: dict, retries: int = 3) -> requests.Response:
+        """Make an HTTP request with retries."""
+        for attempt in range(retries):
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                response.raise_for_status()  # Raise an error for bad responses
+                return response
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Request failed: {e}. Attempt {attempt + 1} of {retries}.")
+                time.sleep(2)  # Wait before retrying
+        raise Exception("Max retries exceeded for request.")
 
     def receive_asset(self, from_chain: str, amount: float, sender_address: str) -> dict:
         """Receive assets from another blockchain."""
@@ -83,33 +89,33 @@ class CrossChainInteroperability:
             raise ValueError("Unsupported blockchain.")
 
         logging.info(f"Retrieving balance for address {address} on {chain}.")
-        balance = self.mock_get_balance(chain, address)
-        logging.info(f"Balance for address {address} on {chain}: {balance}")
-        return balance
+        response = self.make_request(f"{self.blockchain_apis[chain]['url']}/balance", 
+                                      {"Authorization": f"Bearer {self.blockchain_apis[chain]['api_key']}"}, 
+                                      {"address": address})
 
-    def mock_get_balance(self, chain: str, address: str) -> float:
-        """Mock function to simulate balance retrieval."""
-        # In a real implementation, this would interact with the respective blockchain APIs.
-        return 100.0  # Mock balance
+        if response.get("status") == "success":
+            balance = response['balance']
+            logging.info(f"Balance for address {address} on {chain}: {balance}")
+            return balance
+        else:
+            logging.error(f"Failed to retrieve balance: {response.get('error')}")
+            raise Exception("Balance retrieval failed.")
 
     def confirm_transaction(self, chain: str, transaction_id: str, timeout: int = 60) -> bool:
         """Confirm a transaction on the specified blockchain."""
         start_time = time.time()
         while time.time() - start_time < timeout:
             logging.info(f"Checking transaction status for {transaction_id} on {chain}.")
-            # Here you would call the blockchain API to check the transaction status
-            # For demonstration, we will mock a successful confirmation
-            if self.mock_check_transaction_status(transaction_id):
+            response = self.make_request(f"{self.blockchain_apis[chain]['url']}/transaction/{transaction_id}", 
+                                          {"Authorization": f"Bearer {self.blockchain_apis[chain]['api_key']}"}, 
+                                          {})
+
+            if response.get("status") == "success" and response['confirmed']:
                 logging.info(f"Transaction {transaction_id} confirmed on {chain}.")
                 return True
             time.sleep(5)  # Wait before checking again
         logging.warning(f"Transaction {transaction_id} not confirmed within timeout.")
         return False
-
-    def mock_check_transaction_status(self, transaction_id: str) -> bool:
-        """Mock function to simulate transaction status check."""
-        # In a real implementation, this would interact with the respective blockchain APIs.
-        return True  # Mock confirmation
 
     def validate_data(self, price_data: float, target_value: float, tolerance: float = 0.05) -> bool:
         """Validate price data against a target value with a specified tolerance."""
