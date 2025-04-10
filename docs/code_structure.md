@@ -89,7 +89,7 @@ nexus-revoluter/
 │       ├── test_dynamic_fee_structure.py     # Unit tests for dynamic fee structures
 │       ├── test_liquid_democracy.py          # Unit tests for liquid democracy
 │       └── ...
-  
+│ 
 ├── docs/                                     # Documentation for the project
 │   ├── README.md                             # Project overview and setup instructions
 │   ├── API_Documentation.md                  # API usage and endpoints (with examples)
