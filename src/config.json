@@ -1,0 +1,43 @@
+{
+    "node": {
+        "host": "127.0.0.1",
+        "port": 5000,
+        "difficulty": 2
+    },
+    "satellite": {
+        "max_relay_distance_km": 20000,
+        "relay_bandwidth_mbps": 1000,
+        "satellite_count": 10,
+        "launch_schedule": "2025-04-10T00:00:00Z"  // Updated to April 10, 2025
+    },
+    "drones": {
+        "max_flight_range_km": 50,
+        "drone_count": 5,
+        "charging_station_locations": [
+            {"lat": 34.0522, "lon": -118.2437},  // Los Angeles
+            {"lat": 40.7128, "lon": -74.0060}    // New York
+        ]
+    },
+    "quantum_encryption": {
+        "enabled": true,
+        "key_length": 256,
+        "algorithm": "AES"
+    },
+    "interoperability": {
+        "enabled": true,
+        "protocols": ["HTTP", "WebSocket", "MQTT"]
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "node.log"
+    },
+    "network": {
+        "peer_discovery": {
+            "enabled": true,
+            "initial_peers": [
+                "127.0.0.1:5001",
+                "127.0.0.1:5002"
+            ]
+        }
+    }
+}
