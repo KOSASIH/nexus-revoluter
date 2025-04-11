@@ -1,0 +1,24 @@
+system:
+  name: SANO
+  version: 1.0.0
+
+stablecoin:
+  symbol: "Pi"  # Pi Coin symbol
+  target_price: 314159.00
+  tolerance: 0.05  # Toleransi deviasi harga (5%)
+
+network:
+  mainnet_endpoint: "https://rpc.pi-network.io"
+  node_count: 1000000  # Estimasi jumlah node
+
+ai:
+  quantum_simulator: "qasm_simulator"
+  model_path: "models/quantum_predictor"
+
+resources:
+  ipfs_node: "/ip4/127.0.0.1/tcp/5001"
+  github_repo: "https://github.com/KOSASIH/nexus-revoluter"
+
+logging:
+  level: "INFO"
+  file: "logs/sano.log"
