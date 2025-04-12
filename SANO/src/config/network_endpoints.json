@@ -1,0 +1,66 @@
+{
+  "nodes": [
+    {
+      "id": "node_1",
+      "name": "Main Node",
+      "url": "https://rpc.pi-network.io",
+      "type": "mainnet",
+      "status": "active",
+      "latency": 120,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Primary node for mainnet operations."
+    },
+    {
+      "id": "node_2",
+      "name": "Test Node",
+      "url": "https://rpc.testnet.pi-network.io",
+      "type": "testnet",
+      "status": "active",
+      "latency": 150,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Node for testing and development."
+    },
+    {
+      "id": "node_3",
+      "name": "Backup Node",
+      "url": "https://backup.pi-network.io",
+      "type": "mainnet",
+      "status": "inactive",
+      "latency": null,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Backup node for redundancy."
+    }
+  ],
+  "partners": [
+    {
+      "id": "partner_1",
+      "name": "Exchange A",
+      "url": "https://api.exchange-a.com",
+      "type": "exchange",
+      "status": "active",
+      "api_key_required": true,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Partner exchange for trading Pi."
+    },
+    {
+      "id": "partner_2",
+      "name": "Wallet Service B",
+      "url": "https://api.wallet-b.com",
+      "type": "wallet",
+      "status": "active",
+      "api_key_required": true,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Wallet service for storing Pi."
+    },
+    {
+      "id": "partner_3",
+      "name": "Analytics Service C",
+      "url": "https://api.analytics-c.com",
+      "type": "analytics",
+      "status": "inactive",
+      "api_key_required": false,
+      "last_checked": "2025-04-12T12:00:00Z",
+      "description": "Analytics service for monitoring Pi transactions."
+    }
+  ]
+}
