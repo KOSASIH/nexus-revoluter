@@ -5,11 +5,11 @@ system:
 stablecoin:
   symbol: "Pi"  # Pi Coin symbol
   target_price: 314159.00
-  tolerance: 0.05  # Toleransi deviasi harga (5%)
+  tolerance: 0.05  # Price deviation tolerance (5%)
 
 network:
   mainnet_endpoint: "https://rpc.pi-network.io"
-  node_count: 1000000  # Estimasi jumlah node
+  node_count: 1000000  # Estimated number of nodes
 
 ai:
   quantum_simulator: "qasm_simulator"
