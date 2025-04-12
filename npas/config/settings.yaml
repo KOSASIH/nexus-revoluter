@@ -1,0 +1,41 @@
+# npas/config/settings.yaml
+
+# Configuration for Pi Network API
+pi_network:
+  main_site: "https://minepi.com"  # Main site for Pi Network
+  wallet: "https://wallet.pinet.com"  # Wallet endpoint for Pi Network
+  ecosystem: "https://ecosystem.pinet.com"  # Ecosystem endpoint for Pi Network
+  api_key: "your_api_key"  # Replace with your actual API key
+
+# Configuration for Nexus Revoluter Git Repository
+nexus_revoluter:
+  repo_path: "./nexus-revoluter"  # Local path for the cloned repository
+  repo_url: "https://github.com/KOSASIH/nexus-revoluter.git"  # URL of the Git repository
+  branch: "main"  # Branch to track for changes
+
+# Configuration for Blockchain Interaction
+blockchain:
+  rpc_endpoint: "https://rpc.pi-network.io"  # RPC endpoint for blockchain interaction
+  contract_address: "0x...SyncContract"  # Smart contract address for synchronization
+  account: "0x...YourAccount"  # Your blockchain account address
+  private_key: "your_private_key"  # Your blockchain account private key
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  file: "logs/npas.log"  # Log file path
+
+# Metrics Configuration
+metrics:
+  report_interval: 300  # Interval for reporting metrics in seconds
+  enabled: true  # Enable or disable metrics reporting
+  metrics_file: "logs/metrics.log"  # Log file for metrics
+
+# Advanced Features Configuration
+advanced_features:
+  enable_auto_sync: true  # Enable automatic synchronization of changes
+  sync_interval: 60  # Interval for automatic synchronization in seconds
+  notification_service:  # Configuration for notification service
+    enabled: true  # Enable or disable notifications
+    service_url: "https://notification.service/api"  # URL for the notification service
+    api_key: "your_notification_api_key"  # API key for the notification service
