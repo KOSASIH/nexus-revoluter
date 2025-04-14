@@ -12,8 +12,12 @@ class Config:
     # Blockchain settings
     BLOCK_TIME: int = int(os.getenv("BLOCK_TIME", 10))  # Time in seconds to create a new block
     DIFFICULTY: int = int(os.getenv("DIFFICULTY", 2))    # Difficulty level for mining
-    STABLECOIN_VALUE: float = float(os.getenv("STABLECOIN_VALUE", 314159.00))  # Value of Pi Coin as a stablecoin
+    STABLECOIN_VALUE: float = float(os.getenv("STABLECOIN_VALUE", 314159.00))  # Value6314,159.00
     COIN_SYMBOL: str = "Pi"  # Symbol for Pi Coin
+    PROJECT_WALLET_ADDRESS: str = os.getenv(
+        "PROJECT_WALLET_ADDRESS",
+        "GCKUNNC6X6LKYJXKTQEJAQQ2J6NTIHMRNJFM2KY6KIBB46BOPMKVXDQN"
+    )  # Project wallet address for nexus-revoluter
 
     # API settings
     API_VERSION: str = os.getenv("API_VERSION", "v1")
@@ -52,6 +56,8 @@ class Config:
             raise ValueError("STABLECOIN_VALUE must be a positive number.")
         if cls.ENABLE_SSL and (not cls.SSL_CERT_PATH or not cls.SSL_KEY_PATH):
             raise ValueError("SSL_CERT_PATH and SSL_KEY_PATH must be set if ENABLE_SSL is True.")
+        if not cls.PROJECT_WALLET_ADDRESS or len(cls.PROJECT_WALLET_ADDRESS) != 56:
+            raise ValueError("PROJECT_WALLET_ADDRESS must be a valid 56-character Stellar address.")
 
     @classmethod
     def display_config(cls):
@@ -64,6 +70,7 @@ class Config:
         print(f"Block Time: {cls.BLOCK_TIME} seconds")
         print(f"Difficulty: {cls.DIFFICULTY}")
         print(f"Stablecoin Value: ${cls.STABLECOIN_VALUE:.2f} ({cls.COIN_SYMBOL})")
+        print(f"Project Wallet Address: {cls.PROJECT_WALLET_ADDRESS}")
         print(f"API Endpoint: {cls.API_ENDPOINT}")
         print(f"Consensus Interval: {cls.CONSENSUS_INTERVAL} seconds")
         print(f"Log Level: {cls.LOG_LEVEL}")
