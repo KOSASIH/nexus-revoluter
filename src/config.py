@@ -12,7 +12,13 @@ class Config:
     # Blockchain settings
     BLOCK_TIME: int = int(os.getenv("BLOCK_TIME", 10))  # Time in seconds to create a new block
     DIFFICULTY: int = int(os.getenv("DIFFICULTY", 2))    # Difficulty level for mining
-    STABLECOIN_VALUE: float = float(os.getenv("STABLECOIN_VALUE", 314159.00))  # Value6314,159.00
+    
+    # Stablecoin value with error handling for float conversion
+    try:
+        STABLECOIN_VALUE: float = float(os.getenv("STABLECOIN_VALUE", 314159.00))  # Default value: 314,159.00
+    except ValueError:
+        raise ValueError("STABLECOIN_VALUE must be a valid float.")
+    
     COIN_SYMBOL: str = "Pi"  # Symbol for Pi Coin
     PROJECT_WALLET_ADDRESS: str = os.getenv(
         "PROJECT_WALLET_ADDRESS",
@@ -71,7 +77,7 @@ class Config:
         print(f"Difficulty: {cls.DIFFICULTY}")
         print(f"Stablecoin Value: ${cls.STABLECOIN_VALUE:.2f} ({cls.COIN_SYMBOL})")
         print(f"Project Wallet Address: {cls.PROJECT_WALLET_ADDRESS}")
-        print(f"API Endpoint: {cls.API_ENDPOINT}")
+ print(f"API Endpoint: {cls.API_ENDPOINT}")
         print(f"Consensus Interval: {cls.CONSENSUS_INTERVAL} seconds")
         print(f"Log Level: {cls.LOG_LEVEL}")
         print(f"Log File: {cls.LOG_FILE}")
