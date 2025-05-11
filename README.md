@@ -6,6 +6,7 @@
 [![API Documentation](https://img.shields.io/badge/API-Documentation-blue.svg)](https://github.com/KOSASIH/nexus-revoluter/docs/API_Documentation.md)
 [![CodeQL Advanced](https://github.com/KOSASIH/nexus-revoluter/actions/workflows/codeql.yml/badge.svg)](https://github.com/KOSASIH/nexus-revoluter/actions/workflows/codeql.yml)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/KOSASIH/nexus-revoluter/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/KOSASIH/nexus-revoluter/tree/main)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10537/badge)](https://www.bestpractices.dev/projects/10537)
 
 [![IMF Certified](https://img.shields.io/badge/IMF-Certified-007bff.svg)](https://www.imf.org/en/Data)
 [![World Bank Certified](https://img.shields.io/badge/World%20Bank-Certified-009688.svg)](https://www.worldbank.org/en/about/certifications)
