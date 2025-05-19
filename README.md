@@ -107,15 +107,15 @@ Nexus Revoluter provides a range of APIs for interacting with the blockchain. He
 
 * Create a new transaction: 
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"from": "your_pi_wallet_address", "to": "recipient_pi_wallet_address", "amount": 10}' http://localhost:8000/transactions
+  curl -X POST -H "Content-Type: application/json" -d '{"from": "your_pi_wallet_address", "to": "recipient_pi_wallet_address", "amount": 10}' http://localhost:8080/transactions
   ```
 * Get the balance of an address: 
   ```bash
-  curl -X GET http://localhost:8000/balance/your_pi_wallet_address
+  curl -X GET http://localhost:8080/balance/your_pi_wallet_address
   ```
 * Deploy a new smart contract: 
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"contract": "your_contract_address", "abi": "your_contract_abi"}' http://localhost:8000/contracts
+  curl -X POST -H "Content-Type: application/json" -d '{"contract": "your_contract_address", "abi": "your_contract_abi"}' http://localhost:8080/contracts
   ```
 
 ## API Documentation
