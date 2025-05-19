@@ -27,7 +27,7 @@ app = FastAPI(title="nexus-revoluter API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://minepi.com", "https://wallet.pinet.com", "https://ecosystem.pinet.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -397,4 +397,4 @@ if __name__ == "__main__":
     import uvicorn
     if not os.path.exists("nexus_wallet.json"):
         wallet.create_wallet(blockchain="stellar")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)

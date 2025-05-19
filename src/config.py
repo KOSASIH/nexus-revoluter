@@ -5,7 +5,7 @@ from typing import Optional
 class Config:
     # Network settings
     NETWORK_NAME: str = os.getenv("NETWORK_NAME", "PiNetwork")
-    NETWORK_PORT: int = int(os.getenv("NETWORK_PORT", 5000))
+    NETWORK_PORT: int = int(os.getenv("NETWORK_PORT", 8080))
     NETWORK_HOST: str = os.getenv("NETWORK_HOST", "0.0.0.0")
     MAX_CONNECTIONS: int = int(os.getenv("MAX_CONNECTIONS", 100))
 
@@ -77,7 +77,7 @@ class Config:
         print(f"Difficulty: {cls.DIFFICULTY}")
         print(f"Stablecoin Value: ${cls.STABLECOIN_VALUE:.2f} ({cls.COIN_SYMBOL})")
         print(f"Project Wallet Address: {cls.PROJECT_WALLET_ADDRESS}")
- print(f"API Endpoint: {cls.API_ENDPOINT}")
+        print(f"API Endpoint: {cls.API_ENDPOINT}")
         print(f"Consensus Interval: {cls.CONSENSUS_INTERVAL} seconds")
         print(f"Log Level: {cls.LOG_LEVEL}")
         print(f"Log File: {cls.LOG_FILE}")
