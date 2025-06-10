@@ -52,7 +52,7 @@ marshmallow==3.19.0
 asyncpg==0.25.0  # If using PostgreSQL with async support
 
 # Existing dependencies
-requests==2.28.1
+requests==2.32.4
 pyyaml==6.0
 web3==6.0.0
 gitpython==3.1.27
