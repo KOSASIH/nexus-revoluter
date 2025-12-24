@@ -55,6 +55,6 @@ asyncpg==0.25.0  # If using PostgreSQL with async support
 requests==2.28.1
 pyyaml==6.0
 web3==6.0.0
-gitpython==3.1.27
+gitpython==3.1.41
 scikit-learn==1.1.2
 numpy==1.23.3
