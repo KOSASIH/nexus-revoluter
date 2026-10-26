@@ -15,6 +15,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { Block, PeerNode } from '../types';
+import { MempoolViewer } from './MempoolViewer';
+import { NodeMeshVisualizer } from './NodeMeshVisualizer';
 
 interface NodeViewProps {
   blockHeight: number;
@@ -249,6 +251,12 @@ export const NodeView: React.FC<NodeViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Unconfirmed Memory Pool (Mempool) */}
+      <MempoolViewer />
+
+      {/* P2P Gossip Protocol & SCP Propagation Simulator */}
+      <NodeMeshVisualizer peers={peers} />
 
       {/* Add Peer Modal */}
       {isAddingPeer && (

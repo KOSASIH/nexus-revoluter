@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { WalletAddress, Transaction } from '../types';
 import { QrModal } from './QrModal';
+import { TxDetailsModal } from './TxDetailsModal';
 
 interface WalletViewProps {
   addresses: WalletAddress[];
@@ -34,6 +35,7 @@ interface WalletViewProps {
   }) => { success: boolean; message: string };
   onSaveWallet: () => void;
   onLoadWallet: () => void;
+  onClaimFaucet?: (address: string) => void;
 }
 
 export const WalletView: React.FC<WalletViewProps> = ({
@@ -43,9 +45,11 @@ export const WalletView: React.FC<WalletViewProps> = ({
   onDeleteAddress,
   onSendTransaction,
   onSaveWallet,
-  onLoadWallet
+  onLoadWallet,
+  onClaimFaucet
 }) => {
   const [selectedQrAddress, setSelectedQrAddress] = useState<WalletAddress | null>(null);
+  const [selectedTxForDetails, setSelectedTxForDetails] = useState<Transaction | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   
   // New Address Form Modal / Toggle
@@ -157,6 +161,16 @@ export const WalletView: React.FC<WalletViewProps> = ({
             <Plus className="w-4 h-4" />
             <span>Generate Address</span>
           </button>
+          {onClaimFaucet && (
+            <button
+              onClick={() => onClaimFaucet(addresses[0]?.address)}
+              title="Claim 100 π PI from testnet faucet"
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-xs font-semibold text-purple-300 hover:text-white border border-purple-500/30 transition"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <span>+100 π PI Faucet</span>
+            </button>
+          )}
           <button
             onClick={onSaveWallet}
             title="Export & encrypt wallet"
@@ -480,21 +494,22 @@ export const WalletView: React.FC<WalletViewProps> = ({
               filteredTxs.map((tx) => (
                 <div
                   key={tx.id}
-                  className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition flex items-center justify-between"
+                  onClick={() => setSelectedTxForDetails(tx)}
+                  className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-blue-500/50 hover:bg-slate-900/60 transition flex items-center justify-between cursor-pointer group"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-xs font-bold text-white truncate">
+                        <span className="font-mono text-xs font-bold text-white group-hover:text-blue-300 transition truncate">
                           {tx.id.slice(0, 16)}...
                         </span>
                         <span className="text-[10px] text-slate-400">{tx.timestamp}</span>
                       </div>
                       <div className="text-[11px] text-slate-400 truncate mt-0.5">
-                        {tx.memo || 'Transfer'}
+                        {tx.memo || 'Transfer'} • <span className="text-blue-400/80 group-hover:underline">Inspect Receipt</span>
                       </div>
                     </div>
                   </div>
@@ -523,6 +538,12 @@ export const WalletView: React.FC<WalletViewProps> = ({
       <QrModal
         address={selectedQrAddress}
         onClose={() => setSelectedQrAddress(null)}
+      />
+
+      {/* Cryptographic Transaction Details Receipt Modal */}
+      <TxDetailsModal
+        tx={selectedTxForDetails}
+        onClose={() => setSelectedTxForDetails(null)}
       />
     </div>
   );

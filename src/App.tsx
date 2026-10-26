@@ -202,6 +202,35 @@ export const App: React.FC = () => {
     handleAddAddress('Restored Cold Stash Vault');
   };
 
+  const handleClaimFaucet = (targetAddress?: string) => {
+    const addressToCredit = targetAddress || addresses[0]?.address;
+    if (!addressToCredit) return;
+
+    setAddresses(prev => prev.map(a => {
+      if (a.address === addressToCredit) {
+        return { ...a, piBalance: a.piBalance + 100 };
+      }
+      return a;
+    }));
+
+    const newTxId = 'tx_faucet_' + Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    const newTx: Transaction = {
+      id: newTxId,
+      from: 'G_FAUCET_PIONEER_TESTNET_RELAY',
+      to: addressToCredit,
+      amount: 100,
+      asset: 'PI',
+      timestamp: 'Just now',
+      memo: 'Pi Network Testnet Faucet (+100 π PI)',
+      status: 'confirmed',
+      fee: 0,
+      complianceChecked: true,
+      blockNumber: blockHeight
+    };
+
+    setTransactions(prev => [newTx, ...prev]);
+  };
+
   // Node Handlers
   const handleAddPeer = (peer: { name: string; ip: string; location: string; role: PeerNode['role'] }) => {
     const newPeer: PeerNode = {
@@ -381,6 +410,7 @@ export const App: React.FC = () => {
             onSendTransaction={handleSendTransaction}
             onSaveWallet={handleSaveWallet}
             onLoadWallet={handleLoadWallet}
+            onClaimFaucet={handleClaimFaucet}
           />
         )}
 

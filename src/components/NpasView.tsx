@@ -13,7 +13,9 @@ import {
   Check, 
   FileCode,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  X,
+  Copy
 } from 'lucide-react';
 import { SyncLog } from '../types';
 
@@ -34,6 +36,15 @@ export const NpasView: React.FC<NpasViewProps> = ({
   const [aiAnalysisResult, setAiAnalysisResult] = useState<string>(
     'AI Predictive Engine: Zero conflicts detected across 4 Pi Network endpoints. Invariant ledger consensus matched 100%.'
   );
+
+  const [selectedEndpoint, setSelectedEndpoint] = useState<{
+    name: string;
+    url: string;
+    ping: number;
+    tls: string;
+    merkleRoot: string;
+    payload: string;
+  } | null>(null);
 
   // Live fluctuating telemetry simulation to match npas/dashboard/dashboard.py
   useEffect(() => {
@@ -99,39 +110,89 @@ export const NpasView: React.FC<NpasViewProps> = ({
 
       {/* Target Pi Network Endpoints Status */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div 
+          onClick={() => setSelectedEndpoint({
+            name: 'minepi.com Gateway',
+            url: 'https://minepi.com/api/v2/protocol-rules',
+            ping: 18,
+            tls: 'TLS 1.3 / ChaCha20-Poly1305',
+            merkleRoot: '0x9d82f7103a8ec492ba37482910faecb891240182749102938471928374619283',
+            payload: JSON.stringify({
+              endpoint: "minepi.com",
+              protocolVersion: "2.1.0-mainnet",
+              invariantCheck: "CONSISTENT",
+              syncedBlock: 4920194,
+              consensusQuorum: "99.98% Healthy",
+              rulesHash: "sha256:7b91c...88a"
+            }, null, 2)
+          })}
+          className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/90 transition cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-white">minepi.com Gateway</span>
+            <span className="text-xs font-semibold text-white group-hover:text-blue-300 transition">minepi.com Gateway</span>
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
           <p className="text-[11px] text-slate-400">Main Portal & Whitepaper Protocol Rules</p>
           <div className="mt-3 flex items-center justify-between text-[11px] font-mono pt-2 border-t border-slate-800/80">
             <span className="text-emerald-400">Status: Healthy</span>
-            <span className="text-slate-400">Ping: 18ms</span>
+            <span className="text-blue-400 group-hover:underline">Inspect State →</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div 
+          onClick={() => setSelectedEndpoint({
+            name: 'wallet.pinet.com Bridge',
+            url: 'https://wallet.pinet.com/api/v1/stellar-custody',
+            ping: 24,
+            tls: 'TLS 1.3 / AES-256-GCM',
+            merkleRoot: '0x8c71e6092b7db381a926371809ebda7801390171638091827360817263508172',
+            payload: JSON.stringify({
+              endpoint: "wallet.pinet.com",
+              bridgeType: "Stellar Horizon Bridge",
+              accountNonceSync: "SYNCHRONIZED",
+              keypairVerification: "Ed25519 Verified",
+              unlockedSupply: "68,420,000 π PI",
+              activeWallets: "14,890,210"
+            }, null, 2)
+          })}
+          className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/90 transition cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-white">wallet.pinet.com Bridge</span>
+            <span className="text-xs font-semibold text-white group-hover:text-blue-300 transition">wallet.pinet.com Bridge</span>
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
           <p className="text-[11px] text-slate-400">Stellar Custodial Account Settlement</p>
           <div className="mt-3 flex items-center justify-between text-[11px] font-mono pt-2 border-t border-slate-800/80">
             <span className="text-emerald-400">Nonce: In-Sync</span>
-            <span className="text-slate-400">Ping: 24ms</span>
+            <span className="text-blue-400 group-hover:underline">Inspect State →</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div 
+          onClick={() => setSelectedEndpoint({
+            name: 'ecosystem.pinet.com DApps',
+            url: 'https://ecosystem.pinet.com/api/v2/smart-contracts/registry',
+            ping: 16,
+            tls: 'TLS 1.3 / ChaCha20-Poly1305',
+            merkleRoot: '0x7b60d5981a6ca2709815260798daca6790289060527980716259706152497061',
+            payload: JSON.stringify({
+              endpoint: "ecosystem.pinet.com",
+              dAppRegistries: 420,
+              verifiedContracts: ["KYCVerification.sol", "LiquidityPool.sol", "PiCoinStable.js"],
+              zkProofVerifier: "0x7F2...b84",
+              piSdkCompatibility: "v2.0-ready"
+            }, null, 2)
+          })}
+          className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900/90 transition cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-white">ecosystem.pinet.com DApps</span>
+            <span className="text-xs font-semibold text-white group-hover:text-blue-300 transition">ecosystem.pinet.com DApps</span>
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
           <p className="text-[11px] text-slate-400">Smart Contract ABI & Metadata Relay</p>
           <div className="mt-3 flex items-center justify-between text-[11px] font-mono pt-2 border-t border-slate-800/80">
             <span className="text-emerald-400">ZK-Verified</span>
-            <span className="text-slate-400">Ping: 16ms</span>
+            <span className="text-blue-400 group-hover:underline">Inspect State →</span>
           </div>
         </div>
       </div>
@@ -286,6 +347,67 @@ export const NpasView: React.FC<NpasViewProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Endpoint Payload & Cryptographic State Inspector Modal */}
+      {selectedEndpoint && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative text-slate-100 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelectedEndpoint(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                <FileCode className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">{selectedEndpoint.name}</h3>
+                <p className="font-mono text-xs text-blue-400 break-all">{selectedEndpoint.url}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs mb-4">
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <div className="text-[10px] text-slate-500 uppercase font-semibold">Latency / Round-Trip</div>
+                <div className="text-emerald-400 font-mono font-bold mt-0.5">{selectedEndpoint.ping} ms</div>
+              </div>
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <div className="text-[10px] text-slate-500 uppercase font-semibold">TLS Protocol</div>
+                <div className="text-slate-200 font-mono font-bold mt-0.5">{selectedEndpoint.tls}</div>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 mb-4">
+              <div className="text-[10px] text-slate-500 uppercase font-semibold mb-1">State Merkle Root Hash</div>
+              <p className="font-mono text-xs text-purple-300 break-all select-all font-semibold">
+                {selectedEndpoint.merkleRoot}
+              </p>
+            </div>
+
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 mb-4">
+              <div className="flex items-center justify-between text-[10px] text-slate-500 uppercase font-semibold mb-1.5">
+                <span>Synchronized JSON State Payload</span>
+                <span className="text-emerald-400">HTTP/2 200 OK</span>
+              </div>
+              <pre className="text-xs font-mono text-slate-200 bg-slate-900/90 p-3 rounded-lg overflow-x-auto border border-slate-800/80">
+                {selectedEndpoint.payload}
+              </pre>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setSelectedEndpoint(null)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition"
+              >
+                Close Inspector
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

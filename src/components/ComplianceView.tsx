@@ -11,6 +11,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { ComplianceReport } from '../types';
+import { ZkCircuitVisualizer } from './ZkCircuitVisualizer';
 
 interface ComplianceViewProps {
   currentReport: ComplianceReport;
@@ -210,6 +211,9 @@ export const ComplianceView: React.FC<ComplianceViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Interactive Groth16 Zero-Knowledge SNARK Circuit Pipeline */}
+      <ZkCircuitVisualizer />
     </div>
   );
 };

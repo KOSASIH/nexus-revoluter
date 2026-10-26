@@ -14,6 +14,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+import { SanoConverter } from './SanoConverter';
+
 interface SanoViewProps {
   livePrice: number;
   communityGcv: number;
@@ -174,6 +176,9 @@ export const SanoView: React.FC<SanoViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* SANO Interactive Valuation & Barter Calculator */}
+      <SanoConverter livePrice={livePrice} communityGcv={communityGcv} />
 
       {/* Tab Content 1: Overview */}
       {activeTab === 'overview' && (
