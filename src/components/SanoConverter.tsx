@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, ArrowRightLeft, ShoppingBag, Coffee, Smartphone, Sun, Car, Home, Info, Sparkles } from 'lucide-react';
+import { Calculator, ShoppingBag, Coffee, Smartphone, Sun, Car, Home } from 'lucide-react';
 
 interface SanoConverterProps {
   livePrice: number;
@@ -8,12 +8,11 @@ interface SanoConverterProps {
 
 export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communityGcv }) => {
   const [piAmount, setPiAmount] = useState<string>('10');
-  const [customGoodPrice, setCustomGoodPrice] = useState<number>(1200);
 
   const numPi = parseFloat(piAmount) || 0;
   const marketUsd = numPi * livePrice;
   const gcvUsd = numPi * communityGcv;
-  const xlmEquivalent = (numPi * livePrice) / 0.14; // assuming XLM ~$0.14
+  const xlmEquivalent = (numPi * livePrice) / 0.14;
 
   const PRESET_GOODS = [
     { name: 'Specialty Coffee', priceUsd: 4.5, icon: Coffee, category: 'Micro Barter' },
@@ -29,7 +28,7 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <Calculator className="w-5 h-5 text-blue-400" />
-            Interactive $\pi\text{ PI}$ Valuation & Barter Calculator
+            Interactive π PI Valuation and Barter Calculator
           </h3>
           <p className="text-xs text-slate-400">
             Real-time mathematical simulator contrasting live market exchange rates vs. Community GCV purchasing power
@@ -41,9 +40,7 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
         </span>
       </div>
 
-      {/* Calculator Input & Conversions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Input */}
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
           <label className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
             <span>Enter π PI Amount</span>
@@ -60,7 +57,6 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
           <div className="text-[10px] text-slate-500">Pioneer Balance Unit</div>
         </div>
 
-        {/* Live Market Value */}
         <div className="p-4 rounded-xl bg-slate-950 border border-blue-900/40 space-y-1">
           <div className="text-[10px] uppercase font-bold text-blue-400">Live Market Valuation</div>
           <div className="text-xl font-mono font-bold text-white">
@@ -69,7 +65,6 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
           <div className="text-[10px] text-slate-500 font-mono">Rate: ${livePrice.toFixed(4)} / π PI</div>
         </div>
 
-        {/* GCV Community Value */}
         <div className="p-4 rounded-xl bg-slate-950 border border-purple-900/40 space-y-1">
           <div className="text-[10px] uppercase font-bold text-purple-400">Community GCV Valuation</div>
           <div className="text-xl font-mono font-bold text-purple-300">
@@ -78,7 +73,6 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
           <div className="text-[10px] text-slate-500 font-mono">Target: ${communityGcv.toLocaleString()} / π PI</div>
         </div>
 
-        {/* XLM Native Equivalent */}
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
           <div className="text-[10px] uppercase font-bold text-slate-400">Stellar Horizon (XLM)</div>
           <div className="text-xl font-mono font-bold text-slate-200">
@@ -88,7 +82,6 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
         </div>
       </div>
 
-      {/* Real-World Goods Barter Matrix */}
       <div className="pt-2">
         <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
           <ShoppingBag className="w-4 h-4 text-emerald-400" />
