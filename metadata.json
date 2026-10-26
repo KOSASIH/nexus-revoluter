@@ -1,0 +1,9 @@
+{
+  "name": "Nexus Revoluter",
+  "description": "Decentralized blockchain node orchestrator, Pi Network synchronizer (NPAS), SANO Target Monitor, and multi-asset wallet platform.",
+  "version": "1.0.0",
+  "author": "KOSASIH",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
