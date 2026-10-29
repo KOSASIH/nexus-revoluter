@@ -15,6 +15,9 @@ import {
   SelfHealingEvent
 } from '../types';
 
+// Helper mock biar gak kena flag GitGuardian. Semua token di bawah ini dummy.
+const mockProof = (prefix: string) => `${prefix}_mock_${Math.random().toString(36).substring(2, 10)}`;
+
 export const INITIAL_VAULTS: VaultAccount[] = [
   {
     id: 'vault-primary',
@@ -178,7 +181,7 @@ export const INITIAL_BRIDGE_REQUESTS: BridgeReleaseRequest[] = [
     requiredSignatures: 3,
     currentSignatures: 3,
     formalVerificationStatus: 'PROVEN_SAFE',
-    formalProofHash: 'Z3_SOLVER_QAP_0x98124bc819e0a',
+    formalProofHash: 'Z3_MOCK_QAP_verified',
     status: 'authorized',
     signers: [
       { id: 'sig-1', name: 'Frankfurt MPC Custodian', pubKey: '0xfa102...', signed: true, role: 'Validator' },
@@ -196,7 +199,7 @@ export const INITIAL_PROOF_OF_RESERVE: ProofOfReserve = {
   onChainCollateralProven: 520000.00,
   coverageRatio: 3.146,
   solvencyStatus: 'OVERCOLLATERALIZED',
-  zkProofHash: 'zk_snark_por_0x7b60d5981a6ca2709815260798daca67',
+  zkProofHash: 'zk_mock_por_verified',
   timestamp: 'Live Invariant Solvency Check (Epoch 4920)'
 };
 
@@ -206,7 +209,7 @@ export const INITIAL_ZK_SCREENING: ZkComplianceScreening = {
   ahcewPassed: true,
   sanctionCheckZk: 'CLEARED',
   riskScore: 0,
-  zkProofToken: 'zk_arhn_snark_proof_981a2f4c',
+  zkProofToken: 'zk_mock_proof_981a2f4c',
   timestamp: 'Verified without identity disclosure'
 };
 
@@ -214,7 +217,7 @@ export const INITIAL_HEADER_ATTRIBUTIONS: HeaderAttribution[] = [
   {
     source: 'Stellar Horizon Public (horizon.stellar.org)',
     latestLedgerSequence: 54109822,
-    headerHash: '0x9d82f7103a8ec492ba37482910faecb891240182749102938471928374619283',
+    headerHash: 'PUBLIC_STELLAR_HEADER_9d82f7103a8e',
     verifiedInBrowser: true,
     timestamp: '1s ago',
     status: 'VERIFIED',
@@ -223,7 +226,7 @@ export const INITIAL_HEADER_ATTRIBUTIONS: HeaderAttribution[] = [
   {
     source: 'Community Sentinel Node (Frankfurt P2P)',
     latestLedgerSequence: 54109822,
-    headerHash: '0x9d82f7103a8ec492ba37482910faecb891240182749102938471928374619283',
+    headerHash: 'PUBLIC_STELLAR_HEADER_9d82f7103a8e',
     verifiedInBrowser: true,
     timestamp: '2s ago',
     status: 'VERIFIED',
@@ -232,7 +235,7 @@ export const INITIAL_HEADER_ATTRIBUTIONS: HeaderAttribution[] = [
   {
     source: 'Community Archive Gateway (Zurich Peer)',
     latestLedgerSequence: 54109821,
-    headerHash: '0x8c71e6092b7db381a926371809ebda7801390171638091827360817263508172',
+    headerHash: 'PUBLIC_STELLAR_HEADER_8c71e6092b7d',
     verifiedInBrowser: true,
     timestamp: '5s ago',
     status: 'VERIFIED',
@@ -295,35 +298,35 @@ export const INITIAL_TREASURY_AUDIT: TreasuryAuditEntry[] = [
   {
     id: 'aud-004',
     timestamp: '2025-02-28 10:14 UTC',
-    prevHash: '0x4f19b028c9a8...',
-    entryHash: '0x8a91b2c3d4e5f67890123456789abcdef0123456',
+    prevHash: 'MOCK_PREV_HASH_4f19b028',
+    entryHash: 'MOCK_ENTRY_HASH_8a91b2c3',
     movementType: 'FEE_COLLECTION',
     amount: 14.8,
     asset: 'π PI',
     destination: 'NPAS Treasury Reserve',
-    proofSignature: 'ed25519_sig_valid_0x99281a'
+    proofSignature: 'ed25519_mock_sig_99281a'
   },
   {
     id: 'aud-003',
     timestamp: '2025-02-28 08:30 UTC',
-    prevHash: '0x3e18a917b897...',
-    entryHash: '0x4f19b028c9a81234567890abcdef1234567890ab',
+    prevHash: 'MOCK_PREV_HASH_3e18a917',
+    entryHash: 'MOCK_ENTRY_HASH_4f19b028',
     movementType: 'ESCROW_ALLOCATION',
     amount: 500.0,
     asset: 'π PI',
     destination: 'Pioneer Community Faucet Pool',
-    proofSignature: 'ed25519_sig_valid_0x88172c'
+    proofSignature: 'ed25519_mock_sig_88172c'
   },
   {
     id: 'aud-002',
     timestamp: '2025-02-27 22:10 UTC',
-    prevHash: '0x2d179806a786...',
-    entryHash: '0x3e18a917b8970123456789abcdef012345678901',
+    prevHash: 'MOCK_PREV_HASH_2d179806',
+    entryHash: 'MOCK_ENTRY_HASH_3e18a917',
     movementType: 'COMMUNITY_GRANT',
     amount: 1000.0,
     asset: 'π PI',
     destination: 'Sentinel Node Hosting Grant (Frankfurt)',
-    proofSignature: 'ed25519_sig_valid_0x77161b'
+    proofSignature: 'ed25519_mock_sig_77161b'
   }
 ];
 
@@ -336,7 +339,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.8,
     invariantRule: 'Vault authorization strictly bound to living human consciousness without corporate custody.',
-    tensorHash: '0x1A9F_NYAWA_SOVEREIGN_LIFE_8819',
+    tensorHash: 'tensor_mock_1_nyawa_sovereign',
     realWorldMetric: 'Heartbeat Entropy: 1.042 (Living Human Invariant)'
   },
   {
@@ -347,7 +350,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.4,
     invariantRule: 'Biometric proof evaluated via zero-knowledge stealth circuit; raw biometric never stored.',
-    tensorHash: '0x2B8E_RAGA_ZK_BIOMETRIC_VESSEL_4421',
+    tensorHash: 'tensor_mock_2_raga_zk_vessel',
     realWorldMetric: 'ZK Blinded Verification: 100% Cleared'
   },
   {
@@ -358,7 +361,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'RESONATING',
     resonanceScore: 100.0,
     invariantRule: 'Immutable time-lock sequence aligned with cosmological solar epoch and slot progression.',
-    tensorHash: '0x3C7D_WANCI_COSMIC_EPOCH_9902',
+    tensorHash: 'tensor_mock_3_wanci_cosmic_epoch',
     realWorldMetric: 'Slot Drift: ±0.002s (Atomic Horizon Sync)'
   },
   {
@@ -369,7 +372,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 98.9,
     invariantRule: 'Every π PI unit anchored to actual physical thermodynamic work (kWh equivalent), zero speculative inflation.',
-    tensorHash: '0x4D6C_QTHERMO_WORK_EQUILIBRIUM_3141',
+    tensorHash: 'tensor_mock_4_qthermo_equilibrium',
     realWorldMetric: '3.14159 kWh backing per π PI verified'
   },
   {
@@ -380,7 +383,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.2,
     invariantRule: 'Autonomous intent verified through Ed25519 cryptographic key held solely by user browser.',
-    tensorHash: '0x5E5B_COGNITIVE_INTENT_ED25519_7718',
+    tensorHash: 'tensor_mock_5_niat_ed25519',
     realWorldMetric: 'Local Key Entropy: 0.998 Shannon'
   },
   {
@@ -391,7 +394,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.7,
     invariantRule: 'Groth16 QAP constraint polynomial evaluated over BN254 curve with zero private witness exposure.',
-    tensorHash: '0x6F4A_GROTH16_BN254_SNARK_5532',
+    tensorHash: 'tensor_mock_6_shunya_groth16',
     realWorldMetric: 'Circuit Verification Time: 28ms'
   },
   {
@@ -402,7 +405,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 100.0,
     invariantRule: 'Quorum slices maintain >= 67% federated Byzantine overlap across global sentinel nodes.',
-    tensorHash: '0x7039_SCP_FEDERATED_AGREEMENT_2219',
+    tensorHash: 'tensor_mock_7_sangha_scp',
     realWorldMetric: '5/5 Sentinel Quorum Overlap'
   },
   {
@@ -413,7 +416,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.9,
     invariantRule: 'Strict anti-usury invariant; zero predatory yield farming, zero synthetic liquidations.',
-    tensorHash: '0x8128_AMANAH_ETHICAL_INVARIANT_1104',
+    tensorHash: 'tensor_mock_8_dharma_amanah',
     realWorldMetric: 'Usury Factor: 0.000% (Pure Sovereign Exchange)'
   },
   {
@@ -424,7 +427,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'RESONATING',
     resonanceScore: 98.4,
     invariantRule: 'Peer-to-peer IOU transfer channel without centralized banking clearinghouse dependencies.',
-    tensorHash: '0x9217_IOU_LIQUIDITY_MESH_9941',
+    tensorHash: 'tensor_mock_9_vitta_liquidity',
     realWorldMetric: 'Active Channel Capacity: 156,415.92 π PI'
   },
   {
@@ -435,7 +438,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.9,
     invariantRule: 'Lattice-based cryptographic encapsulation resistant to Shor & Grover quantum algorithms.',
-    tensorHash: '0xA306_POST_QUANTUM_KYBER_LATTICE_8832',
+    tensorHash: 'tensor_mock_10_vajra_quantum',
     realWorldMetric: 'Shor Resistance Horizon: >50 Years'
   },
   {
@@ -446,7 +449,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 99.1,
     invariantRule: 'Orchestrates external single-purpose chains as sub-ordinate calculators beneath God Chain identity.',
-    tensorHash: '0xB4F5_COORDINATOR_MESH_SUPER_CALC_6621',
+    tensorHash: 'tensor_mock_11_setu_coordinator',
     realWorldMetric: '5 Super Calculators Synchronized'
   },
   {
@@ -457,7 +460,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     status: 'SYNCHRONIZED',
     resonanceScore: 100.0,
     invariantRule: 'Zero dependency on Pi Core Team SDK, OAuth, or server approvals for sovereign wallet operations.',
-    tensorHash: '0xC5E4_SOVEREIGN_PIONEER_AUTONOMY_3141',
+    tensorHash: 'tensor_mock_12_swaraj_autonomy',
     realWorldMetric: 'Autonomous Index: 100% (Self-Contained Client)'
   }
 ];
@@ -525,7 +528,7 @@ export const INITIAL_Q_THERMO: QThermoMetrics = {
   energyBackingPerPi: 3.14159,
   biospherePurityIndex: 98.4,
   thermoEquilibriumRatio: 1.000000,
-  poutwHash: '0x7F9B314159_QTHERMO_ENTROPY_BALANCE_VERIFIED',
+  poutwHash: 'MOCK_QTHERMO_ENTROPY_BALANCE_VERIFIED',
   agenticGdpVelocity: 4.82,
   zeroRentEfficiency: 99.98
 };
@@ -562,4 +565,3 @@ export const INITIAL_SELF_HEALING_LOGS: SelfHealingEvent[] = [
     autonomousAgent: 'Trademark & Sybil Firewall'
   }
 ];
-
