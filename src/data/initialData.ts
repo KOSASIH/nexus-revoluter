@@ -8,7 +8,11 @@ import {
   HeaderAttribution,
   SocialRecoveryState,
   DaoProposal,
-  TreasuryAuditEntry 
+  TreasuryAuditEntry,
+  DimensionVector,
+  SuperCalculator,
+  QThermoMetrics,
+  SelfHealingEvent
 } from '../types';
 
 export const INITIAL_VAULTS: VaultAccount[] = [
@@ -322,3 +326,240 @@ export const INITIAL_TREASURY_AUDIT: TreasuryAuditEntry[] = [
     proofSignature: 'ed25519_sig_valid_0x77161b'
   }
 ];
+
+export const INITIAL_DIMENSIONS: DimensionVector[] = [
+  {
+    id: 1,
+    name: 'Life-Force Consciousness (Nyawa)',
+    sanskritName: 'Prana / Nyawa',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.8,
+    invariantRule: 'Vault authorization strictly bound to living human consciousness without corporate custody.',
+    tensorHash: '0x1A9F_NYAWA_SOVEREIGN_LIFE_8819',
+    realWorldMetric: 'Heartbeat Entropy: 1.042 (Living Human Invariant)'
+  },
+  {
+    id: 2,
+    name: 'Physical Zero-Knowledge Vessel (Raga)',
+    sanskritName: 'Kaya / Raga',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.4,
+    invariantRule: 'Biometric proof evaluated via zero-knowledge stealth circuit; raw biometric never stored.',
+    tensorHash: '0x2B8E_RAGA_ZK_BIOMETRIC_VESSEL_4421',
+    realWorldMetric: 'ZK Blinded Verification: 100% Cleared'
+  },
+  {
+    id: 3,
+    name: 'Temporal Cosmic Synchronizer (Wanci)',
+    sanskritName: 'Kala / Wanci',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'RESONATING',
+    resonanceScore: 100.0,
+    invariantRule: 'Immutable time-lock sequence aligned with cosmological solar epoch and slot progression.',
+    tensorHash: '0x3C7D_WANCI_COSMIC_EPOCH_9902',
+    realWorldMetric: 'Slot Drift: ±0.002s (Atomic Horizon Sync)'
+  },
+  {
+    id: 4,
+    name: 'Thermodynamic Invariant (Q-Thermo)',
+    sanskritName: 'Agni / Q-Thermo',
+    category: 'THERMODYNAMICS',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 98.9,
+    invariantRule: 'Every π PI unit anchored to actual physical thermodynamic work (kWh equivalent), zero speculative inflation.',
+    tensorHash: '0x4D6C_QTHERMO_WORK_EQUILIBRIUM_3141',
+    realWorldMetric: '3.14159 kWh backing per π PI verified'
+  },
+  {
+    id: 5,
+    name: 'Cognitive Sovereign Will (Niat)',
+    sanskritName: 'Manas / Niat',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.2,
+    invariantRule: 'Autonomous intent verified through Ed25519 cryptographic key held solely by user browser.',
+    tensorHash: '0x5E5B_COGNITIVE_INTENT_ED25519_7718',
+    realWorldMetric: 'Local Key Entropy: 0.998 Shannon'
+  },
+  {
+    id: 6,
+    name: 'Zero-Knowledge Constraint Lattice',
+    sanskritName: 'Shunya / ZK-Lattice',
+    category: 'SECURITY_PROOF',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.7,
+    invariantRule: 'Groth16 QAP constraint polynomial evaluated over BN254 curve with zero private witness exposure.',
+    tensorHash: '0x6F4A_GROTH16_BN254_SNARK_5532',
+    realWorldMetric: 'Circuit Verification Time: 28ms'
+  },
+  {
+    id: 7,
+    name: 'Federated Byzantine Quorum (SCP)',
+    sanskritName: 'Sangha / Quorum',
+    category: 'CONSENSUS_COMPUTE',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 100.0,
+    invariantRule: 'Quorum slices maintain >= 67% federated Byzantine overlap across global sentinel nodes.',
+    tensorHash: '0x7039_SCP_FEDERATED_AGREEMENT_2219',
+    realWorldMetric: '5/5 Sentinel Quorum Overlap'
+  },
+  {
+    id: 8,
+    name: 'Amanah Ethical Equilibrium',
+    sanskritName: 'Dharma / Amanah',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.9,
+    invariantRule: 'Strict anti-usury invariant; zero predatory yield farming, zero synthetic liquidations.',
+    tensorHash: '0x8128_AMANAH_ETHICAL_INVARIANT_1104',
+    realWorldMetric: 'Usury Factor: 0.000% (Pure Sovereign Exchange)'
+  },
+  {
+    id: 9,
+    name: 'Decentralized IOU Liquidity Mesh',
+    sanskritName: 'Vitta / Liquidity',
+    category: 'CONSENSUS_COMPUTE',
+    status: 'RESONATING',
+    resonanceScore: 98.4,
+    invariantRule: 'Peer-to-peer IOU transfer channel without centralized banking clearinghouse dependencies.',
+    tensorHash: '0x9217_IOU_LIQUIDITY_MESH_9941',
+    realWorldMetric: 'Active Channel Capacity: 156,415.92 π PI'
+  },
+  {
+    id: 10,
+    name: 'Post-Quantum Impervious Shield',
+    sanskritName: 'Vajra / Quantum',
+    category: 'SECURITY_PROOF',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.9,
+    invariantRule: 'Lattice-based cryptographic encapsulation resistant to Shor & Grover quantum algorithms.',
+    tensorHash: '0xA306_POST_QUANTUM_KYBER_LATTICE_8832',
+    realWorldMetric: 'Shor Resistance Horizon: >50 Years'
+  },
+  {
+    id: 11,
+    name: 'Universal Super-Calculator Coordinator',
+    sanskritName: 'Setu / Coordinator',
+    category: 'CONSENSUS_COMPUTE',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 99.1,
+    invariantRule: 'Orchestrates external single-purpose chains as sub-ordinate calculators beneath God Chain identity.',
+    tensorHash: '0xB4F5_COORDINATOR_MESH_SUPER_CALC_6621',
+    realWorldMetric: '5 Super Calculators Synchronized'
+  },
+  {
+    id: 12,
+    name: 'Absolute Pioneer Autonomy',
+    sanskritName: 'Swaraj / Sovereign',
+    category: 'LIFE_SOVEREIGNTY',
+    status: 'SYNCHRONIZED',
+    resonanceScore: 100.0,
+    invariantRule: 'Zero dependency on Pi Core Team SDK, OAuth, or server approvals for sovereign wallet operations.',
+    tensorHash: '0xC5E4_SOVEREIGN_PIONEER_AUTONOMY_3141',
+    realWorldMetric: 'Autonomous Index: 100% (Self-Contained Client)'
+  }
+];
+
+export const INITIAL_SUPER_CALCULATORS: SuperCalculator[] = [
+  {
+    id: 'calc-btc',
+    name: 'Bitcoin Core Mesh',
+    role: 'Cash Calculator',
+    chainTarget: 'BTC UTXO State',
+    tensorProofType: 'SHA-256 Proof of Work Header Chain',
+    coordinationStatus: 'SYNCHRONIZED',
+    lastBlockSync: 885124,
+    tpsEquivalent: 7,
+    latencyToGodChain: 14
+  },
+  {
+    id: 'calc-eth-sol',
+    name: 'EVM & SVM Compute Matrix',
+    role: 'Contract Calculator',
+    chainTarget: 'Ethereum / Solana Virtual Machine',
+    tensorProofType: 'Merkle Patricia Trie State Root Proof',
+    coordinationStatus: 'SYNCHRONIZED',
+    lastBlockSync: 21894210,
+    tpsEquivalent: 3450,
+    latencyToGodChain: 9
+  },
+  {
+    id: 'calc-pi',
+    name: 'Pi Network Pioneer Mesh',
+    role: 'KYC Calculator',
+    chainTarget: 'Pi SCP Ledger (Unofficial IOU Mirror)',
+    tensorProofType: 'Stellar Consensus Protocol Quorum Slice',
+    coordinationStatus: 'SYNCHRONIZED',
+    lastBlockSync: 4920194,
+    tpsEquivalent: 1000,
+    latencyToGodChain: 4
+  },
+  {
+    id: 'calc-privacy',
+    name: 'Zcash & Worldcoin Verifier',
+    role: 'Privacy Calculator',
+    chainTarget: 'Zero-Knowledge Anonymity Pool',
+    tensorProofType: 'Halo2 / Groth16 Recursive SNARK Proof',
+    coordinationStatus: 'SYNCHRONIZED',
+    lastBlockSync: 2450119,
+    tpsEquivalent: 450,
+    latencyToGodChain: 18
+  },
+  {
+    id: 'calc-storage',
+    name: 'Arweave & IPFS Archival',
+    role: 'Storage Calculator',
+    chainTarget: 'Permanent Permaweb Provenance',
+    tensorProofType: 'Proof of Access & Content Addressing Hash',
+    coordinationStatus: 'SYNCHRONIZED',
+    lastBlockSync: 1490215,
+    tpsEquivalent: 120,
+    latencyToGodChain: 22
+  }
+];
+
+export const INITIAL_Q_THERMO: QThermoMetrics = {
+  currentEntropy: 14.82,
+  energyBackingPerPi: 3.14159,
+  biospherePurityIndex: 98.4,
+  thermoEquilibriumRatio: 1.000000,
+  poutwHash: '0x7F9B314159_QTHERMO_ENTROPY_BALANCE_VERIFIED',
+  agenticGdpVelocity: 4.82,
+  zeroRentEfficiency: 99.98
+};
+
+export const INITIAL_SELF_HEALING_LOGS: SelfHealingEvent[] = [
+  {
+    id: 'heal-001',
+    timestamp: '2m ago',
+    incidentType: 'BYZANTINE_DRIFT',
+    affectedTarget: 'Virginia NPAS Mainnet Bridge Relay (Node 3)',
+    severity: 'RESOLVED',
+    remediationAction: 'Gossip fanout dynamically elevated from factor 3 to 5. Quorum overlap restored to 100%.',
+    recoveryLatencyMs: 340,
+    autonomousAgent: 'SCP Consensus Auto-Healer'
+  },
+  {
+    id: 'heal-002',
+    timestamp: '14m ago',
+    incidentType: 'MEMPOOL_FLOOD',
+    affectedTarget: 'Unconfirmed Transaction Mempool Buffer',
+    severity: 'RESOLVED',
+    remediationAction: 'Non-compliant micro-spams filtered via dynamic zero-rent queue. Valid Pioneer transactions prioritized.',
+    recoveryLatencyMs: 185,
+    autonomousAgent: 'Mempool Traffic Arbiter'
+  },
+  {
+    id: 'heal-003',
+    timestamp: '42m ago',
+    incidentType: 'ECLIPSE_ATTACK_ATTEMPT',
+    affectedTarget: 'P2P Gossip Inbound Socket 185.220.101.5',
+    severity: 'RESOLVED',
+    remediationAction: 'Adversarial conflicting slot sequence dropped. Peer blacklisted on Trademark Firewall Sentinel registry.',
+    recoveryLatencyMs: 92,
+    autonomousAgent: 'Trademark & Sybil Firewall'
+  }
+];
+

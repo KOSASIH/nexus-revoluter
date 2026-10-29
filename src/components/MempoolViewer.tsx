@@ -6,7 +6,7 @@ interface MempoolTx {
   from: string;
   to: string;
   amount: number;
-  asset: 'PI' | 'XLM' | 'NRV';
+  asset: 'π PI' | 'XLM' | 'NRV';
   fee: number;
   priority: 'low' | 'standard' | 'high';
   ageSec: number;
@@ -23,7 +23,7 @@ export const MempoolViewer: React.FC = () => {
       from: 'GDZX94K2...KOSASIH88',
       to: 'GDF71029...VALIDTR',
       amount: 45.0,
-      asset: 'PI',
+      asset: 'π PI',
       fee: 0.00012,
       priority: 'high',
       ageSec: 2
@@ -33,7 +33,7 @@ export const MempoolViewer: React.FC = () => {
       from: 'GABR72K1...REVOLUTER01',
       to: 'GCXP4491...NPASBRIDGE',
       amount: 150.0,
-      asset: 'PI',
+      asset: 'π PI',
       fee: 0.00010,
       priority: 'standard',
       ageSec: 4
@@ -76,7 +76,7 @@ export const MempoolViewer: React.FC = () => {
             from: 'GDZX94K2...KOSASIH88',
             to: 'GABR72K1...REVOLUTER01',
             amount: 88.0,
-            asset: 'PI',
+            asset: 'π PI',
             fee: 0.00011,
             priority: 'standard',
             ageSec: 1
@@ -180,7 +180,7 @@ export const MempoolViewer: React.FC = () => {
 
               <div className="text-right shrink-0 ml-3">
                 <div className="font-mono font-bold text-white">
-                  +{ptx.amount.toLocaleString()} <span className="text-purple-400">{ptx.asset === 'PI' ? 'π PI' : ptx.asset}</span>
+                  +{ptx.amount.toLocaleString()} <span className="text-purple-400">{ptx.asset}</span>
                 </div>
                 <div className="text-[10px] text-slate-500 font-mono">
                   Fee: {ptx.fee} XLM • {ptx.ageSec}s ago

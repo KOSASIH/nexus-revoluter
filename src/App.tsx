@@ -9,7 +9,10 @@ import {
   INITIAL_HEADER_ATTRIBUTIONS,
   INITIAL_SOCIAL_RECOVERY,
   INITIAL_DAO_PROPOSALS,
-  INITIAL_TREASURY_AUDIT
+  INITIAL_TREASURY_AUDIT,
+  INITIAL_DIMENSIONS,
+  INITIAL_SUPER_CALCULATORS,
+  INITIAL_Q_THERMO
 } from './data/initialData';
 import { 
   NavTab, 
@@ -22,7 +25,10 @@ import {
   HeaderAttribution,
   SocialRecoveryState,
   DaoProposal,
-  TreasuryAuditEntry
+  TreasuryAuditEntry,
+  DimensionVector,
+  SuperCalculator,
+  QThermoMetrics
 } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -36,6 +42,7 @@ import { DaoView } from './components/DaoView';
 import { TreasuryView } from './components/TreasuryView';
 import { GuardView } from './components/GuardView';
 import { AiSentinelHud } from './components/AiSentinelHud';
+import { GodChainView } from './components/GodChainView';
 
 
 export const App: React.FC = () => {
@@ -53,6 +60,22 @@ export const App: React.FC = () => {
   const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>(INITIAL_SOCIAL_RECOVERY);
   const [proposals, setProposals] = useState<DaoProposal[]>(INITIAL_DAO_PROPOSALS);
   const [treasuryAudit, setTreasuryAudit] = useState<TreasuryAuditEntry[]>(INITIAL_TREASURY_AUDIT);
+  const [dimensions, setDimensions] = useState<DimensionVector[]>(INITIAL_DIMENSIONS);
+  const [superCalculators] = useState<SuperCalculator[]>(INITIAL_SUPER_CALCULATORS);
+  const [qThermo, setQThermo] = useState<QThermoMetrics>(INITIAL_Q_THERMO);
+
+  const handleCalibrateDimension = (id: number) => {
+    setDimensions(prev => prev.map(dim => {
+      if (dim.id === id) {
+        return {
+          ...dim,
+          status: 'SYNCHRONIZED',
+          resonanceScore: Math.min(100, parseFloat((dim.resonanceScore + 0.2).toFixed(1)))
+        };
+      }
+      return dim;
+    }));
+  };
 
   // Economic & Market Monitor State
   // Live PI market price with default fallback $0.0756 USD
@@ -177,8 +200,23 @@ export const App: React.FC = () => {
     downloadAnchor.remove();
   };
 
-  const handleImportEncrypted = () => {
-    handleGenerateAddress('Restored Cold Storage Vault');
+  const handleImportEncrypted = (importedVaults?: VaultAccount[]) => {
+    if (importedVaults && importedVaults.length > 0) {
+      setVaults(prev => {
+        const existingMap = new Map(prev.map(v => [v.address, v]));
+        for (const v of importedVaults) {
+          if (!existingMap.has(v.address)) {
+            existingMap.set(v.address, {
+              ...v,
+              id: v.id || `vault-imp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+            });
+          }
+        }
+        return Array.from(existingMap.values());
+      });
+    } else {
+      handleGenerateAddress('Restored Cold Storage Vault');
+    }
   };
 
   // Module 7 Handlers: Social Recovery
@@ -382,6 +420,15 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'god-chain' && (
+          <GodChainView
+            dimensions={dimensions}
+            superCalculators={superCalculators}
+            qThermo={qThermo}
+            onCalibrateDimension={handleCalibrateDimension}
+          />
+        )}
+
         {activeTab === 'vault' && (
           <VaultView
             vaults={vaults}

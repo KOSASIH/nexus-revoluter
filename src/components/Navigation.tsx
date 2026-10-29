@@ -8,7 +8,8 @@ import {
   Sliders, 
   Vote, 
   Landmark,
-  ShieldAlert
+  ShieldAlert,
+  Atom
 } from 'lucide-react';
 import { NavTab } from '../types';
 
@@ -22,6 +23,12 @@ export const Navigation: React.FC<NavigationProps> = ({
   onTabChange
 }) => {
   const tabs = [
+    {
+      id: 'god-chain' as NavTab,
+      label: '12D God Chain & Q-Thermo',
+      icon: Atom,
+      badge: 'Web4 GDP'
+    },
     {
       id: 'vault' as NavTab,
       label: 'Pioneer Vault',

@@ -7,7 +7,8 @@ export type NavTab =
   | 'sano'
   | 'dao'
   | 'treasury'
-  | 'guard';
+  | 'guard'
+  | 'god-chain';
 
 export interface VaultAccount {
   id: string;
@@ -175,4 +176,101 @@ export interface TransactionThreatDetail {
   verdictReason: string;
   simulatedExecution: 'SUCCESS_NO_REVERT' | 'FLAG_ANOMALOUS_MEMO' | 'HIGH_GAS_DRAIN';
 }
+
+export interface DimensionVector {
+  id: number;
+  name: string;
+  sanskritName: string;
+  category: 'LIFE_SOVEREIGNTY' | 'THERMODYNAMICS' | 'CONSENSUS_COMPUTE' | 'SECURITY_PROOF';
+  status: 'SYNCHRONIZED' | 'CALIBRATING' | 'RESONATING';
+  resonanceScore: number; // 0-100
+  invariantRule: string;
+  tensorHash: string;
+  realWorldMetric: string;
+}
+
+export interface SuperCalculator {
+  id: string;
+  name: string;
+  role: 'Cash Calculator' | 'Contract Calculator' | 'KYC Calculator' | 'Privacy Calculator' | 'Storage Calculator';
+  chainTarget: string;
+  tensorProofType: string;
+  coordinationStatus: 'SYNCHRONIZED' | 'OBSERVING' | 'VERIFYING';
+  lastBlockSync: number;
+  tpsEquivalent: number;
+  latencyToGodChain: number;
+}
+
+export interface QThermoMetrics {
+  currentEntropy: number; // Joules/Kelvin
+  energyBackingPerPi: number; // kWh equivalent per π PI
+  biospherePurityIndex: number; // 0-100%
+  thermoEquilibriumRatio: number;
+  poutwHash: string; // Proof of Useful Thermodynamic Work
+  agenticGdpVelocity: number; // V = GDP / M
+  zeroRentEfficiency: number; // %
+}
+
+export interface SelfHealingEvent {
+  id: string;
+  timestamp: string;
+  incidentType: 'BYZANTINE_DRIFT' | 'ECLIPSE_ATTACK_ATTEMPT' | 'MEMPOOL_FLOOD' | 'FORK_ANOMALY';
+  affectedTarget: string;
+  severity: 'WARNING' | 'CRITICAL' | 'RESOLVED';
+  remediationAction: string;
+  recoveryLatencyMs: number;
+  autonomousAgent: string;
+}
+
+export interface PredictiveGasForecast {
+  minuteSlot: string;
+  predictedCongestion: number; // 0-100%
+  recommendedFeePi: number; // π PI
+  optimalTransferWindow: boolean;
+  expectedTps: number;
+}
+
+export interface QuantumAuditReport {
+  address: string;
+  shannonEntropy: number;
+  saltUniformity: number;
+  pbkdf2Rounds: number;
+  shorResistanceYears: number;
+  kyberDilithiumWrapper: boolean;
+  securityVerdict: 'QUANTUM_IMPERVIOUS' | 'REINFORCED' | 'UPGRADE_RECOMMENDED';
+}
+
+export interface SovereignAgent {
+  id: 'ARHANA' | 'AGNI_Q' | 'DHARMA_AI' | 'VAJRA_ZK';
+  name: string;
+  codename: string;
+  role: string;
+  specialization: string;
+  cognitiveLayer: string;
+  status: 'ACTIVE_OBSERVING' | 'SYNTHESIZING' | 'ATTENDING';
+  confidenceScore: number;
+  heuristicHeuristicsCount: number;
+  avatarColor: string;
+  samplePrompts: string[];
+}
+
+export interface AgentInferenceResponse {
+  agentId: string;
+  prompt: string;
+  timestamp: string;
+  verdict: 'CONFIRMED_OPTIMAL' | 'VERIFIED_SOUND' | 'ATTENTION_REQUIRED';
+  reasoningChain: string[];
+  mathematicalMetrics: { [key: string]: string | number };
+  cryptographicSignature: string;
+}
+
+export interface StealthAddressProof {
+  ephemeralPublicKey: string; // R = r * G
+  stealthRecipientAddress: string; // P = H(r * K_view) * G + K_spend
+  viewTag: string; // 1-byte fast scanner prefix
+  zkBlindFactor: string;
+  derivationTimestamp: string;
+}
+
+
 

@@ -11,11 +11,14 @@ import {
   Lock, 
   Info,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Atom,
+  EyeOff,
+  Key
 } from 'lucide-react';
-import { VaultAccount, Transaction } from '../types';
+import { VaultAccount, Transaction, StealthAddressProof } from '../types';
 import { TxDetailsModal } from './TxDetailsModal';
-import { analyzeTransactionRisk } from '../services/aiSentinel';
+import { analyzeTransactionRisk, generateDksapStealthAddress } from '../services/aiSentinel';
 
 
 interface TransactionViewProps {
@@ -49,6 +52,16 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [txSuccessMessage, setTxSuccessMessage] = useState<string | null>(null);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+  const [isStealthMode, setIsStealthMode] = useState<boolean>(false);
+  const [stealthProof, setStealthProof] = useState<StealthAddressProof | null>(null);
+
+  const handleDeriveStealthAddress = () => {
+    const target = toAddress.trim() || 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88';
+    const proof = generateDksapStealthAddress(target);
+    setStealthProof(proof);
+    setToAddress(proof.stealthRecipientAddress);
+  };
+
   // Selected vault details
   const selectedVault = vaults.find(v => v.address === fromAddress) || vaults[0];
 
@@ -181,6 +194,59 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
                 className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
                 required
               />
+            </div>
+
+            {/* ZK Stealth Mode (DKSAP Dual-Key Stealth Address Protocol) */}
+            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <EyeOff className="w-4 h-4 text-purple-400" />
+                  <span className="text-xs font-bold text-white">DKSAP Stealth Shield</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/40">
+                    Dual-Key Protocol
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !isStealthMode;
+                    setIsStealthMode(next);
+                    if (next) handleDeriveStealthAddress();
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    isStealthMode
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {isStealthMode ? 'Stealth Active' : 'Enable Stealth'}
+                </button>
+              </div>
+
+              {isStealthMode && (
+                <div className="space-y-2 pt-2 border-t border-slate-800 animate-in fade-in text-xs font-mono">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <span>Unlinkable one-time destination derived:</span>
+                    <button
+                      type="button"
+                      onClick={handleDeriveStealthAddress}
+                      className="text-purple-400 hover:text-purple-300 underline text-[10px]"
+                    >
+                      Re-Roll Stealth Key
+                    </button>
+                  </div>
+                  {stealthProof && (
+                    <div className="p-2.5 rounded bg-slate-900 border border-purple-900/40 text-[10px] text-slate-300 space-y-1">
+                      <div className="text-purple-300 font-bold truncate">Stealth Address: {stealthProof.stealthRecipientAddress}</div>
+                      <div className="text-slate-400 truncate">Ephemeral PubKey (R): {stealthProof.ephemeralPublicKey.slice(0, 24)}...</div>
+                      <div className="text-slate-400">Fast Scan View Tag: {stealthProof.viewTag} • Blind Factor: {stealthProof.zkBlindFactor}</div>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-500 font-sans">
+                    Guarantees on-chain anonymity: only the recipient&apos;s view key can identify and spend this transfer.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Asset Selector & Amount */}

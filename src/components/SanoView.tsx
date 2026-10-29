@@ -31,6 +31,7 @@ export const SanoView: React.FC<SanoViewProps> = ({
 }) => {
   const [lastUpdated, setLastUpdated] = useState<string>('Just now');
   const [activeTab, setActiveTab] = useState<'overview' | 'comparison' | 'community'>('overview');
+  const [testPiAmount, setTestPiAmount] = useState<number>(10);
 
   useEffect(() => {
     setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
@@ -217,14 +218,19 @@ export const SanoView: React.FC<SanoViewProps> = ({
         </div>
       )}
 
-      {/* Tab Content 2: Valuation Index */}
+      {/* Tab Content 2: Valuation Index & Divergence Oscillator */}
       {activeTab === 'comparison' && (
-        <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-5">
-          <div>
-            <h3 className="text-base font-bold text-white mb-1">Market Price vs. Community GCV Benchmark</h3>
-            <p className="text-xs text-slate-400">
-              Side-by-side analytical comparison of market-driven exchange pricing and the community consensus valuation.
-            </p>
+        <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 className="text-base font-bold text-white mb-1">Market Price vs. Community GCV Benchmark</h3>
+              <p className="text-xs text-slate-400">
+                Mathematical divergence spread and grassroots consensual adoption oscillator.
+              </p>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl bg-purple-950/60 border border-purple-800/40 text-purple-200 font-mono text-xs">
+              Divergence Spread: <strong className="text-amber-300">{Math.round(communityGcv / Math.max(0.0001, livePrice)).toLocaleString()}x</strong>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,6 +248,52 @@ export const SanoView: React.FC<SanoViewProps> = ({
               <p className="text-xs text-slate-400 leading-relaxed">
                 A consensus benchmark recognized by Pioneer communities worldwide for peer-to-peer commerce, goods exchange, and internal ecosystem barter valuation.
               </p>
+            </div>
+          </div>
+
+          {/* Interactive Divergence Calculator */}
+          <div className="p-5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Interactive Dual-Valuation Simulator</span>
+              </div>
+              <div className="flex items-center space-x-2 text-xs font-mono">
+                <span className="text-slate-400">Holding:</span>
+                <input
+                  type="number"
+                  min="0.1"
+                  max="100000"
+                  step="1"
+                  value={testPiAmount}
+                  onChange={(e) => setTestPiAmount(Math.max(0.1, parseFloat(e.target.value) || 0))}
+                  className="w-24 px-2 py-1 rounded bg-slate-900 border border-slate-700 text-right text-white font-mono font-bold focus:outline-none"
+                />
+                <span className="text-purple-400 font-bold">π PI</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+              <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <div className="text-slate-400 text-[11px]">Secondary Market Value ({testPiAmount} π PI):</div>
+                <div className="text-xl font-bold text-blue-300 mt-1">
+                  ${(testPiAmount * livePrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Based on live index ${livePrice.toFixed(4)}</div>
+              </div>
+
+              <div className="p-3 bg-slate-900 rounded-lg border border-purple-900/40">
+                <div className="text-slate-400 text-[11px]">Community GCV Target Value ({testPiAmount} π PI):</div>
+                <div className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300 mt-1">
+                  ${(testPiAmount * communityGcv).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </div>
+                <div className="text-[10px] text-purple-400/80 mt-0.5">Target komunitas, bukan harga pasar</div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-indigo-950/30 border border-indigo-900/40 text-[11px] text-slate-300 flex items-center justify-between">
+              <span>Community Sentiment Resonance: <strong className="text-emerald-400">96.4% Bullish Adoption</strong></span>
+              <span className="text-[10px] font-mono text-slate-400">Purely Observational</span>
             </div>
           </div>
         </div>
