@@ -266,6 +266,46 @@ export const SanoView: React.FC<SanoViewProps> = ({
         </div>
       )}
 
+      {/* AI Observational Volatility Corridor & Market Depth Radar (Observational Only) */}
+      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              AI Cognitive Volatility Corridor & Market Radar (Observational)
+            </h3>
+          </div>
+          <span className="text-[10px] font-mono bg-blue-950 text-blue-300 px-2 py-0.5 rounded border border-blue-800">
+            Read-Only Heuristic Neural Model
+          </span>
+        </div>
+
+        <p className="text-xs text-slate-400 leading-relaxed">
+          Autonomous statistical correlation between secondary market liquidity pools and decentralized Pioneer merchant barter frequency. Non-invasive monitoring with zero pegging intervention.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="text-[11px] text-slate-400">30-Day Volatility Band:</div>
+            <div className="text-base font-bold text-emerald-400 mt-1">$0.0680 — $0.0910 USD</div>
+            <div className="text-[10px] text-slate-500 mt-0.5">Mean price convergence index 94.2%</div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="text-[11px] text-slate-400">GCV Sentiment Resonance:</div>
+            <div className="text-base font-bold text-purple-400 mt-1">High Global Consensus</div>
+            <div className="text-[10px] text-slate-500 mt-0.5">Grassroots commerce indexing in 48 regions</div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="text-[11px] text-slate-400">Autonomous Sentinel Verdict:</div>
+            <div className="text-base font-bold text-blue-400 mt-1">Market Equilibrium Stable</div>
+            <div className="text-[10px] text-slate-500 mt-0.5">Zero manipulative order clusters detected</div>
+          </div>
+        </div>
+      </div>
+
+
       {/* Mandatory Disclaimer Text at Bottom */}
       <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800/80 flex items-center space-x-3 text-xs text-slate-400 shadow-inner">
         <AlertCircle className="w-4 h-4 text-slate-400 shrink-0" />

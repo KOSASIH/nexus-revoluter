@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, QrCode, Key, ShieldCheck } from 'lucide-react';
-import { WalletAddress } from '../types';
+import { VaultAccount } from '../types';
 
 interface QrModalProps {
-  address: WalletAddress | null;
+  address: VaultAccount | null;
   onClose: () => void;
 }
 
@@ -32,8 +32,8 @@ export const QrModal: React.FC<QrModalProps> = ({ address, onClose }) => {
           <div className="inline-flex p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-2">
             <QrCode className="w-7 h-7" />
           </div>
-          <h3 className="text-base font-bold text-white">{address.label}</h3>
-          <p className="text-xs text-slate-400">Scan to receive Pi or Stellar assets</p>
+          <h3 className="text-base font-bold text-white">{address.name}</h3>
+          <p className="text-xs text-slate-400">Scan to receive π PI IOU or Stellar assets</p>
         </div>
 
         {/* QR Code Graphic (SVG generated) */}
@@ -96,7 +96,7 @@ export const QrModal: React.FC<QrModalProps> = ({ address, onClose }) => {
           <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
             <div className="text-[10px] text-slate-400">Native XLM Balance</div>
             <div className="text-sm font-mono font-bold text-slate-200">
-              {address.balance.toFixed(2)} XLM
+              {address.xlmBalance.toFixed(2)} XLM
             </div>
           </div>
         </div>

@@ -1,62 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  INITIAL_ADDRESSES, 
-  INITIAL_TRANSACTIONS, 
-  INITIAL_BLOCKS, 
-  INITIAL_PEERS, 
-  INITIAL_IOT_DEVICES, 
-  INITIAL_TOKENIZED_ASSETS, 
-  INITIAL_PROPOSALS, 
-  INITIAL_SYNC_LOGS, 
-  INITIAL_COMPLIANCE_REPORT 
+  INITIAL_VAULTS,
+  INITIAL_SENTINELS,
+  INITIAL_TRANSACTIONS,
+  INITIAL_BRIDGE_REQUESTS,
+  INITIAL_PROOF_OF_RESERVE,
+  INITIAL_ZK_SCREENING,
+  INITIAL_HEADER_ATTRIBUTIONS,
+  INITIAL_SOCIAL_RECOVERY,
+  INITIAL_DAO_PROPOSALS,
+  INITIAL_TREASURY_AUDIT
 } from './data/initialData';
 import { 
   NavTab, 
-  WalletAddress, 
+  VaultAccount, 
   Transaction, 
-  Block, 
-  PeerNode, 
-  IoTDevice, 
-  TokenizedAsset, 
-  Proposal, 
-  SyncLog, 
-  ComplianceReport 
+  SentinelNode, 
+  BridgeReleaseRequest, 
+  ProofOfReserve, 
+  ZkComplianceScreening,
+  HeaderAttribution,
+  SocialRecoveryState,
+  DaoProposal,
+  TreasuryAuditEntry
 } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
-import { WalletView } from './components/WalletView';
-import { NodeView } from './components/NodeView';
-import { NpasView } from './components/NpasView';
+import { VaultView } from './components/VaultView';
+import { TransactionView } from './components/TransactionView';
+import { P2pView } from './components/P2pView';
+import { BridgeView } from './components/BridgeView';
+import { ZkComplianceView } from './components/ZkComplianceView';
 import { SanoView } from './components/SanoView';
-import { AssetsIotView } from './components/AssetsIotView';
-import { GovernanceView } from './components/GovernanceView';
-import { ComplianceView } from './components/ComplianceView';
+import { DaoView } from './components/DaoView';
+import { TreasuryView } from './components/TreasuryView';
+import { GuardView } from './components/GuardView';
+import { AiSentinelHud } from './components/AiSentinelHud';
+
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<NavTab>('wallet');
-  const [network, setNetwork] = useState<string>('pi-mainnet');
+  const [activeTab, setActiveTab] = useState<NavTab>('vault');
+  const [network, setNetwork] = useState<string>('iou-ledger');
 
   // Application Data States
-  const [addresses, setAddresses] = useState<WalletAddress[]>(INITIAL_ADDRESSES);
+  const [vaults, setVaults] = useState<VaultAccount[]>(INITIAL_VAULTS);
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  const [blocks, setBlocks] = useState<Block[]>(INITIAL_BLOCKS);
-  const [peers, setPeers] = useState<PeerNode[]>(INITIAL_PEERS);
-  const [iotDevices, setIotDevices] = useState<IoTDevice[]>(INITIAL_IOT_DEVICES);
-  const [tokenizedAssets, setTokenizedAssets] = useState<TokenizedAsset[]>(INITIAL_TOKENIZED_ASSETS);
-  const [proposals, setProposals] = useState<Proposal[]>(INITIAL_PROPOSALS);
-  const [syncLogs, setSyncLogs] = useState<SyncLog[]>(INITIAL_SYNC_LOGS);
-  const [complianceReport, setComplianceReport] = useState<ComplianceReport>(INITIAL_COMPLIANCE_REPORT);
+  const [sentinels] = useState<SentinelNode[]>(INITIAL_SENTINELS);
+  const [bridgeRequests, setBridgeRequests] = useState<BridgeReleaseRequest[]>(INITIAL_BRIDGE_REQUESTS);
+  const [proofOfReserve] = useState<ProofOfReserve>(INITIAL_PROOF_OF_RESERVE);
+  const [zkScreening] = useState<ZkComplianceScreening>(INITIAL_ZK_SCREENING);
+  const [headerAttributions] = useState<HeaderAttribution[]>(INITIAL_HEADER_ATTRIBUTIONS);
+  const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>(INITIAL_SOCIAL_RECOVERY);
+  const [proposals, setProposals] = useState<DaoProposal[]>(INITIAL_DAO_PROPOSALS);
+  const [treasuryAudit, setTreasuryAudit] = useState<TreasuryAuditEntry[]>(INITIAL_TREASURY_AUDIT);
 
   // Economic & Market Monitor State
-  // Live PI market price with default fallback 0.0756 USD
+  // Live PI market price with default fallback $0.0756 USD
   const [livePrice, setLivePrice] = useState<number>(0.0756);
   const [isPriceLoading, setIsPriceLoading] = useState<boolean>(false);
   const communityGcv = 314159.00;
   const [blockHeight, setBlockHeight] = useState<number>(4920194);
 
   // Compute aggregate balances
-  const totalPiBalance = addresses.reduce((sum, a) => sum + a.piBalance, 0);
-  const totalXlmBalance = addresses.reduce((sum, a) => sum + a.balance, 0);
+  const totalPiBalance = vaults.reduce((sum, v) => sum + v.piBalance, 0);
+  const totalXlmBalance = vaults.reduce((sum, v) => sum + v.xlmBalance, 0);
 
   // Fetch live market price
   const fetchLivePrice = async () => {
@@ -82,80 +89,151 @@ export const App: React.FC = () => {
     return () => clearInterval(priceTimer);
   }, []);
 
-  // Live Block Mining Simulator (every 10s add new block)
+  // Increment simulated block slot
   useEffect(() => {
     const blockInterval = setInterval(() => {
-      setBlockHeight(prevHeight => {
-        const newHeight = prevHeight + 1;
-        const randomTxCount = Math.floor(Math.random() * 30) + 15;
-        const randomHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-        
-        const newBlock: Block = {
-          height: newHeight,
-          hash: randomHash,
-          previousHash: blocks[0]?.hash || '0x0000000000000000000000000000000000000000',
-          validator: 'Nexus-SANO-Sentinel-' + ['Tokyo', 'Frankfurt', 'Virginia', 'Singapore', 'Zurich'][Math.floor(Math.random() * 5)],
-          txCount: randomTxCount,
-          timestamp: 'Just now',
-          sizeKb: Number((Math.random() * 60 + 80).toFixed(1)),
-          gasUsed: Math.floor(Math.random() * 500000 + 1000000)
-        };
-
-        setBlocks(prev => [newBlock, ...prev.slice(0, 9)]);
-        return newHeight;
-      });
+      setBlockHeight(prev => prev + 1);
     }, 10000);
-
     return () => clearInterval(blockInterval);
-  }, [blocks]);
+  }, []);
 
-  // Wallet Handlers
-  const handleAddAddress = (label: string) => {
+  // Module 1 Handlers: Vault & Faucet
+  const handleGenerateAddress = (name: string) => {
     const randomHex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
-    const newAddress: WalletAddress = {
+    const newVault: VaultAccount = {
+      id: `vault-${Date.now()}`,
+      name,
       address: `GDZX${randomHex.slice(0, 36)}PI`,
-      label,
-      balance: 100.0,
-      piBalance: 314.15,
+      piBalance: 100.0,
+      xlmBalance: 50.0,
       isPrimary: false,
-      createdAt: new Date().toISOString().split('T')[0]
+      role: 'primary',
+      keyType: 'Ed25519-QuantumResistant',
+      createdAt: new Date().toISOString().split('T')[0],
+      vaultAgeDays: 1
     };
-    setAddresses(prev => [...prev, newAddress]);
+    setVaults(prev => [...prev, newVault]);
   };
 
-  const handleDeleteAddress = (addressToDelete: string) => {
-    setAddresses(prev => prev.filter(a => a.address !== addressToDelete));
+  const handleClaimFaucet = (vaultId: string) => {
+    setVaults(prev => prev.map(v => {
+      if (v.id === vaultId) {
+        return { ...v, piBalance: v.piBalance + 100 };
+      }
+      return v;
+    }));
+
+    const targetVault = vaults.find(v => v.id === vaultId) || vaults[0];
+
+    // Log transaction
+    const newTxId = 'tx_faucet_' + Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    const newTx: Transaction = {
+      id: newTxId,
+      from: 'GCXP449102847192847291847192847192847NPASBRIDGE',
+      to: targetVault.address,
+      amount: 100.00,
+      asset: 'π PI IOU',
+      timestamp: 'Just now',
+      memo: 'Test IOU Faucet Allocation (+100 π PI)',
+      status: 'confirmed',
+      fee: 0.0,
+      complianceChecked: true,
+      blockNumber: blockHeight,
+      aiRiskScore: 0,
+      aiRiskVerdict: 'SAFE'
+    };
+    setTransactions(prev => [newTx, ...prev]);
+
+    // Append to immutable treasury audit log
+    const prevAudit = treasuryAudit[0];
+    const newAuditEntry: TreasuryAuditEntry = {
+      id: `aud-00${treasuryAudit.length + 1}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+      prevHash: prevAudit ? prevAudit.entryHash.slice(0, 16) + '...' : '0x0000000000000000',
+      entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      movementType: 'ESCROW_ALLOCATION',
+      amount: 100.0,
+      asset: 'π PI',
+      destination: `Faucet Allocation to ${targetVault.name}`,
+      proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+    };
+    setTreasuryAudit(prev => [newAuditEntry, ...prev]);
   };
 
+  const handleExportEncrypted = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(
+      JSON.stringify({
+        schema: 'Sovereign-Pioneer-Vault-V1',
+        encryption: 'AES-256-GCM-PBKDF2',
+        vaults,
+        exportedAt: new Date().toISOString()
+      }, null, 2)
+    );
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `nexus_pioneer_vault_backup_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleImportEncrypted = () => {
+    handleGenerateAddress('Restored Cold Storage Vault');
+  };
+
+  // Module 7 Handlers: Social Recovery
+  const handleApproveRecoveryGuardian = (guardianId: string) => {
+    setSocialRecovery(prev => {
+      const updated = prev.guardians.map(g => g.id === guardianId ? { ...g, status: 'confirmed' as const } : g);
+      const approvals = updated.filter(g => g.status === 'confirmed').length;
+      return {
+        ...prev,
+        guardians: updated,
+        approvalsReceived: approvals,
+        recoveryInProgress: approvals >= 2
+      };
+    });
+  };
+
+  const handleTriggerRecovery = () => {
+    setSocialRecovery(prev => ({
+      ...prev,
+      recoveryInProgress: true
+    }));
+  };
+
+  // Module 6 Handlers: Execute Transaction
   const handleSendTransaction = (tx: {
     from: string;
     to: string;
     amount: number;
-    asset: 'PI' | 'XLM' | 'NRV';
+    asset: 'π PI IOU' | 'XLM' | 'NRV';
     memo: string;
+    aiRiskScore: number;
+    aiRiskVerdict: 'SAFE' | 'SUSPICIOUS' | 'FLAGGED';
   }) => {
     // Deduct from sender
-    setAddresses(prev => prev.map(a => {
-      if (a.address === tx.from) {
-        if (tx.asset === 'PI') {
-          return { ...a, piBalance: Math.max(0, a.piBalance - tx.amount) };
+    setVaults(prev => prev.map(v => {
+      if (v.address === tx.from) {
+        if (tx.asset === 'π PI IOU') {
+          return { ...v, piBalance: Math.max(0, v.piBalance - tx.amount) };
         } else if (tx.asset === 'XLM') {
-          return { ...a, balance: Math.max(0, a.balance - tx.amount - 0.0001) };
+          return { ...v, xlmBalance: Math.max(0, v.xlmBalance - tx.amount - 0.0001) };
         }
       }
-      return a;
+      return v;
     }));
 
-    // If recipient is one of user's own addresses, credit it
-    setAddresses(prev => prev.map(a => {
-      if (a.address === tx.to) {
-        if (tx.asset === 'PI') {
-          return { ...a, piBalance: a.piBalance + tx.amount };
+    // Credit if recipient is one of user's own vaults
+    setVaults(prev => prev.map(v => {
+      if (v.address === tx.to) {
+        if (tx.asset === 'π PI IOU') {
+          return { ...v, piBalance: v.piBalance + tx.amount };
         } else if (tx.asset === 'XLM') {
-          return { ...a, balance: a.balance + tx.amount };
+          return { ...v, xlmBalance: v.xlmBalance + tx.amount };
         }
       }
-      return a;
+      return v;
     }));
 
     const newTxId = 'tx_' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
@@ -170,167 +248,89 @@ export const App: React.FC = () => {
       status: 'confirmed',
       fee: 0.0001,
       complianceChecked: true,
-      blockNumber: blockHeight
+      blockNumber: blockHeight,
+      aiRiskScore: tx.aiRiskScore,
+      aiRiskVerdict: tx.aiRiskVerdict
     };
 
     setTransactions(prev => [newTx, ...prev]);
 
-    return {
-      success: true,
-      message: `Transaction ${newTxId.slice(0, 10)}... confirmed on Block #${blockHeight}. AML verified. Ed25519 signature recorded.`
+    // Record fee in treasury audit trail
+    const prevAudit = treasuryAudit[0];
+    const newAuditEntry: TreasuryAuditEntry = {
+      id: `aud-00${treasuryAudit.length + 1}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+      prevHash: prevAudit ? prevAudit.entryHash.slice(0, 16) + '...' : '0x0000000000000000',
+      entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      movementType: 'FEE_COLLECTION',
+      amount: 0.0001,
+      asset: 'π PI',
+      destination: 'Stellar SCP Quorum Fee Pool',
+      proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
     };
+    setTreasuryAudit(prev => [newAuditEntry, ...prev]);
   };
 
-  const handleSaveWallet = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(
-      JSON.stringify({
-        version: '1.0.0',
-        walletType: 'Stellar-Pi-QuantumResistant',
-        addresses,
-        exportedAt: new Date().toISOString()
-      }, null, 2)
-    );
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `nexus_wallet_backup_${Date.now()}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
-
-  const handleLoadWallet = () => {
-    handleAddAddress('Restored Cold Stash Vault');
-  };
-
-  const handleClaimFaucet = (targetAddress?: string) => {
-    const addressToCredit = targetAddress || addresses[0]?.address;
-    if (!addressToCredit) return;
-
-    setAddresses(prev => prev.map(a => {
-      if (a.address === addressToCredit) {
-        return { ...a, piBalance: a.piBalance + 100 };
-      }
-      return a;
-    }));
-
-    const newTxId = 'tx_faucet_' + Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newTx: Transaction = {
-      id: newTxId,
-      from: 'G_FAUCET_PIONEER_TESTNET_RELAY',
-      to: addressToCredit,
-      amount: 100,
-      asset: 'PI',
-      timestamp: 'Just now',
-      memo: 'Pi Network Testnet Faucet (+100 π PI)',
-      status: 'confirmed',
-      fee: 0,
-      complianceChecked: true,
-      blockNumber: blockHeight
-    };
-
-    setTransactions(prev => [newTx, ...prev]);
-  };
-
-  // Node Handlers
-  const handleAddPeer = (peer: { name: string; ip: string; location: string; role: PeerNode['role'] }) => {
-    const newPeer: PeerNode = {
-      id: `node-${Date.now()}`,
-      name: peer.name,
-      ip: peer.ip,
-      location: peer.location,
-      role: peer.role,
-      pingMs: Math.floor(Math.random() * 25) + 12,
-      uptime: '99.99%',
-      status: 'active',
-      version: 'v1.4.2-nexus'
-    };
-    setPeers(prev => [...prev, newPeer]);
-  };
-
-  const handleOptimizeLatency = () => {
-    setPeers(prev => prev.map(p => ({
-      ...p,
-      pingMs: Math.max(8, Math.round(p.pingMs * 0.85))
-    })));
-  };
-
-  // NPAS Trigger
-  const handleTriggerSync = () => {
-    const newSyncLog: SyncLog = {
-      id: `sync-${Date.now().toString().slice(-4)}`,
-      timestamp: new Date().toLocaleTimeString(),
-      target: ['minepi.com', 'wallet.pinet.com', 'ecosystem.pinet.com', 'Stellar Horizon'][Math.floor(Math.random() * 4)] as any,
-      operation: 'Autonomous State Invariant & ABI Reconciliation',
-      status: 'synced',
-      latencyMs: Math.floor(Math.random() * 15) + 12,
-      verifiedByZk: true
-    };
-    setSyncLogs(prev => [newSyncLog, ...prev.slice(0, 7)]);
-  };
-
-  // IoT & Asset Handlers
-  const handleAddDevice = (device: { deviceId: string; deviceType: string; location: string }) => {
-    const newDevice: IoTDevice = {
-      deviceId: device.deviceId,
-      deviceType: device.deviceType,
-      location: device.location,
-      status: 'online',
-      lastPing: 'Just now',
-      metrics: {
-        battery: 100,
-        signal: 95,
-        temperature: 21.5,
-        powerKw: 0.25,
-        telemetryRate: '1 packet / 2s',
-        reading: 'Sensory Calibration: OPTIMAL | Encryption: Ed25519'
-      }
-    };
-    setIotDevices(prev => [newDevice, ...prev]);
-  };
-
-  const handleAddAsset = (asset: {
-    assetId: string;
-    name: string;
-    owner: string;
-    tokenizedValue: number;
-    category: TokenizedAsset['category'];
-  }) => {
-    const newAsset: TokenizedAsset = {
-      assetId: asset.assetId,
-      name: asset.name,
-      owner: asset.owner,
-      tokenizedValue: asset.tokenizedValue,
-      valuationUsd: asset.tokenizedValue * livePrice,
-      tokenSymbol: 'n' + asset.name.slice(0, 4).toUpperCase(),
-      category: asset.category,
-      auditDate: new Date().toISOString().split('T')[0] + ' (Certified)',
-      status: 'active'
-    };
-    setTokenizedAssets(prev => [newAsset, ...prev]);
-  };
-
-  // Governance Handlers
-  const handleVote = (proposalId: string, choice: 'for' | 'against' | 'abstain') => {
-    setProposals(prev => prev.map(p => {
-      if (p.id === proposalId) {
-        let forV = p.votesFor;
-        let againstV = p.votesAgainst;
-        let abstainV = p.votesAbstain;
-
-        if (p.userVoted === 'for') forV -= 31415;
-        if (p.userVoted === 'against') againstV -= 31415;
-        if (p.userVoted === 'abstain') abstainV -= 31415;
-
-        if (choice === 'for') forV += 31415;
-        if (choice === 'against') againstV += 31415;
-        if (choice === 'abstain') abstainV += 31415;
+  // Module 3 Handlers: MPC Bridge Release
+  const handleToggleSignature = (requestId: string, signerId: string) => {
+    setBridgeRequests(prev => prev.map(req => {
+      if (req.id === requestId) {
+        const updatedSigners = req.signers.map(s => {
+          if (s.id === signerId) {
+            return { ...s, signed: !s.signed };
+          }
+          return s;
+        });
+        const currentCount = updatedSigners.filter(s => s.signed).length;
+        const isAuthorized = currentCount >= req.requiredSignatures;
 
         return {
+          ...req,
+          signers: updatedSigners,
+          currentSignatures: currentCount,
+          status: isAuthorized ? 'authorized' : 'pending'
+        };
+      }
+      return req;
+    }));
+  };
+
+  const handleRequestNewRelease = (amount: number, recipient: string) => {
+    const newReqId = `MPC-REQ-${Math.floor(Math.random() * 9000 + 1000)}`;
+    const newReq: BridgeReleaseRequest = {
+      id: newReqId,
+      requestedAmount: amount,
+      recipient,
+      requiredSignatures: 3,
+      currentSignatures: 1,
+      formalVerificationStatus: 'PROVEN_SAFE',
+      formalProofHash: 'Z3_SOLVER_QAP_0x' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      status: 'pending',
+      signers: [
+        { id: 'sig-1', name: 'Frankfurt MPC Custodian', pubKey: '0xfa102...', signed: true, role: 'Validator' },
+        { id: 'sig-2', name: 'Zurich Reserve Escrow', pubKey: '0xb8912...', signed: false, role: 'Auditor' },
+        { id: 'sig-3', name: 'Tokyo Sentinel Key', pubKey: '0x3c819...', signed: false, role: 'Sentinel' },
+        { id: 'sig-4', name: 'Singapore Quantum Key', pubKey: '0x5019a...', signed: false, role: 'Backup' },
+        { id: 'sig-5', name: 'Virginia Relay Sentinel', pubKey: '0x7129c...', signed: false, role: 'Relay' },
+      ]
+    };
+    setBridgeRequests(prev => [newReq, ...prev]);
+  };
+
+  // Module 9 Handlers: Pioneer DAO Voting
+  const handleVoteProposal = (proposalId: string, support: 'for' | 'against') => {
+    const primaryVault = vaults.find(v => v.isPrimary) || vaults[0];
+    const totalPi = vaults.reduce((acc, v) => acc + v.piBalance, 0);
+    const vaultAge = primaryVault?.vaultAgeDays || 365;
+    const voteWeight = Math.floor(Math.sqrt(totalPi) * Math.log2(vaultAge + 2));
+
+    setProposals(prev => prev.map(p => {
+      if (p.id === proposalId) {
+        return {
           ...p,
-          votesFor: forV,
-          votesAgainst: againstV,
-          votesAbstain: abstainV,
-          userVoted: choice
+          votesFor: support === 'for' ? p.votesFor + voteWeight : p.votesFor,
+          votesAgainst: support === 'against' ? p.votesAgainst + voteWeight : p.votesAgainst,
+          userVoted: support
         };
       }
       return p;
@@ -340,48 +340,27 @@ export const App: React.FC = () => {
   const handleCreateProposal = (proposal: {
     title: string;
     description: string;
-    category: Proposal['category'];
+    category: 'Bridge Fee' | 'Guardian List' | 'Sentinel Rules' | 'Shura Treasury';
   }) => {
-    const newProp: Proposal = {
-      id: `PROP-${Date.now().toString().slice(-4)}`,
+    const newProp: DaoProposal = {
+      id: `SHURA-PROP-0${proposals.length + 1}`,
       title: proposal.title,
       description: proposal.description,
-      proposer: addresses[0]?.address.slice(0, 12) + '...Pioneer',
+      proposer: vaults[0]?.address.slice(0, 10) + '...PIONEER',
       category: proposal.category,
       votesFor: 31415,
       votesAgainst: 0,
-      votesAbstain: 0,
-      status: 'active',
-      deadline: 'In 7 days',
+      timelockActive: true,
+      timelockEndsAt: '48 hours remaining',
+      status: 'in_timelock',
       userVoted: 'for'
     };
     setProposals(prev => [newProp, ...prev]);
   };
 
-  // Compliance Handlers
-  const handleGenerateNewKyc = (userKey: string, country: string) => {
-    const newHash = 'zkp_snark_' + Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newReport: ComplianceReport = {
-      reportId: `ARHN-ZK-${Math.floor(Math.random() * 9000 + 1000)}-${country.slice(0, 2).toUpperCase()}`,
-      userPublicKey: userKey,
-      status: 'verified',
-      zkProofHash: newHash,
-      riskScore: 1,
-      checks: {
-        amlCheck: true,
-        sanctionList: true,
-        velocityRisk: true,
-        geoCompliance: true
-      },
-      timestamp: new Date().toUTCString(),
-      empathyFeedback: `Pioneer identity verified in compliance with ${country} standards. Mathematical confidentiality guaranteed without data transmission.`
-    };
-    setComplianceReport(newReport);
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Global Application Header */}
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+      {/* Global Application Header with Trademark Firewall Banner */}
       <Header
         currentNetwork={network}
         onNetworkChange={setNetwork}
@@ -392,42 +371,59 @@ export const App: React.FC = () => {
         totalXlmBalance={totalXlmBalance}
       />
 
-      {/* Main Tab Navigation */}
+      {/* Main Tab Navigation with Required Badges */}
       <Navigation
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        syncBadgeCount={syncLogs.length}
       />
+
+      {/* Sovereign AI Sentinel Cognitive Matrix HUD */}
+      <AiSentinelHud sentinels={sentinels} />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'wallet' && (
-          <WalletView
-            addresses={addresses}
-            transactions={transactions}
-            onAddAddress={handleAddAddress}
-            onDeleteAddress={handleDeleteAddress}
-            onSendTransaction={handleSendTransaction}
-            onSaveWallet={handleSaveWallet}
-            onLoadWallet={handleLoadWallet}
+        {activeTab === 'vault' && (
+          <VaultView
+            vaults={vaults}
+            socialRecovery={socialRecovery}
+            onGenerateAddress={handleGenerateAddress}
             onClaimFaucet={handleClaimFaucet}
+            onExportEncrypted={handleExportEncrypted}
+            onImportEncrypted={handleImportEncrypted}
+            onApproveRecoveryGuardian={handleApproveRecoveryGuardian}
+            onTriggerRecovery={handleTriggerRecovery}
           />
         )}
 
-        {activeTab === 'node' && (
-          <NodeView
-            blockHeight={blockHeight}
-            blocks={blocks}
-            peers={peers}
-            onAddPeer={handleAddPeer}
-            onOptimizeLatency={handleOptimizeLatency}
+        {activeTab === 'transaction' && (
+          <TransactionView
+            vaults={vaults}
+            transactions={transactions}
+            onSendTransaction={handleSendTransaction}
+            livePrice={livePrice}
+            communityGcv={communityGcv}
           />
         )}
 
-        {activeTab === 'npas' && (
-          <NpasView
-            syncLogs={syncLogs}
-            onTriggerSync={handleTriggerSync}
+        {activeTab === 'p2p' && (
+          <P2pView
+            sentinels={sentinels}
+          />
+        )}
+
+        {activeTab === 'bridge' && (
+          <BridgeView
+            bridgeRequests={bridgeRequests}
+            headerAttributions={headerAttributions}
+            onToggleSignature={handleToggleSignature}
+            onRequestNewRelease={handleRequestNewRelease}
+          />
+        )}
+
+        {activeTab === 'zk-compliance' && (
+          <ZkComplianceView
+            proofOfReserve={proofOfReserve}
+            complianceScreening={zkScreening}
           />
         )}
 
@@ -440,43 +436,41 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'assets-iot' && (
-          <AssetsIotView
-            iotDevices={iotDevices}
-            tokenizedAssets={tokenizedAssets}
-            onAddDevice={handleAddDevice}
-            onAddAsset={handleAddAsset}
-          />
-        )}
-
-        {activeTab === 'governance' && (
-          <GovernanceView
+        {activeTab === 'dao' && (
+          <DaoView
             proposals={proposals}
-            onVote={handleVote}
+            vaults={vaults}
+            onVote={handleVoteProposal}
             onCreateProposal={handleCreateProposal}
           />
         )}
 
-        {activeTab === 'compliance' && (
-          <ComplianceView
-            currentReport={complianceReport}
-            onGenerateNewKyc={handleGenerateNewKyc}
+        {activeTab === 'treasury' && (
+          <TreasuryView
+            auditEntries={treasuryAudit}
+            vaults={vaults}
           />
+        )}
+
+        {activeTab === 'guard' && (
+          <GuardView />
         )}
       </main>
 
-      {/* Footer */}
+      {/* Sovereign Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-slate-300">Nexus Revoluter</span>
             <span>•</span>
-            <span>Pi Network & Stellar Autonomous Architecture</span>
+            <span>Sovereign Pioneer Infrastructure</span>
+            <span>•</span>
+            <span className="text-amber-400 font-medium">Unofficial community project, not affiliated with Pi Core Team</span>
           </div>
-          <div className="flex items-center space-x-4 text-[11px]">
-            <span>MIT Licensed</span>
-            <span>SANO Target Monitor Active</span>
-            <span>NPAS Bridge Synced</span>
+          <div className="flex items-center space-x-4 text-[11px] font-mono">
+            <span>SANO MONITOR • NPAS V1.0</span>
+            <span>Ed25519 & ZK-SNARK</span>
+            <span>Byzantine Quorum 67%</span>
           </div>
         </div>
       </footer>

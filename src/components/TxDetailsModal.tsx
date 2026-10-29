@@ -28,7 +28,7 @@ export const TxDetailsModal: React.FC<TxDetailsModalProps> = ({ tx, onClose }) =
       sender: tx.from,
       recipient: tx.to,
       amount: tx.amount,
-      asset: tx.asset === 'PI' ? 'π PI' : tx.asset,
+      asset: tx.asset === 'π PI IOU' ? 'π PI' : tx.asset,
       fee: tx.fee,
       memo: tx.memo || '',
       complianceVerification: {
@@ -76,7 +76,7 @@ export const TxDetailsModal: React.FC<TxDetailsModalProps> = ({ tx, onClose }) =
           <div>
             <span className="text-[10px] text-slate-500 font-semibold uppercase">Transferred Value</span>
             <div className="text-2xl font-mono font-bold text-emerald-400">
-              +{tx.amount.toLocaleString()} <span className="text-sm font-normal text-purple-400">{tx.asset === 'PI' ? 'π PI' : tx.asset}</span>
+              +{tx.amount.toLocaleString()} <span className="text-sm font-normal text-purple-400">{tx.asset === 'π PI IOU' ? 'π PI' : tx.asset}</span>
             </div>
           </div>
           <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold uppercase bg-emerald-950 text-emerald-300 border border-emerald-800/50">

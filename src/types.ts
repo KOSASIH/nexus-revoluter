@@ -1,19 +1,25 @@
 export type NavTab = 
-  | 'wallet'
-  | 'node'
-  | 'npas'
+  | 'vault'
+  | 'transaction'
+  | 'p2p'
+  | 'bridge'
+  | 'zk-compliance'
   | 'sano'
-  | 'assets-iot'
-  | 'governance'
-  | 'compliance';
+  | 'dao'
+  | 'treasury'
+  | 'guard';
 
-export interface WalletAddress {
+export interface VaultAccount {
+  id: string;
+  name: string;
   address: string;
-  label: string;
-  balance: number;
   piBalance: number;
+  xlmBalance: number;
   isPrimary?: boolean;
+  role: 'primary' | 'reserve' | 'bridge';
+  keyType: 'Ed25519-QuantumResistant';
   createdAt: string;
+  vaultAgeDays: number;
 }
 
 export interface Transaction {
@@ -21,102 +27,152 @@ export interface Transaction {
   from: string;
   to: string;
   amount: number;
-  asset: 'PI' | 'XLM' | 'NRV';
+  asset: 'π PI IOU' | 'XLM' | 'NRV';
   timestamp: string;
   memo?: string;
-  status: 'confirmed' | 'pending' | 'failed';
+  status: 'confirmed' | 'pending' | 'flagged';
   fee: number;
   complianceChecked: boolean;
   blockNumber: number;
+  aiRiskScore?: number;
+  aiRiskVerdict?: 'SAFE' | 'SUSPICIOUS' | 'FLAGGED';
 }
 
-export interface Block {
-  height: number;
-  hash: string;
-  previousHash: string;
-  validator: string;
-  txCount: number;
-  timestamp: string;
-  sizeKb: number;
-  gasUsed: number;
-}
-
-export interface PeerNode {
+export interface SentinelNode {
   id: string;
   name: string;
+  hop: number;
   ip: string;
-  location: string;
-  role: 'Validator' | 'SANO Orchestrator' | 'NPAS Relayer' | 'Archive Node';
+  port: number;
+  region: string;
   pingMs: number;
   uptime: string;
-  status: 'active' | 'syncing' | 'offline';
-  version: string;
+  active: boolean;
+  quorumAck: boolean;
+  role: string;
 }
 
-export interface IoTDevice {
-  deviceId: string;
-  deviceType: string;
-  location: string;
-  status: 'online' | 'standby' | 'warning';
-  lastPing: string;
-  metrics: {
-    battery: number;
-    signal: number;
-    temperature: number;
-    powerKw?: number;
-    telemetryRate: string;
-    reading: string;
-  };
-}
-
-export interface TokenizedAsset {
-  assetId: string;
+export interface BridgeSigner {
+  id: string;
   name: string;
-  owner: string;
-  tokenizedValue: number;
-  valuationUsd: number;
-  tokenSymbol: string;
-  category: 'Renewable Energy' | 'Real Estate' | 'Carbon Credit' | 'Compute Cluster';
-  auditDate: string;
-  status: 'active' | 'pending_audit' | 'locked';
+  pubKey: string;
+  signed: boolean;
+  role: string;
 }
 
-export interface Proposal {
+export interface BridgeReleaseRequest {
+  id: string;
+  requestedAmount: number;
+  recipient: string;
+  requiredSignatures: number;
+  currentSignatures: number;
+  formalVerificationStatus: 'PROVEN_SAFE' | 'VERIFYING' | 'REJECTED';
+  formalProofHash: string;
+  status: 'pending' | 'authorized' | 'rejected';
+  signers: BridgeSigner[];
+}
+
+export interface ProofOfReserve {
+  asset: string;
+  totalVaultObligations: number;
+  onChainCollateralProven: number;
+  coverageRatio: number;
+  solvencyStatus: 'SOLVENT_100%' | 'OVERCOLLATERALIZED';
+  zkProofHash: string;
+  timestamp: string;
+}
+
+export interface ZkComplianceScreening {
+  userAddress: string;
+  arhnPassed: boolean;
+  ahcewPassed: boolean;
+  sanctionCheckZk: 'CLEARED' | 'FLAGGED';
+  riskScore: number;
+  zkProofToken: string;
+  timestamp: string;
+}
+
+export interface HeaderAttribution {
+  source: string;
+  latestLedgerSequence: number;
+  headerHash: string;
+  verifiedInBrowser: boolean;
+  timestamp: string;
+  status: 'VERIFIED' | 'WARNING_CACHED';
+  latencyMs: number;
+}
+
+export interface GuardianContact {
+  id: string;
+  name: string;
+  address: string;
+  status: 'confirmed' | 'pending';
+}
+
+export interface SocialRecoveryState {
+  enabled: boolean;
+  guardians: GuardianContact[];
+  threshold: string; // "2 of 3"
+  recoveryInProgress: boolean;
+  approvalsReceived: number;
+}
+
+export interface DaoProposal {
   id: string;
   title: string;
   description: string;
   proposer: string;
-  category: 'Orchestration' | 'Monetary Policy' | 'Network Upgrade' | 'Community Fund';
+  category: 'Bridge Fee' | 'Guardian List' | 'Sentinel Rules' | 'Shura Treasury';
   votesFor: number;
   votesAgainst: number;
-  votesAbstain: number;
-  status: 'active' | 'passed' | 'rejected';
-  deadline: string;
-  userVoted?: 'for' | 'against' | 'abstain';
+  timelockEndsAt: string;
+  timelockActive: boolean;
+  status: 'active' | 'in_timelock' | 'executed' | 'rejected';
+  userVoted?: 'for' | 'against';
 }
 
-export interface SyncLog {
+export interface TreasuryAuditEntry {
   id: string;
   timestamp: string;
-  target: 'minepi.com' | 'wallet.pinet.com' | 'ecosystem.pinet.com' | 'Stellar Horizon';
-  operation: string;
-  status: 'synced' | 'verifying' | 'queued' | 'warning';
-  latencyMs: number;
-  verifiedByZk: boolean;
+  prevHash: string;
+  entryHash: string;
+  movementType: 'FEE_COLLECTION' | 'ESCROW_ALLOCATION' | 'COMMUNITY_GRANT';
+  amount: number;
+  asset: 'π PI';
+  destination: string;
+  proofSignature: string;
 }
 
-export interface ComplianceReport {
-  reportId: string;
-  userPublicKey: string;
-  status: 'verified' | 'flagged' | 'under_review';
-  zkProofHash: string;
-  riskScore: number;
-  checks: {
-    amlCheck: boolean;
-    sanctionList: boolean;
-    velocityRisk: boolean;
-    geoCompliance: boolean;
-  };
+export interface AiDiagnosticReport {
   timestamp: string;
-  empathyFeedback: string;
+  threatLevel: 'NOMINAL' | 'ELEVATED' | 'CRITICAL';
+  quorumHealth: number;
+  byzantineRisk: 'LOW' | 'MEDIUM' | 'HIGH';
+  solvencyIndex: number;
+  recommendations: string[];
+  anomalousNodesDetected: number;
+  sybilResistanceScore: number;
+  latencyJitterMs: number;
+  autonomousRemediations: string[];
 }
+
+export interface ShuraAiAnalysis {
+  proposalId: string;
+  shuraScore: number;
+  ethicalAlignment: 'EXCELLENT' | 'FAIR' | 'RISKY';
+  economicSustainability: string;
+  welfareImpact: string;
+  sybilVulnerability: string;
+  recommendedAction: 'RATIFY' | 'TIMELOCK_AUDIT' | 'REJECT';
+  keyInsights: string[];
+}
+
+export interface TransactionThreatDetail {
+  entropyScore: number;
+  honeypotProbability: number;
+  phishingRisk: 'NONE' | 'LOW' | 'HIGH';
+  quantumResistance: boolean;
+  verdictReason: string;
+  simulatedExecution: 'SUCCESS_NO_REVERT' | 'FLAG_ANOMALOUS_MEMO' | 'HIGH_GAS_DRAIN';
+}
+
