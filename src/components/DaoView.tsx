@@ -47,7 +47,7 @@ export const DaoView: React.FC<DaoViewProps> = ({
   const totalPi = vaults.reduce((acc, v) => acc + v.piBalance, 0);
   const vaultAge = primaryVault?.vaultAgeDays || 365;
 
-  // Quadratic formula: sqrt(π PI) * log2(vaultAgeDays + 2)
+  // Quadratic formula: sqrt(π NXS) * log2(vaultAgeDays + 2)
   const quadraticPower = Math.floor(Math.sqrt(totalPi) * Math.log2(vaultAge + 2));
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -110,13 +110,13 @@ export const DaoView: React.FC<DaoViewProps> = ({
 
             <div className="mt-2 text-3xl font-mono font-bold text-white">
               {quadraticPower.toLocaleString()}{' '}
-              <span className="text-sm font-normal text-purple-400">π PI Power</span>
+              <span className="text-sm font-bold text-purple-400">π NXS Power</span>
             </div>
 
             <div className="mt-3 text-xs text-slate-400 space-y-1">
               <div className="flex justify-between">
                 <span>Total Vault Holding:</span>
-                <span className="font-mono text-white font-semibold">{totalPi.toLocaleString()} π PI</span>
+                <span className="font-mono text-white font-semibold">{totalPi.toLocaleString()} π NXS</span>
               </div>
               <div className="flex justify-between">
                 <span>Primary Vault Age:</span>
@@ -187,7 +187,7 @@ export const DaoView: React.FC<DaoViewProps> = ({
             <Vote className="w-4 h-4 text-blue-400" />
             Active Pioneer Proposals ({proposals.length})
           </h3>
-          <span className="text-xs text-slate-400 font-mono">Tally in π PI Power</span>
+          <span className="text-xs text-slate-400 font-mono">Tally in π NXS Power</span>
         </div>
 
         <div className="space-y-4">
@@ -235,14 +235,14 @@ export const DaoView: React.FC<DaoViewProps> = ({
                   </p>
                 </div>
 
-                {/* Tally Bar in π PI notation */}
+                {/* Tally Bar in π NXS notation */}
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-mono">
                     <span className="text-emerald-400 font-semibold">
-                      FOR: {prop.votesFor.toLocaleString()} π PI ({pctFor.toFixed(1)}%)
+                      FOR: {prop.votesFor.toLocaleString()} π NXS ({pctFor.toFixed(1)}%)
                     </span>
                     <span className="text-rose-400 font-semibold">
-                      AGAINST: {prop.votesAgainst.toLocaleString()} π PI ({(100 - pctFor).toFixed(1)}%)
+                      AGAINST: {prop.votesAgainst.toLocaleString()} π NXS ({(100 - pctFor).toFixed(1)}%)
                     </span>
                   </div>
 
@@ -322,7 +322,7 @@ export const DaoView: React.FC<DaoViewProps> = ({
                         You cast your quadratic ballot ({prop.userVoted.toUpperCase()})
                       </span>
                     ) : (
-                      <span>Cast your {quadraticPower.toLocaleString()} π PI ballot:</span>
+                      <span>Cast your {quadraticPower.toLocaleString()} π NXS ballot:</span>
                     )}
                   </div>
 
@@ -363,7 +363,7 @@ export const DaoView: React.FC<DaoViewProps> = ({
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
             <h3 className="text-base font-bold text-white mb-1">Create Pioneer Shura Proposal</h3>
             <p className="text-xs text-slate-400 mb-4">
-              Requires min 100 π PI balance to submit. Approved motions enter 48-hour timelock.
+              Requires min 100 π NXS balance to submit. Approved motions enter 48-hour timelock.
             </p>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">

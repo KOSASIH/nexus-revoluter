@@ -14,8 +14,9 @@ export interface VaultAccount {
   id: string;
   name: string;
   address: string;
-  piBalance: number;
+  piBalance: number; // π NXS native balance
   xlmBalance: number;
+  legacyIouBalance?: number; // π PI IOU legacy balance
   isPrimary?: boolean;
   role: 'primary' | 'reserve' | 'bridge';
   keyType: 'Ed25519-QuantumResistant';
@@ -28,7 +29,7 @@ export interface Transaction {
   from: string;
   to: string;
   amount: number;
-  asset: 'π PI IOU' | 'XLM' | 'NRV';
+  asset: 'π NXS' | 'XLM' | 'π PI IOU';
   timestamp: string;
   memo?: string;
   status: 'confirmed' | 'pending' | 'flagged';
@@ -139,7 +140,7 @@ export interface TreasuryAuditEntry {
   entryHash: string;
   movementType: 'FEE_COLLECTION' | 'ESCROW_ALLOCATION' | 'COMMUNITY_GRANT';
   amount: number;
-  asset: 'π PI';
+  asset: 'π NXS' | 'XLM' | 'π PI IOU';
   destination: string;
   proofSignature: string;
 }
@@ -203,7 +204,8 @@ export interface SuperCalculator {
 
 export interface QThermoMetrics {
   currentEntropy: number; // Joules/Kelvin
-  energyBackingPerPi: number; // kWh equivalent per π PI
+  energyBackingPerNxs: number; // kWh equivalent per π NXS (3.14159)
+  energyBackingPerPi?: number; // legacy alias
   biospherePurityIndex: number; // 0-100%
   thermoEquilibriumRatio: number;
   poutwHash: string; // Proof of Useful Thermodynamic Work
@@ -225,7 +227,8 @@ export interface SelfHealingEvent {
 export interface PredictiveGasForecast {
   minuteSlot: string;
   predictedCongestion: number; // 0-100%
-  recommendedFeePi: number; // π PI
+  recommendedFeeNxs: number; // π NXS
+  recommendedFeePi?: number; // legacy alias
   optimalTransferWindow: boolean;
   expectedTps: number;
 }
@@ -272,5 +275,41 @@ export interface StealthAddressProof {
   derivationTimestamp: string;
 }
 
+export interface ZkCircuitSynthesisResult {
+  circuitType: 'SOLVENCY_GROTH16' | 'SANCTIONS_MERKLE_PROOF' | 'DKSAP_STEALTH_SCHNORR';
+  circuitName: string;
+  r1csConstraintsCount: number;
+  publicInputsCount: number;
+  provingKeyHash: string;
+  witnessPolynomialHash: string;
+  pairingProof: {
+    piA: string;
+    piB: string;
+    piC: string;
+  };
+  synthesisTimeMs: number;
+  verificationPairingMs: number;
+  isSatisfied: boolean;
+  ellipticCurve: string;
+  zkCertificateHash: string;
+}
 
+export interface ShamirShare {
+  index: number;
+  shareHex: string;
+  label: string;
+  polynomialEval: string;
+  quorumRole: string;
+}
 
+export interface ThermodynamicGridSimulation {
+  solarInputKwh: number;
+  hydroInputKwh: number;
+  geothermalInputKwh: number;
+  gridPowerWatts: number;
+  carnotEfficiencyPct: number;
+  effectiveNxsFloorKwh: number;
+  entropyDissipatedJK: number;
+  biosphereScore: number;
+  attestationSignature: string;
+}

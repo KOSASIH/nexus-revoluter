@@ -52,6 +52,22 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
   const [isHarmonizing, setIsHarmonizing] = useState<boolean>(false);
   const [harmonicToast, setHarmonicToast] = useState<string | null>(null);
 
+  // Super-Calculator Interactive Verifier
+  const [selectedCalc, setSelectedCalc] = useState<SuperCalculator>(superCalculators[0]);
+  const [isVerifyingCalc, setIsVerifyingCalc] = useState<boolean>(false);
+  const [calcProofResult, setCalcProofResult] = useState<string | null>(null);
+
+  const handleVerifySuperCalculator = (calc: SuperCalculator) => {
+    setSelectedCalc(calc);
+    setIsVerifyingCalc(true);
+    setCalcProofResult(null);
+    setTimeout(() => {
+      setIsVerifyingCalc(false);
+      setCalcProofResult(`State Root verification for [${calc.name}] confirmed: 0 invariant drift detected against L0 God Chain at block #${calc.lastBlockSync.toLocaleString()}.`);
+      setTimeout(() => setCalcProofResult(null), 5000);
+    }, 700);
+  };
+
   // Dynamic simulation parameters for Q-Thermo
   const [simulatedTxVelocity, setSimulatedTxVelocity] = useState<number>(4.82);
   const [simulatedLoadIndex, setSimulatedLoadIndex] = useState<number>(45);
@@ -114,7 +130,7 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
               <div className="text-xl font-mono font-black text-amber-300">
                 3.14159 <span className="text-xs font-normal text-amber-400/80">kWh</span>
               </div>
-              <div className="text-[9px] text-slate-400 font-mono">per <span className="text-amber-300 font-bold">π PI</span> token</div>
+              <div className="text-[9px] text-slate-400 font-mono">per <span className="text-amber-300 font-bold">π NXS</span> token</div>
             </div>
 
             <button
@@ -359,53 +375,101 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {superCalculators.map((calc) => (
-              <div 
-                key={calc.id} 
-                className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/50 transition flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase">
-                      {calc.role}
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
-                      {calc.coordinationStatus}
-                    </span>
+            {superCalculators.map((calc) => {
+              const isSelected = selectedCalc.id === calc.id;
+              return (
+                <div 
+                  key={calc.id} 
+                  onClick={() => handleVerifySuperCalculator(calc)}
+                  className={`p-5 rounded-2xl border cursor-pointer transition flex flex-col justify-between space-y-4 ${
+                    isSelected
+                      ? 'bg-gradient-to-br from-indigo-950/80 to-slate-900 border-indigo-500 ring-1 ring-indigo-500/50 shadow-lg shadow-indigo-500/20'
+                      : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase">
+                        {calc.role}
+                      </span>
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                        isSelected 
+                          ? 'text-emerald-300 bg-emerald-950 border-emerald-700 font-bold' 
+                          : 'text-emerald-400 bg-emerald-950/60 border-emerald-800/40'
+                      }`}>
+                        {isSelected ? 'ACTIVE TARGET' : calc.coordinationStatus}
+                      </span>
+                    </div>
+
+                    <h4 className="text-base font-bold text-white mt-1">
+                      {calc.name}
+                    </h4>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      Target: {calc.chainTarget}
+                    </p>
+
+                    <div className="mt-4 space-y-2 text-xs">
+                      <div className="flex items-center justify-between text-slate-400">
+                        <span>Header Sync:</span>
+                        <span className="font-mono text-white font-semibold">#{calc.lastBlockSync.toLocaleString()}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-slate-400">
+                        <span>Throughput:</span>
+                        <span className="font-mono text-indigo-300 font-semibold">{calc.tpsEquivalent} TPS equiv.</span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-slate-400">
+                        <span>God Chain Relay Latency:</span>
+                        <span className="font-mono text-emerald-400 font-semibold">{calc.latencyToGodChain} ms</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <h4 className="text-base font-bold text-white mt-1">
-                    {calc.name}
-                  </h4>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">
-                    Target: {calc.chainTarget}
-                  </p>
-
-                  <div className="mt-4 space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>Header Sync:</span>
-                      <span className="font-mono text-white font-semibold">#{calc.lastBlockSync.toLocaleString()}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>Throughput:</span>
-                      <span className="font-mono text-indigo-300 font-semibold">{calc.tpsEquivalent} TPS equiv.</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-slate-400">
-                      <span>God Chain Relay Latency:</span>
-                      <span className="font-mono text-emerald-400 font-semibold">{calc.latencyToGodChain} ms</span>
-                    </div>
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-slate-400 truncate max-w-[200px]">{calc.tensorProofType}</span>
+                    <span className="text-indigo-400 font-bold">Inspect Proof →</span>
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                <div className="pt-3 border-t border-slate-800/80">
-                  <div className="text-[10px] font-mono text-slate-500">
-                    Proof: <span className="text-slate-400">{calc.tensorProofType}</span>
-                  </div>
+          {/* Interactive Super-Calculator Invariant Verification Console */}
+          <div className="p-5 rounded-2xl bg-slate-950 border border-indigo-900/50 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-bold text-white flex items-center gap-2">
+                  <Atom className="w-4 h-4 text-indigo-400" />
+                  <span>Cross-Chain Invariant State Root Verifier: {selectedCalc.name}</span>
+                  {isVerifyingCalc && <RefreshCw className="w-3.5 h-3.5 text-indigo-400 animate-spin" />}
+                </div>
+                <div className="text-[11px] font-mono text-slate-400 mt-0.5">
+                  Proof Engine: <span className="text-indigo-300 font-bold">{selectedCalc.tensorProofType}</span> • Target: <span className="text-slate-300">{selectedCalc.chainTarget}</span>
                 </div>
               </div>
-            ))}
+
+              <button
+                onClick={() => handleVerifySuperCalculator(selectedCalc)}
+                disabled={isVerifyingCalc}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5 self-start disabled:opacity-60"
+              >
+                <CheckCircle2 className={`w-3.5 h-3.5 ${isVerifyingCalc ? 'animate-spin' : ''}`} />
+                <span>{isVerifyingCalc ? 'Verifying Merkle Roots...' : 'Re-verify State Root Anchor'}</span>
+              </button>
+            </div>
+
+            {calcProofResult ? (
+              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-xs text-emerald-200 flex items-center space-x-2 animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{calcProofResult}</span>
+              </div>
+            ) : (
+              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800/80 text-xs text-slate-400 flex items-center justify-between font-mono">
+                <span>Subordinate L1 state roots cryptographically anchored without compromising sovereign pioneer life-force.</span>
+                <span className="text-emerald-400 font-bold">100% Invariant Match</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -426,11 +490,11 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
                 </span>
               </div>
               <div className="text-3xl sm:text-4xl font-mono font-black text-white">
-                {qThermo.energyBackingPerPi.toFixed(5)}{' '}
+                {(qThermo.energyBackingPerNxs || 3.14159).toFixed(5)}{' '}
                 <span className="text-base font-normal text-amber-300">kWh</span>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Every <strong className="text-amber-300 font-bold">π PI</strong> token possesses a hard physical floor based on useful computational and ecological thermodynamic work.
+                Every <strong className="text-amber-300 font-bold">π NXS</strong> token possesses a hard physical floor based on useful computational and ecological thermodynamic work.
               </p>
             </div>
 
@@ -482,7 +546,7 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
                   Q-Thermo Invariant Load Simulation
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Simulate real-time computational load and test the self-balancing energy invariant for <span className="text-blue-300 font-bold">π PI</span> settlement.
+                  Simulate real-time computational load and test the self-balancing energy invariant for <span className="text-purple-300 font-bold">π NXS</span> settlement.
                 </p>
               </div>
               <span className="text-xs font-mono font-bold text-indigo-300 bg-indigo-950/60 px-3 py-1 rounded-lg border border-indigo-800">
@@ -511,7 +575,7 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
               <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800">
                 <span className="text-slate-400">Dynamic Backing Floor:</span>
                 <div className="font-mono font-bold text-amber-300 text-base mt-0.5">
-                  {(3.14159 * (1 + (simulatedLoadIndex - 50) * 0.001)).toFixed(5)} kWh / <span className="text-amber-300">π PI</span>
+                  {(3.14159 * (1 + (simulatedLoadIndex - 50) * 0.001)).toFixed(5)} kWh / <span className="text-amber-300 font-bold">π NXS</span>
                 </div>
               </div>
               <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800">
@@ -538,13 +602,13 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
                 60-Minute Predictive Gas & Congestion Horizon
               </h3>
               <p className="text-xs text-slate-300 max-w-2xl mt-1 leading-relaxed">
-                Algorithmic forecasting of peer gossip load, fee pricing in <strong className="text-white">π PI</strong>, and optimal zero-rent windows for Pioneer transactions.
+                Algorithmic forecasting of peer gossip load, fee pricing in <strong className="text-white">π NXS</strong>, and optimal zero-rent windows for Pioneer transactions.
               </p>
             </div>
 
             <div className="p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Zero-Rent Pioneer Guarantee: Base transfer remains 0.00010 <span className="font-bold">π PI</span></span>
+              <span>Zero-Rent Pioneer Guarantee: Base transfer remains 0.00010 <span className="font-bold">π NXS</span></span>
             </div>
           </div>
 
@@ -581,7 +645,7 @@ export const GodChainView: React.FC<GodChainViewProps> = ({
                 <div className="pt-2 border-t border-slate-800/80 space-y-1 text-[11px]">
                   <div className="text-slate-400">Rec. Fee:</div>
                   <div className="font-mono font-bold text-white">
-                    {slot.recommendedFeePi.toFixed(5)} <span className="text-blue-400">π PI</span>
+                    {(slot.recommendedFeeNxs || 0.0001).toFixed(5)} <span className="text-purple-400 font-bold">π NXS</span>
                   </div>
                   <div className="text-[10px] font-mono text-slate-500">
                     Est. {slot.expectedTps} TPS

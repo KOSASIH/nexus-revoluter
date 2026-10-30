@@ -198,7 +198,7 @@ export const AiSentinelHud: React.FC<AiSentinelHudProps> = ({ sentinels, onTrigg
                 {report.sybilResistanceScore}%
               </div>
               <p className="text-[10px] text-slate-500 mt-0.5">
-                Quadratic stake weight √π PI × log2(vaultAge) in active enforcement.
+                Quadratic stake weight √π NXS × log2(vaultAge) in active enforcement.
               </p>
             </div>
 
@@ -214,6 +214,35 @@ export const AiSentinelHud: React.FC<AiSentinelHudProps> = ({ sentinels, onTrigg
               <p className="text-[10px] text-slate-500 mt-0.5">
                 Trademark Firewall & Phishing heuristic radar operational.
               </p>
+            </div>
+
+            {/* Live 5-Node Sentinel Quorum Topology Matrix */}
+            <div className="md:col-span-4 bg-slate-950/90 border border-indigo-950/60 rounded-xl p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-white flex items-center gap-1.5">
+                  <Radio className="w-3.5 h-3.5 text-blue-400" />
+                  Live Federated Quorum Topology & Latency Mesh (5 Global Sentinels)
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400 font-semibold">
+                  Byzantine Slices Overlap: 100% (Safety Surplus +33%)
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono text-[11px]">
+                {sentinels.map((s) => (
+                  <div key={s.id} className="p-2.5 bg-slate-900/90 rounded-lg border border-slate-800 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 text-[10px] truncate">{s.name.split(' ')[0]}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    </div>
+                    <div className="text-slate-400 text-[10px] truncate">{s.region}</div>
+                    <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-850">
+                      <span className="text-emerald-400 font-bold">{s.pingMs}ms</span>
+                      <span className="text-slate-500">{s.uptime}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Recommendations / Auto-Remediations Details */}

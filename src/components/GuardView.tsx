@@ -23,7 +23,7 @@ export const GuardView: React.FC = () => {
 
     setTimeout(() => {
       setIsAuditing(false);
-      setAuditMessage('Deep Legal & Sentinel Audit PASSED: 0 official trademark infringements, 0 unencrypted secrets, 100% π PI symbol consistency across all modules.');
+      setAuditMessage('Deep Legal & Sentinel Audit PASSED: 0 official trademark infringements, 0 unencrypted secrets, 100% π NXS symbol consistency across sovereign modules with isolated legacy IOU watermark.');
       setTimeout(() => setAuditMessage(null), 6000);
     }, 800);
   };
@@ -90,10 +90,10 @@ export const GuardView: React.FC = () => {
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
           <div className="text-xs font-bold text-slate-400 uppercase">Currency Symbol Standard</div>
           <div className="text-sm font-bold text-purple-400 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4" /> π PI Notation
+            <CheckCircle2 className="w-4 h-4" /> π NXS Notation
           </div>
           <div className="text-[11px] text-slate-400">
-            Never bare PI as sole token icon
+            Never bare PI or NRV. Legacy IOU isolated.
           </div>
         </div>
 

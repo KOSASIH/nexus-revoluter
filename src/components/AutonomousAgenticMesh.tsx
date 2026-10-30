@@ -92,7 +92,7 @@ export const AutonomousAgenticMesh: React.FC<AutonomousAgenticMeshProps> = ({
             Autonomous Sovereign Agent Neural Network
           </h3>
           <p className="text-xs text-slate-300 max-w-3xl mt-1 leading-relaxed">
-            4 decentralized cognitive agents execute autonomous real-time heuristics across consensus slices, physical thermodynamic backing in <strong className="text-white">π PI</strong>, Amanah equity, and post-quantum zero-knowledge cryptography.
+            4 decentralized cognitive agents execute autonomous real-time heuristics across consensus slices, physical thermodynamic backing in <strong className="text-white">π NXS</strong>, Amanah equity, and post-quantum zero-knowledge cryptography.
           </p>
         </div>
 

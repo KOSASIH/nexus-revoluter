@@ -83,7 +83,7 @@ export const TreasuryView: React.FC<TreasuryViewProps> = ({
         <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
           <div className="text-xs text-slate-400 font-medium mb-1">Total Treasury Collateral</div>
           <div className="text-xl font-mono font-bold text-white">
-            {totalPi.toLocaleString(undefined, { minimumFractionDigits: 2 })} <span className="text-purple-400 text-sm">π PI</span>
+            {totalPi.toLocaleString(undefined, { minimumFractionDigits: 2 })} <span className="text-purple-400 text-sm font-bold">π NXS</span>
           </div>
           <div className="text-[11px] text-slate-500 mt-1">Multi-Vault Aggregate</div>
         </div>

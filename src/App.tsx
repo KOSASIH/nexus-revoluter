@@ -47,7 +47,7 @@ import { GodChainView } from './components/GodChainView';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTab>('vault');
-  const [network, setNetwork] = useState<string>('iou-ledger');
+  const [network, setNetwork] = useState<string>('nexus-ledger');
 
   // Application Data States
   const [vaults, setVaults] = useState<VaultAccount[]>(INITIAL_VAULTS);
@@ -78,8 +78,8 @@ export const App: React.FC = () => {
   };
 
   // Economic & Market Monitor State
-  // Live PI market price with default fallback $0.0756 USD
-  const [livePrice, setLivePrice] = useState<number>(0.0756);
+  // Live Stellar XLM price with default fallback $0.1142 USD
+  const [livePrice, setLivePrice] = useState<number>(0.1142);
   const [isPriceLoading, setIsPriceLoading] = useState<boolean>(false);
   const communityGcv = 314159.00;
   const [blockHeight, setBlockHeight] = useState<number>(4920194);
@@ -88,19 +88,19 @@ export const App: React.FC = () => {
   const totalPiBalance = vaults.reduce((sum, v) => sum + v.piBalance, 0);
   const totalXlmBalance = vaults.reduce((sum, v) => sum + v.xlmBalance, 0);
 
-  // Fetch live market price
+  // Fetch live market price for Stellar XLM
   const fetchLivePrice = async () => {
     setIsPriceLoading(true);
     try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd');
       if (response.ok) {
         const data = await response.json();
-        if (data?.['pi-network']?.usd && typeof data['pi-network'].usd === 'number') {
-          setLivePrice(data['pi-network'].usd);
+        if (data?.['stellar']?.usd && typeof data['stellar'].usd === 'number') {
+          setLivePrice(data['stellar'].usd);
         }
       }
     } catch {
-      // Gracefully retain fallback price ($0.0756)
+      // Gracefully retain fallback price ($0.1142)
     } finally {
       setIsPriceLoading(false);
     }
@@ -155,9 +155,9 @@ export const App: React.FC = () => {
       from: 'GCXP449102847192847291847192847192847NPASBRIDGE',
       to: targetVault.address,
       amount: 100.00,
-      asset: 'π PI IOU',
+      asset: 'π NXS',
       timestamp: 'Just now',
-      memo: 'Test IOU Faucet Allocation (+100 π PI)',
+      memo: '+100 π NXS Test Faucet Allocation',
       status: 'confirmed',
       fee: 0.0,
       complianceChecked: true,
@@ -176,7 +176,7 @@ export const App: React.FC = () => {
       entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
       movementType: 'ESCROW_ALLOCATION',
       amount: 100.0,
-      asset: 'π PI',
+      asset: 'π NXS',
       destination: `Faucet Allocation to ${targetVault.name}`,
       proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
     };
@@ -245,7 +245,7 @@ export const App: React.FC = () => {
     from: string;
     to: string;
     amount: number;
-    asset: 'π PI IOU' | 'XLM' | 'NRV';
+    asset: 'π NXS' | 'XLM' | 'π PI IOU';
     memo: string;
     aiRiskScore: number;
     aiRiskVerdict: 'SAFE' | 'SUSPICIOUS' | 'FLAGGED';
@@ -253,7 +253,7 @@ export const App: React.FC = () => {
     // Deduct from sender
     setVaults(prev => prev.map(v => {
       if (v.address === tx.from) {
-        if (tx.asset === 'π PI IOU') {
+        if (tx.asset === 'π NXS' || tx.asset === 'π PI IOU') {
           return { ...v, piBalance: Math.max(0, v.piBalance - tx.amount) };
         } else if (tx.asset === 'XLM') {
           return { ...v, xlmBalance: Math.max(0, v.xlmBalance - tx.amount - 0.0001) };
@@ -265,7 +265,7 @@ export const App: React.FC = () => {
     // Credit if recipient is one of user's own vaults
     setVaults(prev => prev.map(v => {
       if (v.address === tx.to) {
-        if (tx.asset === 'π PI IOU') {
+        if (tx.asset === 'π NXS' || tx.asset === 'π PI IOU') {
           return { ...v, piBalance: v.piBalance + tx.amount };
         } else if (tx.asset === 'XLM') {
           return { ...v, xlmBalance: v.xlmBalance + tx.amount };
@@ -302,7 +302,7 @@ export const App: React.FC = () => {
       entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
       movementType: 'FEE_COLLECTION',
       amount: 0.0001,
-      asset: 'π PI',
+      asset: 'π NXS',
       destination: 'Stellar SCP Quorum Fee Pool',
       proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
     };
@@ -506,16 +506,16 @@ export const App: React.FC = () => {
 
       {/* Sovereign Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left">
             <span className="font-semibold text-slate-300">Nexus Revoluter</span>
-            <span>•</span>
-            <span>Sovereign Pioneer Infrastructure</span>
-            <span>•</span>
-            <span className="text-amber-400 font-medium">Unofficial community project, not affiliated with Pi Core Team</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="text-amber-400 font-medium">
+              Nexus Revoluter is an independent community infrastructure, not affiliated with Pi Core Team, Stellar Development Foundation, or any L1 team. All assets are sovereign or legacy IOU, not native mainnet coins.
+            </span>
           </div>
-          <div className="flex items-center space-x-4 text-[11px] font-mono">
-            <span>SANO MONITOR • NPAS V1.0</span>
+          <div className="flex items-center space-x-4 text-[11px] font-mono shrink-0">
+            <span className="text-blue-400 font-bold">SOVEREIGN MONITOR • NPAS V2.0</span>
             <span>Ed25519 & ZK-SNARK</span>
             <span>Byzantine Quorum 67%</span>
           </div>

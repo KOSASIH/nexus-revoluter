@@ -28,7 +28,7 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <Calculator className="w-5 h-5 text-blue-400" />
-            Interactive π PI Valuation and Barter Calculator
+            Interactive π NXS Valuation and Barter Calculator
           </h3>
           <p className="text-xs text-slate-400">
             Real-time mathematical simulator contrasting live market exchange rates vs. Community GCV purchasing power
@@ -36,15 +36,15 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
         </div>
 
         <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-blue-950 text-blue-300 border border-blue-800/40">
-          Formula: 1 π PI = ${livePrice.toFixed(4)} MKT | ${communityGcv.toLocaleString()} GCV
+          Formula: 1 π NXS = ${livePrice.toFixed(4)} MKT | ${communityGcv.toLocaleString()} GCV
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
           <label className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
-            <span>Enter π PI Amount</span>
-            <span className="text-purple-400">π PI</span>
+            <span>Enter π NXS Amount</span>
+            <span className="text-purple-400">π NXS</span>
           </label>
           <input
             type="number"
@@ -62,7 +62,7 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
           <div className="text-xl font-mono font-bold text-white">
             ${marketUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
           </div>
-          <div className="text-[10px] text-slate-500 font-mono">Rate: ${livePrice.toFixed(4)} / π PI</div>
+          <div className="text-[10px] text-slate-500 font-mono">Rate: ${livePrice.toFixed(4)} / π NXS</div>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-950 border border-purple-900/40 space-y-1">
@@ -70,7 +70,7 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
           <div className="text-xl font-mono font-bold text-purple-300">
             ${gcvUsd.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </div>
-          <div className="text-[10px] text-slate-500 font-mono">Target: ${communityGcv.toLocaleString()} / π PI</div>
+          <div className="text-[10px] text-slate-500 font-mono">Target: ${communityGcv.toLocaleString()} / π NXS</div>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
@@ -114,13 +114,13 @@ export const SanoConverter: React.FC<SanoConverterProps> = ({ livePrice, communi
                   <div>
                     <span className="text-[9px] uppercase text-slate-500 block">At Market Price:</span>
                     <span className="text-white font-semibold">
-                      {piMarket >= 1000 ? (piMarket / 1000).toFixed(1) + 'k' : piMarket.toFixed(2)} π PI
+                      {piMarket >= 1000 ? (piMarket / 1000).toFixed(1) + 'k' : piMarket.toFixed(2)} π NXS
                     </span>
                   </div>
                   <div>
                     <span className="text-[9px] uppercase text-purple-400 block">At Community GCV:</span>
                     <span className="text-purple-300 font-bold">
-                      {piGcv < 0.001 ? piGcv.toFixed(6) : piGcv.toFixed(4)} π PI
+                      {piGcv < 0.001 ? piGcv.toFixed(6) : piGcv.toFixed(4)} π NXS
                     </span>
                   </div>
                 </div>

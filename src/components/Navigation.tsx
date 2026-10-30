@@ -31,13 +31,13 @@ export const Navigation: React.FC<NavigationProps> = ({
     },
     {
       id: 'vault' as NavTab,
-      label: 'Pioneer Vault',
+      label: 'Sovereign Vault',
       icon: Wallet,
       badge: null
     },
     {
       id: 'transaction' as NavTab,
-      label: 'Execute IOU',
+      label: 'Execute Sovereign Tx',
       icon: Send,
       badge: null
     },
@@ -57,19 +57,19 @@ export const Navigation: React.FC<NavigationProps> = ({
       id: 'zk-compliance' as NavTab,
       label: 'ZK Compliance',
       icon: ShieldCheck,
-      badge: 'Verified'
+      badge: 'ZK Compliance Verified'
     },
     {
       id: 'sano' as NavTab,
-      label: 'SANO Target Monitor',
+      label: 'Q-Thermo Valuation Monitor',
       icon: Sliders,
       badge: 'Read-Only'
     },
     {
       id: 'dao' as NavTab,
-      label: 'Pioneer DAO',
+      label: 'Sovereign DAO',
       icon: Vote,
-      badge: '3 Active'
+      badge: 'Sovereign DAO 3 Active'
     },
     {
       id: 'treasury' as NavTab,
@@ -110,7 +110,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                     className={`ml-1.5 px-1.5 py-0.5 text-[9px] font-mono rounded-full font-bold uppercase ${
                       isActive
                         ? 'bg-blue-700 text-blue-100'
-                        : tab.badge === 'Verified' || tab.badge === '3 Active'
+                        : tab.badge?.includes('Verified') || tab.badge?.includes('Active')
                         ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/50'
                         : 'bg-slate-800 text-slate-400 border border-slate-700'
                     }`}

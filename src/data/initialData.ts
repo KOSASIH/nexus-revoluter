@@ -21,10 +21,11 @@ const mockProof = (prefix: string) => `${prefix}_mock_${Math.random().toString(3
 export const INITIAL_VAULTS: VaultAccount[] = [
   {
     id: 'vault-primary',
-    name: 'Primary Pioneer Node Vault',
+    name: 'Primary Sovereign Node Vault',
     address: 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88',
     piBalance: 31415.92,
     xlmBalance: 1450.75,
+    legacyIouBalance: 314.15,
     isPrimary: true,
     role: 'primary',
     keyType: 'Ed25519-QuantumResistant',
@@ -33,10 +34,11 @@ export const INITIAL_VAULTS: VaultAccount[] = [
   },
   {
     id: 'vault-reserve',
-    name: 'SANO Reserve Arbitrage Collateral',
+    name: 'Nexus Reserve Collateral Vault',
     address: 'GABR72K1PLMZ82937NYVX729485LKS837194REVOLUTER01',
     piBalance: 125000.00,
     xlmBalance: 820.00,
+    legacyIouBalance: 0,
     isPrimary: false,
     role: 'reserve',
     keyType: 'Ed25519-QuantumResistant',
@@ -45,10 +47,11 @@ export const INITIAL_VAULTS: VaultAccount[] = [
   },
   {
     id: 'vault-bridge',
-    name: 'NPAS Autonomous Bridge Escrow',
+    name: 'Autonomous Bridge Escrow Vault',
     address: 'GCXP449102847192847291847192847192847NPASBRIDGE',
     piBalance: 8840.50,
     xlmBalance: 314.16,
+    legacyIouBalance: 5000.00,
     isPrimary: false,
     role: 'bridge',
     keyType: 'Ed25519-QuantumResistant',
@@ -131,9 +134,9 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     from: 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88',
     to: 'GABR72K1PLMZ82937NYVX729485LKS837194REVOLUTER01',
     amount: 314.15,
-    asset: 'π PI IOU',
+    asset: 'π NXS',
     timestamp: '2 mins ago',
-    memo: 'P2P Micro-Barter Settlement',
+    memo: 'Sovereign P2P Settlement',
     status: 'confirmed',
     fee: 0.0001,
     complianceChecked: true,
@@ -146,9 +149,9 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     from: 'GCXP449102847192847291847192847192847NPASBRIDGE',
     to: 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88',
     amount: 100.00,
-    asset: 'π PI IOU',
+    asset: 'π NXS',
     timestamp: '18 mins ago',
-    memo: 'Test IOU Faucet Allocation',
+    memo: '+100 π NXS Test Faucet Allocation',
     status: 'confirmed',
     fee: 0.0,
     complianceChecked: true,
@@ -169,6 +172,21 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
     complianceChecked: true,
     blockNumber: 4920140,
     aiRiskScore: 2,
+    aiRiskVerdict: 'SAFE'
+  },
+  {
+    id: 'tx_legacy_import_voucher',
+    from: 'GCLEGACYIOU948192847192847192847192847192847IMPORT',
+    to: 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88',
+    amount: 314.15,
+    asset: 'π PI IOU',
+    timestamp: '1 day ago',
+    memo: 'LEGACY IOU IMPORT: Pi Network testnet import voucher',
+    status: 'confirmed',
+    fee: 0.0001,
+    complianceChecked: true,
+    blockNumber: 4919500,
+    aiRiskScore: 1,
     aiRiskVerdict: 'SAFE'
   }
 ];
@@ -194,7 +212,7 @@ export const INITIAL_BRIDGE_REQUESTS: BridgeReleaseRequest[] = [
 ];
 
 export const INITIAL_PROOF_OF_RESERVE: ProofOfReserve = {
-  asset: 'π PI IOU',
+  asset: 'π NXS',
   totalVaultObligations: 165256.42,
   onChainCollateralProven: 520000.00,
   coverageRatio: 3.146,
@@ -302,7 +320,7 @@ export const INITIAL_TREASURY_AUDIT: TreasuryAuditEntry[] = [
     entryHash: 'MOCK_ENTRY_HASH_8a91b2c3',
     movementType: 'FEE_COLLECTION',
     amount: 14.8,
-    asset: 'π PI',
+    asset: 'π NXS',
     destination: 'NPAS Treasury Reserve',
     proofSignature: 'ed25519_mock_sig_99281a'
   },
@@ -313,7 +331,7 @@ export const INITIAL_TREASURY_AUDIT: TreasuryAuditEntry[] = [
     entryHash: 'MOCK_ENTRY_HASH_4f19b028',
     movementType: 'ESCROW_ALLOCATION',
     amount: 500.0,
-    asset: 'π PI',
+    asset: 'π NXS',
     destination: 'Pioneer Community Faucet Pool',
     proofSignature: 'ed25519_mock_sig_88172c'
   },
@@ -324,7 +342,7 @@ export const INITIAL_TREASURY_AUDIT: TreasuryAuditEntry[] = [
     entryHash: 'MOCK_ENTRY_HASH_3e18a917',
     movementType: 'COMMUNITY_GRANT',
     amount: 1000.0,
-    asset: 'π PI',
+    asset: 'π NXS',
     destination: 'Sentinel Node Hosting Grant (Frankfurt)',
     proofSignature: 'ed25519_mock_sig_77161b'
   }
@@ -371,9 +389,9 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     category: 'THERMODYNAMICS',
     status: 'SYNCHRONIZED',
     resonanceScore: 98.9,
-    invariantRule: 'Every π PI unit anchored to actual physical thermodynamic work (kWh equivalent), zero speculative inflation.',
+    invariantRule: 'Every π NXS unit anchored to actual physical thermodynamic work (kWh equivalent), zero speculative inflation.',
     tensorHash: 'tensor_mock_4_qthermo_equilibrium',
-    realWorldMetric: '3.14159 kWh backing per π PI verified'
+    realWorldMetric: '3.14159 kWh backing per π NXS verified'
   },
   {
     id: 5,
@@ -428,7 +446,7 @@ export const INITIAL_DIMENSIONS: DimensionVector[] = [
     resonanceScore: 98.4,
     invariantRule: 'Peer-to-peer IOU transfer channel without centralized banking clearinghouse dependencies.',
     tensorHash: 'tensor_mock_9_vitta_liquidity',
-    realWorldMetric: 'Active Channel Capacity: 156,415.92 π PI'
+    realWorldMetric: 'Active Channel Capacity: 156,415.92 π NXS'
   },
   {
     id: 10,
@@ -525,6 +543,7 @@ export const INITIAL_SUPER_CALCULATORS: SuperCalculator[] = [
 
 export const INITIAL_Q_THERMO: QThermoMetrics = {
   currentEntropy: 14.82,
+  energyBackingPerNxs: 3.14159,
   energyBackingPerPi: 3.14159,
   biospherePurityIndex: 98.4,
   thermoEquilibriumRatio: 1.000000,

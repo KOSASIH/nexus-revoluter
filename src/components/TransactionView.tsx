@@ -28,7 +28,7 @@ interface TransactionViewProps {
     from: string;
     to: string;
     amount: number;
-    asset: 'π PI IOU' | 'XLM' | 'NRV';
+    asset: 'π NXS' | 'XLM' | 'π PI IOU';
     memo: string;
     aiRiskScore: number;
     aiRiskVerdict: 'SAFE' | 'SUSPICIOUS' | 'FLAGGED';
@@ -46,7 +46,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
 }) => {
   const [fromAddress, setFromAddress] = useState<string>(vaults[0]?.address || '');
   const [toAddress, setToAddress] = useState<string>('');
-  const [asset, setAsset] = useState<'π PI IOU' | 'XLM' | 'NRV'>('π PI IOU');
+  const [asset, setAsset] = useState<'π NXS' | 'XLM' | 'π PI IOU'>('π NXS');
   const [amount, setAmount] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -75,12 +75,10 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
 
   const handleMaxAmount = () => {
     if (!selectedVault) return;
-    if (asset === 'π PI IOU') {
+    if (asset === 'π NXS' || asset === 'π PI IOU') {
       setAmount(selectedVault.piBalance.toString());
     } else if (asset === 'XLM') {
       setAmount(Math.max(0, selectedVault.xlmBalance - 0.0001).toFixed(4));
-    } else {
-      setAmount('100');
     }
   };
 
@@ -123,7 +121,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
           </div>
           <h2 className="text-xl font-bold text-white mt-1 flex items-center gap-2">
             <Send className="w-5 h-5 text-blue-400" />
-            Execute IOU Transaction
+            Execute Sovereign Transaction
           </h2>
           <p className="text-xs text-slate-300 max-w-2xl mt-1 leading-relaxed">
             Autonomous ARHN Compliance & AHCEW Empathy Engine. Client-side signed transactions broadcast directly to community validator nodes.
@@ -260,9 +258,9 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
                   onChange={(e) => setAsset(e.target.value as any)}
                   className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="π PI IOU">π PI IOU (Pi Coin IOU)</option>
-                  <option value="XLM">XLM (Native Stellar)</option>
-                  <option value="NRV">NRV (Nexus Revoluter)</option>
+                  <option value="π NXS">π NXS (Sovereign Native Asset)</option>
+                  <option value="XLM">XLM (Native Stellar Gas)</option>
+                  <option value="π PI IOU">π PI IOU (Legacy Import Only)</option>
                 </select>
               </div>
 
@@ -290,22 +288,33 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
                     required
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-slate-400">
-                    {asset === 'π PI IOU' ? 'π PI' : asset}
+                    {asset}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Valuation conversion helper */}
-            {parsedAmount > 0 && asset === 'π PI IOU' && (
+            {parsedAmount > 0 && asset === 'π NXS' && (
               <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-[11px] space-y-1">
                 <div className="flex justify-between text-slate-400">
-                  <span>Market Valuation (@ ${livePrice.toFixed(4)}):</span>
-                  <span className="font-mono text-white">${(parsedAmount * livePrice).toFixed(2)} USD</span>
+                  <span>Thermodynamic Floor (@ 3.14159 kWh/π NXS):</span>
+                  <span className="font-mono text-amber-300 font-bold">{(parsedAmount * 3.14159).toFixed(2)} kWh</span>
                 </div>
                 <div className="flex justify-between text-purple-300">
-                  <span>Community GCV Valuation (@ $314,159):</span>
-                  <span className="font-mono font-semibold">${(parsedAmount * communityGcv).toLocaleString('en-US', { maximumFractionDigits: 0 })} USD</span>
+                  <span>Sovereign Pioneer Settlement:</span>
+                  <span className="font-mono font-semibold">Decoupled Native Invariant</span>
+                </div>
+              </div>
+            )}
+            {parsedAmount > 0 && asset === 'π PI IOU' && (
+              <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-900/40 text-[11px] space-y-1">
+                <div className="flex justify-between text-amber-300">
+                  <span>Legacy Import Token (@ ${livePrice.toFixed(4)}):</span>
+                  <span className="font-mono text-white">${(parsedAmount * livePrice).toFixed(2)} USD</span>
+                </div>
+                <div className="text-[10px] text-amber-400/80">
+                  Legacy IOU Import, bukan NXS asli
                 </div>
               </div>
             )}
@@ -435,7 +444,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
                 <div className="flex justify-between pt-1 border-t border-slate-850">
                   <span className="text-slate-400">Available:</span>
                   <span className="font-mono font-bold text-white">
-                    {selectedVault.piBalance.toLocaleString()} <span className="text-purple-400">π PI</span> • {selectedVault.xlmBalance.toFixed(2)} XLM
+                    {selectedVault.piBalance.toLocaleString()} <span className="text-purple-400 font-bold">π NXS</span> • {selectedVault.xlmBalance.toFixed(2)} XLM
                   </span>
                 </div>
               </div>
@@ -485,7 +494,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
               <div className="text-right">
                 <div className="text-xs font-mono font-bold text-white">
                   {tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}{' '}
-                  <span className="text-purple-400">{tx.asset === 'π PI IOU' ? 'π PI' : tx.asset}</span>
+                  <span className="text-purple-400 font-bold">{tx.asset}</span>
                 </div>
                 <div className="text-[10px] font-mono text-slate-400">
                   Fee: {tx.fee} XLM • Block #{tx.blockNumber}
