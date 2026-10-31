@@ -50,6 +50,15 @@ export const DaoView: React.FC<DaoViewProps> = ({
   // Quadratic formula: sqrt(π NXS) * log2(vaultAgeDays + 2)
   const quadraticPower = Math.floor(Math.sqrt(totalPi) * Math.log2(vaultAge + 2));
 
+  // Interactive Quadratic Voting Simulator state
+  const [simHolding, setSimHolding] = useState<number>(totalPi > 0 ? totalPi : 2500);
+  const [simDays, setSimDays] = useState<number>(vaultAge > 0 ? vaultAge : 365);
+  const [showSimWorkbench, setShowSimWorkbench] = useState<boolean>(true);
+
+  const simLinearPower = simHolding;
+  const simQuadraticPower = Math.floor(Math.sqrt(simHolding) * Math.log2(simDays + 2));
+  const plutocracyDampingRatio = simLinearPower > 0 && simQuadraticPower > 0 ? (simLinearPower / simQuadraticPower).toFixed(1) : '1.0';
+
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newDescription.trim()) return;
@@ -176,6 +185,127 @@ export const DaoView: React.FC<DaoViewProps> = ({
 
           <div className="mt-4 pt-3 border-t border-slate-850 text-[11px] font-mono text-slate-400">
             Amanah Consensus Standard V1.0
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Quadratic Shura Voting Simulator Workbench */}
+      <div className="bg-slate-900/70 p-6 rounded-2xl border border-slate-800 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">
+                Anti-Whale Mathematics
+              </span>
+              <span className="text-xs text-slate-400">Sovereign Shura Consensus</span>
+            </div>
+            <h3 className="text-base font-bold text-white mt-1 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-indigo-400" />
+              Quadratic Voting Simulator & Anti-Plutocracy Workbench
+            </h3>
+            <p className="text-xs text-slate-300 max-w-2xl mt-1">
+              Demonstrates how quadratic rooting &radic;(&pi; NXS) combined with logarithmic vault age log&sub2;(Days + 2) protects grassroots pioneers from capital dominance.
+            </p>
+          </div>
+
+          {/* Quick Presets */}
+          <div className="flex flex-wrap items-center gap-1.5 self-start">
+            <button
+              onClick={() => { setSimHolding(250); setSimDays(180); }}
+              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-300 transition"
+            >
+              Retail Pioneer
+            </button>
+            <button
+              onClick={() => { setSimHolding(3500); setSimDays(730); }}
+              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-300 transition"
+            >
+              Veteran Pioneer
+            </button>
+            <button
+              onClick={() => { setSimHolding(250000); setSimDays(14); }}
+              className="px-2.5 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-[11px] font-mono text-rose-300 border border-rose-800/60 transition"
+            >
+              Whale (14d)
+            </button>
+          </div>
+        </div>
+
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-300 font-medium">Simulated Holding:</span>
+              <span className="font-mono font-bold text-white">{simHolding.toLocaleString()} π NXS</span>
+            </div>
+            <input
+              type="range"
+              min={10}
+              max={250000}
+              step={50}
+              value={simHolding}
+              onChange={(e) => setSimHolding(parseFloat(e.target.value))}
+              className="w-full accent-indigo-500 cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+              <span>10 π NXS</span>
+              <span>√{simHolding.toFixed(0)} = {Math.sqrt(simHolding).toFixed(1)}</span>
+              <span>250k π NXS</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-slate-300 font-medium">Simulated Vault Longevity:</span>
+              <span className="font-mono font-bold text-emerald-400">{simDays} Days ({(simDays / 365).toFixed(1)} yrs)</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={1825}
+              step={1}
+              value={simDays}
+              onChange={(e) => setSimDays(parseInt(e.target.value))}
+              className="w-full accent-emerald-500 cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+              <span>1 Day</span>
+              <span>log₂({simDays}+2) = {Math.log2(simDays + 2).toFixed(2)}x</span>
+              <span>1,825 Days (5 yrs)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparative Cards: Linear vs Quadratic */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <span className="text-[10px] font-mono text-slate-400 uppercase block">Linear Plutocracy Power (1 Token = 1 Vote)</span>
+            <div className="text-xl font-mono font-bold text-slate-300">
+              {simLinearPower.toLocaleString()} <span className="text-xs text-slate-500 font-normal">Votes</span>
+            </div>
+            <p className="text-[10px] text-rose-400/90 leading-tight">
+              Allows predatory capital to monopolize governance outcomes.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-950 border border-indigo-900/60 space-y-1">
+            <span className="text-[10px] font-mono text-indigo-400 uppercase block">Sovereign Shura Quadratic Power</span>
+            <div className="text-xl font-mono font-bold text-indigo-300">
+              {simQuadraticPower.toLocaleString()} <span className="text-xs text-purple-400 font-normal">π NXS Power</span>
+            </div>
+            <p className="text-[10px] text-indigo-300/80 leading-tight">
+              Formula: ⌊√({simHolding}) × log₂({simDays} + 2)⌋
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-950 border border-emerald-900/60 space-y-1">
+            <span className="text-[10px] font-mono text-emerald-400 uppercase block">Plutocracy Damping Factor</span>
+            <div className="text-xl font-mono font-bold text-emerald-400">
+              {plutocracyDampingRatio}x <span className="text-xs text-slate-400 font-normal">Suppression</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-tight">
+              Whale voting advantage reduced by {plutocracyDampingRatio}x, protecting retail pioneer voting sovereignty.
+            </p>
           </div>
         </div>
       </div>

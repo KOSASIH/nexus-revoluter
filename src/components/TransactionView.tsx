@@ -54,6 +54,29 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [isStealthMode, setIsStealthMode] = useState<boolean>(false);
   const [stealthProof, setStealthProof] = useState<StealthAddressProof | null>(null);
+  const [activeMpcSigners, setActiveMpcSigners] = useState<Record<string, boolean>>({
+    owner: true,
+    guardian_sin: true,
+    guardian_tyo: true,
+    ai_sentinel: false,
+    timelock_enclave: false
+  });
+  const [showXdrEnvelope, setShowXdrEnvelope] = useState<boolean>(false);
+
+  const mpcSignerList = [
+    { id: 'owner', name: 'Primary Vault Owner', type: 'Ed25519 Master', region: 'Local Enclave' },
+    { id: 'guardian_sin', name: 'Guardian Alpha', type: 'Shamir Slice #1', region: 'Singapore' },
+    { id: 'guardian_tyo', name: 'Guardian Beta', type: 'Shamir Slice #2', region: 'Tokyo' },
+    { id: 'ai_sentinel', name: 'AI Sentinel Co-Signer', type: 'ARHN Sanctions Key', region: 'Autonomous' },
+    { id: 'timelock_enclave', name: 'Timelock Enclave 48h', type: 'Cold Delay Key', region: 'Frankfurt' },
+  ];
+
+  const totalSignedCount = Object.values(activeMpcSigners).filter(Boolean).length;
+  const isMpcThresholdMet = totalSignedCount >= 3;
+
+  const toggleMpcSigner = (id: string) => {
+    setActiveMpcSigners(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const handleDeriveStealthAddress = () => {
     const target = toAddress.trim() || 'GDZX94K2MQW8VR91PXZL029471NVMS947194KOSASIH88';
@@ -164,7 +187,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
               >
                 {vaults.map((vault) => (
                   <option key={vault.id} value={vault.address}>
-                    {vault.name} ({vault.piBalance.toLocaleString()} π PI • {vault.xlmBalance.toFixed(2)} XLM) - {vault.address.slice(0, 10)}...
+                    {vault.name} ({vault.piBalance.toLocaleString()} π NXS • {vault.xlmBalance.toFixed(2)} XLM) - {vault.address.slice(0, 10)}...
                   </option>
                 ))}
               </select>
@@ -333,18 +356,93 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
               />
             </div>
 
+            {/* MPC 3-of-5 Multi-Party Threshold Signature Ring */}
+            <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Key className="w-4 h-4 text-blue-400" />
+                  <span className="text-xs font-bold text-white">MPC 3-of-5 Threshold Signature Ring</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                  isMpcThresholdMet
+                    ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                    : 'bg-rose-950 text-rose-300 border border-rose-800'
+                }`}>
+                  {totalSignedCount} / 5 Signed ({isMpcThresholdMet ? 'Quorum Met' : 'Need 3+'})
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {mpcSignerList.map((signer) => {
+                  const isChecked = !!activeMpcSigners[signer.id];
+                  return (
+                    <div
+                      key={signer.id}
+                      onClick={() => toggleMpcSigner(signer.id)}
+                      className={`p-2 rounded-lg border cursor-pointer transition flex items-center justify-between ${
+                        isChecked
+                          ? 'bg-blue-950/40 border-blue-600/60 text-white'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-[11px] font-semibold">{signer.name}</div>
+                        <div className="text-[9px] font-mono text-slate-400">{signer.type} • {signer.region}</div>
+                      </div>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
+                        isChecked ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-slate-800 text-slate-500'
+                      }`}>
+                        {isChecked ? 'SIGNED' : 'PENDING'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Horizon XDR Envelope Inspector Toggle */}
+              <div className="pt-2 border-t border-slate-850">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setShowXdrEnvelope(!showXdrEnvelope)}
+                    className="text-[11px] font-mono text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>{showXdrEnvelope ? 'Hide Horizon XDR Envelope' : 'Inspect Raw Horizon XDR Envelope'}</span>
+                  </button>
+                  <span className="text-[10px] font-mono text-slate-500">Stellar Horizon Compatible</span>
+                </div>
+
+                {showXdrEnvelope && (
+                  <div className="mt-2 p-3 rounded-lg bg-slate-900 border border-indigo-900/40 space-y-1.5 text-[10px] font-mono animate-in fade-in">
+                    <div className="flex justify-between text-slate-400">
+                      <span>Source: {fromAddress.slice(0, 14)}...</span>
+                      <span>Seq: 14892019481</span>
+                    </div>
+                    <div className="text-slate-500 break-all select-all bg-slate-950 p-2 rounded border border-slate-800">
+                      AAAAAgAAAAAnB4z9b4u5k9...{btoa(`TX:${parsedAmount}:${asset}:${memo || 'None'}`).slice(0, 36)}...XDR_ENVELOPE_V2_NXS
+                    </div>
+                    <div className="text-[9px] text-emerald-400 flex items-center justify-between pt-1">
+                      <span>Signatures: {totalSignedCount} Ed25519 &amp; Schnorr Aggregated</span>
+                      <span>Fee: 0.0001000 XLM</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Required Info Line */}
             <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] text-blue-200 leading-relaxed flex items-start space-x-2">
               <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
               <div>
-                <strong>Base network fee 0.0001 XLM.</strong> Protected by Ed25519 quantum resistant signature & verified against global sanction registries.
+                <strong>Base network fee 0.0001 XLM.</strong> Protected by Ed25519 quantum resistant signature &amp; verified against global sanction registries.
               </div>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting || parsedAmount <= 0 || !toAddress}
+              disabled={isSubmitting || parsedAmount <= 0 || !toAddress || !isMpcThresholdMet}
               className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               {isSubmitting ? (
@@ -352,10 +450,15 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
                   <RefreshCw className="w-4 h-4 animate-spin" />
                   <span>Computing Ed25519 Signature...</span>
                 </>
+              ) : !isMpcThresholdMet ? (
+                <>
+                  <Lock className="w-4 h-4 text-amber-300" />
+                  <span>Requires 3-of-5 Signatures ({totalSignedCount}/5 Active)</span>
+                </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>Sign & Transmit Transaction</span>
+                  <span>Sign &amp; Transmit Transaction ({totalSignedCount} Signatures)</span>
                 </>
               )}
             </button>

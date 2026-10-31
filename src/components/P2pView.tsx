@@ -35,6 +35,49 @@ export const P2pView: React.FC<P2pViewProps> = ({ sentinels }) => {
   const [isSimulatingAttack, setIsSimulatingAttack] = useState<boolean>(false);
   const [anomalyStatusMessage, setAnomalyStatusMessage] = useState<string | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('node-fra');
+  const [fanoutFactor, setFanoutFactor] = useState<number>(3);
+  const [nodeAnomalyMap, setNodeAnomalyMap] = useState<Record<string, 'HEALTHY' | 'DRIFT' | 'BYZANTINE'>>({
+    'node-fra': 'HEALTHY',
+    'node-tyo': 'HEALTHY',
+    'node-iad': 'HEALTHY',
+    'node-sin': 'HEALTHY',
+    'node-sao': 'HEALTHY'
+  });
+  const [simulatedPacket, setSimulatedPacket] = useState<{
+    hash: string;
+    slot: number;
+    origin: string;
+    timestamp: string;
+    hops: string[];
+  } | null>(null);
+
+  const toggleNodeAnomaly = (nodeId: string) => {
+    setNodeAnomalyMap(prev => {
+      const current = prev[nodeId] || 'HEALTHY';
+      const next = current === 'HEALTHY' ? 'DRIFT' : current === 'DRIFT' ? 'BYZANTINE' : 'HEALTHY';
+      return { ...prev, [nodeId]: next };
+    });
+  };
+
+  const handleEmitGossipPacket = (originId: string = 'node-fra') => {
+    const originNode = sentinels.find(n => n.id === originId) || sentinels[0];
+    const dummyHash = '0x' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...';
+    const packet = {
+      hash: dummyHash,
+      slot: 4920195 + Math.floor(Math.random() * 50),
+      origin: originNode.name,
+      timestamp: new Date().toLocaleTimeString(),
+      hops: [originNode.region.split(',')[0], 'Tokyo', 'Virginia', 'Singapore']
+    };
+    setSimulatedPacket(packet);
+    setGossipPacketsSent(prev => prev + fanoutFactor);
+    setLastBroadcastTimestamp('Just now');
+  };
+
+  // Count faulty nodes
+  const faultyCount = Object.values(nodeAnomalyMap).filter(st => st !== 'HEALTHY').length;
+  // Byzantine condition: N >= 3f + 1
+  const isQuorumSafe = 5 >= (3 * faultyCount + 1);
 
   const handleSimulateAttack = (type: 'BYZANTINE_DRIFT' | 'ECLIPSE_ATTACK_ATTEMPT' | 'MEMPOOL_FLOOD') => {
     setIsSimulatingAttack(true);
@@ -255,58 +298,320 @@ export const P2pView: React.FC<P2pViewProps> = ({ sentinels }) => {
         </div>
       </div>
 
-      {/* Live Epidemic Wave Visualizer */}
-      <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300">
-            <Activity className="w-4 h-4 text-purple-400" />
-            <span>Epidemic Gossip Mesh Propagation</span>
+      {/* Interactive 2D Constellation Topology & Epidemic Gossip Workbench */}
+      <div className="bg-slate-900/70 p-6 rounded-2xl border border-slate-800 space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase">
+                Interactive Topology Workbench
+              </span>
+              <span className="text-xs text-slate-400">2D Constellation Mesh</span>
+            </div>
+            <h3 className="text-base font-bold text-white mt-1 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-purple-400" />
+              Sovereign Federated Gossip Constellation & Byzantine Quorum
+            </h3>
+            <p className="text-xs text-slate-300 max-w-2xl mt-1">
+              Visualizes peer-to-peer epidemic broadcasting without central relays. Inspect quorum slices, adjust fanout factor, and test Byzantine fault tolerance ($N \ge 3f + 1$).
+            </p>
           </div>
-          <span className="text-[11px] font-mono text-slate-500">Fanout: 3 Peers/Round</span>
+
+          {/* Quick Action: Emit Cryptographic Packet */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleEmitGossipPacket(selectedNodeId || 'node-fra')}
+              className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 transition flex items-center gap-1.5"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-300" />
+              <span>Emit Gossip Packet</span>
+            </button>
+          </div>
         </div>
 
-        {/* Visual Topology Graph */}
-        <div className="flex items-center justify-between p-4 bg-slate-950 rounded-xl border border-slate-800/80 overflow-x-auto gap-2">
-          {sentinels.map((node, idx) => (
-            <React.Fragment key={node.id}>
-              <div 
-                onClick={() => setSelectedNodeId(node.id)}
-                className={`flex flex-col items-center min-w-[95px] p-2.5 rounded-lg border cursor-pointer transition ${
-                  selectedNodeId === node.id
-                    ? 'bg-indigo-600/25 border-indigo-500 text-white shadow-lg shadow-indigo-500/20 ring-1 ring-indigo-500/50'
-                    : activeBroadcastingHop === node.hop
-                    ? 'bg-blue-600/20 border-blue-500 text-white shadow-lg shadow-blue-500/20'
-                    : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
-                }`}
-              >
-                <div className="text-[10px] font-mono font-bold text-blue-400 uppercase">Hop {node.hop}</div>
-                <div className="text-[11px] font-semibold mt-0.5 truncate max-w-[85px]">{node.region.split(',')[0]}</div>
-                <div className="text-[9px] font-mono text-slate-500">{node.pingMs}ms</div>
+        {/* Fanout & BFT Resilience Control Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+          {/* Fanout Slider */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400 font-medium">Epidemic Fanout Factor:</span>
+              <span className="font-mono font-bold text-purple-400">{fanoutFactor} Peers / Round</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={5}
+              step={1}
+              value={fanoutFactor}
+              onChange={(e) => setFanoutFactor(parseInt(e.target.value))}
+              className="w-full accent-purple-500 cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+              <span>Min (1)</span>
+              <span>Convergence: ~{Math.ceil(Math.log(5) / Math.log(Math.max(1.1, fanoutFactor)))} Hops</span>
+              <span>Max (5)</span>
+            </div>
+          </div>
+
+          {/* Quorum Math Evaluation */}
+          <div className="space-y-1">
+            <span className="text-xs text-slate-400 font-medium block">Byzantine Condition (N &ge; 3f + 1):</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm font-bold text-white">5 &ge; {3 * faultyCount + 1}</span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                isQuorumSafe ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'
+              }`}>
+                {isQuorumSafe ? 'Quorum Resilient' : 'Quorum Compromised'}
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-500">
+              Faulty Nodes: {faultyCount} / 5 (Max allowed: 1)
+            </p>
+          </div>
+
+          {/* Selected Node Anomaly Controller */}
+          {selectedNodeId && (() => {
+            const currentStatus = nodeAnomalyMap[selectedNodeId] || 'HEALTHY';
+            const nodeName = sentinels.find(n => n.id === selectedNodeId)?.name || 'Selected';
+            return (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400 font-medium truncate">{nodeName}:</span>
+                  <span className={`font-mono font-bold text-[10px] uppercase px-1.5 py-0.5 rounded ${
+                    currentStatus === 'HEALTHY' ? 'text-emerald-400 bg-emerald-950/60' : currentStatus === 'DRIFT' ? 'text-amber-400 bg-amber-950/60' : 'text-rose-400 bg-rose-950/60'
+                  }`}>
+                    {currentStatus}
+                  </span>
+                </div>
+                <button
+                  onClick={() => toggleNodeAnomaly(selectedNodeId)}
+                  className="w-full py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-750 text-xs font-mono text-slate-300 hover:text-white transition flex items-center justify-center gap-1.5"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Cycle State (Healthy &rarr; Drift &rarr; Byzantine)</span>
+                </button>
               </div>
-              {idx < sentinels.length - 1 && (
-                <div className={`h-0.5 flex-1 min-w-[20px] transition ${
-                  activeBroadcastingHop !== null && activeBroadcastingHop > idx
-                    ? 'bg-blue-500 shadow-md shadow-blue-500'
-                    : 'bg-slate-800'
-                }`} />
-              )}
-            </React.Fragment>
-          ))}
+            );
+          })()}
         </div>
 
-        {/* Selected Node Slice Overlay Inspector */}
+        {/* 2D SVG Constellation Canvas */}
+        <div className="relative p-4 rounded-xl bg-slate-950 border border-slate-800/80 overflow-hidden">
+          <svg viewBox="0 0 600 300" className="w-full h-64 select-none">
+            {/* Background Grid */}
+            <defs>
+              <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+              </pattern>
+              <linearGradient id="gossipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="50%" stopColor="#a855f7" />
+                <stop offset="100%" stopColor="#10b981" />
+              </linearGradient>
+            </defs>
+            <rect width="600" height="300" fill="url(#grid)" />
+
+            {/* Pairwise Interconnect Mesh Lines */}
+            {(() => {
+              const coords: Record<string, [number, number]> = {
+                'node-fra': [300, 50],
+                'node-tyo': [500, 110],
+                'node-sin': [420, 240],
+                'node-sao': [180, 240],
+                'node-iad': [100, 110]
+              };
+
+              const nodeKeys = Object.keys(coords);
+              const lines = [];
+
+              for (let i = 0; i < nodeKeys.length; i++) {
+                for (let j = i + 1; j < nodeKeys.length; j++) {
+                  const [x1, y1] = coords[nodeKeys[i]];
+                  const [x2, y2] = coords[nodeKeys[j]];
+                  const isPulsing = activeBroadcastingHop !== null || simulatedPacket !== null;
+                  lines.push(
+                    <line
+                      key={`${nodeKeys[i]}-${nodeKeys[j]}`}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke={isPulsing ? 'url(#gossipGrad)' : '#334155'}
+                      strokeWidth={isPulsing ? 1.8 : 1}
+                      strokeDasharray={isPulsing ? '4,4' : 'none'}
+                      className={isPulsing ? 'animate-pulse' : ''}
+                      opacity={isPulsing ? 0.9 : 0.4}
+                    />
+                  );
+                }
+              }
+              return lines;
+            })()}
+
+            {/* Render 5 Constellation Nodes */}
+            {(() => {
+              const coords: Record<string, [number, number]> = {
+                'node-fra': [300, 50],
+                'node-tyo': [500, 110],
+                'node-sin': [420, 240],
+                'node-sao': [180, 240],
+                'node-iad': [100, 110]
+              };
+
+              return sentinels.map((node) => {
+                const [cx, cy] = coords[node.id] || [300, 150];
+                const isSelected = selectedNodeId === node.id;
+                const status = nodeAnomalyMap[node.id] || 'HEALTHY';
+                const isHopActive = activeBroadcastingHop === node.hop;
+
+                const nodeColor = status === 'HEALTHY' ? '#10b981' : status === 'DRIFT' ? '#f59e0b' : '#ef4444';
+
+                return (
+                  <g
+                    key={node.id}
+                    onClick={() => setSelectedNodeId(node.id)}
+                    className="cursor-pointer transition-transform hover:scale-110"
+                    transform={`translate(${cx}, ${cy})`}
+                  >
+                    {/* Pulsing ring on active hop */}
+                    {isHopActive && (
+                      <circle
+                        r="24"
+                        fill="none"
+                        stroke="#3b82f6"
+                        strokeWidth="2"
+                        className="animate-ping opacity-75"
+                      />
+                    )}
+
+                    {/* Outer Selection Ring */}
+                    {isSelected && (
+                      <circle
+                        r="22"
+                        fill="none"
+                        stroke="#6366f1"
+                        strokeWidth="2.5"
+                        strokeDasharray="3,3"
+                      />
+                    )}
+
+                    {/* Node Core */}
+                    <circle
+                      r="16"
+                      fill="#0f172a"
+                      stroke={nodeColor}
+                      strokeWidth="2.5"
+                    />
+
+                    {/* Hop Label */}
+                    <text
+                      textAnchor="middle"
+                      dy="4"
+                      fontSize="9"
+                      fontWeight="bold"
+                      fill="#f8fafc"
+                      fontFamily="monospace"
+                    >
+                      H{node.hop}
+                    </text>
+
+                    {/* City label below */}
+                    <text
+                      textAnchor="middle"
+                      dy="30"
+                      fontSize="10"
+                      fontWeight="600"
+                      fill="#cbd5e1"
+                    >
+                      {node.region.split(',')[0]}
+                    </text>
+
+                    {/* Ping / Status label */}
+                    <text
+                      textAnchor="middle"
+                      dy="42"
+                      fontSize="9"
+                      fill={nodeColor}
+                      fontFamily="monospace"
+                    >
+                      {status === 'HEALTHY' ? `${node.pingMs}ms` : status}
+                    </text>
+                  </g>
+                );
+              });
+            })()}
+          </svg>
+
+          {/* Micro Legend */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-850 text-[11px] font-mono text-slate-400">
+            <div className="flex items-center space-x-3">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Healthy (Port 8080)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Latency Drift (+120ms)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Byzantine Equivocation
+              </span>
+            </div>
+            <span>Click any node in SVG to select & toggle anomaly</span>
+          </div>
+        </div>
+
+        {/* Live Cryptographic Gossip Packet Trace */}
+        {simulatedPacket && (
+          <div className="p-4 rounded-xl bg-slate-950 border border-indigo-900/50 space-y-2 animate-in fade-in">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-indigo-400" />
+                Live Cryptographic Gossip Packet In Transit
+              </span>
+              <span className="text-[10px] font-mono text-slate-400">{simulatedPacket.timestamp}</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-500 block">Payload SHA-256 Digest:</span>
+                <span className="text-purple-300 truncate block">{simulatedPacket.hash}</span>
+              </div>
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-500 block">Target Consensus Slot:</span>
+                <span className="text-white">#{simulatedPacket.slot}</span>
+              </div>
+              <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-500 block">Originating Sentinel:</span>
+                <span className="text-emerald-400">{simulatedPacket.origin}</span>
+              </div>
+            </div>
+            <div className="text-[11px] font-mono text-slate-400 flex items-center gap-2">
+              <span className="text-slate-500">Gossip Path:</span>
+              <span>{simulatedPacket.hops.join(' ➔ ')}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Selected Node Detailed Inspector */}
         {selectedNodeId && (() => {
           const selNode = sentinels.find(n => n.id === selectedNodeId) || sentinels[0];
+          const status = nodeAnomalyMap[selectedNodeId] || 'HEALTHY';
           return (
-            <div className="p-3.5 bg-slate-950/80 rounded-xl border border-indigo-900/40 text-xs font-mono space-y-2 animate-in fade-in">
+            <div className="p-4 bg-slate-950/80 rounded-xl border border-indigo-900/40 text-xs font-mono space-y-2 animate-in fade-in">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-white">{selNode.name}</span>
                   <span className="text-[10px] text-indigo-400">({selNode.region})</span>
+                  <span className="text-slate-500 text-[10px]">• Endpoint {selNode.ip}:{selNode.port}</span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800">
-                  Quorum Weight: 1.00 • Zero Blocking Sets
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                    status === 'HEALTHY' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : status === 'DRIFT' ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-rose-950 text-rose-300 border border-rose-800'
+                  }`}>
+                    State: {status}
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] bg-blue-950 text-blue-300 border border-blue-800">
+                    Weight: 1.00
+                  </span>
+                </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
                 <div>
@@ -315,11 +620,13 @@ export const P2pView: React.FC<P2pViewProps> = ({ sentinels }) => {
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[10px]">Ping Stability:</span>
-                  <span className="text-emerald-400">{selNode.pingMs} ms (Sub-50ms)</span>
+                  <span className={status === 'DRIFT' ? 'text-amber-400' : 'text-emerald-400'}>
+                    {status === 'DRIFT' ? `${selNode.pingMs + 120} ms (Drift)` : `${selNode.pingMs} ms (Sub-50ms)`}
+                  </span>
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[10px]">Byzantine Threshold:</span>
-                  <span className="text-purple-300">67% Required (100% Satisfied)</span>
+                  <span className="text-purple-300">67% Required ({isQuorumSafe ? 'Satisfied' : 'Risk'})</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[10px]">Sybil Signature:</span>
@@ -409,7 +716,7 @@ export const P2pView: React.FC<P2pViewProps> = ({ sentinels }) => {
               <span className="text-[10px] font-mono text-slate-500">Spam Burst</span>
             </div>
             <p className="text-[11px] text-slate-400 leading-snug">
-              Tests dynamic zero-rent queueing to prioritize valid π PI Pioneer transfers.
+              Tests dynamic zero-rent queueing to prioritize valid π NXS Pioneer transfers.
             </p>
           </button>
         </div>

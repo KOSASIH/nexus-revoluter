@@ -168,7 +168,7 @@ export function generateShuraDeliberation(proposal: DaoProposal): ShuraAiAnalysi
   let ethical: 'EXCELLENT' | 'FAIR' | 'RISKY' = 'EXCELLENT';
   let economic = 'Strong positive correlation with Pioneer community long-term liquidity.';
   let welfare = 'Equitably distributes verification burden and prevents elite capital centralization.';
-  let sybil = 'Quadratic voting formula √π PI × log2(vaultAge) mitigates whale manipulation.';
+  let sybil = 'Quadratic voting formula √π NXS × log2(vaultAge) mitigates whale manipulation.';
   let action: 'RATIFY' | 'TIMELOCK_AUDIT' | 'REJECT' = 'RATIFY';
   const insights: string[] = [];
 
@@ -230,7 +230,7 @@ export function evaluateProofOfReserveIntelligence(por: ProofOfReserve): {
 }
 
 /**
- * Real-Time Mempool Congestion & Gas Forecast for π PI transfers
+ * Real-Time Mempool Congestion & Gas Forecast for π NXS transfers
  */
 export function predictMempoolAndGasForecast(): PredictiveGasForecast[] {
   const slots: PredictiveGasForecast[] = [];

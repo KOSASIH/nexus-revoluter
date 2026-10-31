@@ -33,7 +33,7 @@ export const QrModal: React.FC<QrModalProps> = ({ address, onClose }) => {
             <QrCode className="w-7 h-7" />
           </div>
           <h3 className="text-base font-bold text-white">{address.name}</h3>
-          <p className="text-xs text-slate-400">Scan to receive π PI IOU or Stellar assets</p>
+          <p className="text-xs text-slate-400">Scan to receive π NXS or Stellar assets</p>
         </div>
 
         {/* QR Code Graphic (SVG generated) */}
@@ -61,9 +61,8 @@ export const QrModal: React.FC<QrModalProps> = ({ address, onClose }) => {
             <rect x="19" y="47" width="6" height="8" fill="black" />
             <rect x="7" y="57" width="8" height="6" fill="black" />
 
-            <rect x="35" y="35" width="30" height="30" fill="#1e293b" rx="6" />
-            <circle cx="50" cy="50" r="10" fill="#3b82f6" />
-            <text x="50" y="54" fontSize="12" fontWeight="bold" textAnchor="middle" fill="white">π</text>
+            <rect x="32" y="35" width="36" height="30" fill="#0f172a" rx="6" />
+            <text x="50" y="54" fontSize="9" fontWeight="bold" textAnchor="middle" fill="#c084fc" fontFamily="monospace">π NXS</text>
 
             <rect x="69" y="37" width="8" height="6" fill="black" />
             <rect x="81" y="45" width="6" height="8" fill="black" />
@@ -88,9 +87,9 @@ export const QrModal: React.FC<QrModalProps> = ({ address, onClose }) => {
         {/* Balance tags */}
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
-            <div className="text-[10px] text-slate-400">π PI Balance</div>
-            <div className="text-sm font-mono font-bold text-emerald-400">
-              {address.piBalance.toLocaleString()} π PI
+            <div className="text-[10px] text-slate-400">π NXS Balance</div>
+            <div className="text-sm font-mono font-bold text-purple-400">
+              {address.piBalance.toLocaleString()} π NXS
             </div>
           </div>
           <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
