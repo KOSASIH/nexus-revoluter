@@ -19,7 +19,7 @@ export interface VaultAccount {
   legacyIouBalance?: number; // π PI IOU legacy balance
   isPrimary?: boolean;
   role: 'primary' | 'reserve' | 'bridge';
-  keyType: 'Ed25519-QuantumResistant';
+  keyType: 'Ed25519';
   createdAt: string;
   vaultAgeDays: number;
 }

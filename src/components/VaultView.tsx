@@ -24,13 +24,14 @@ import {
 import { VaultAccount, SocialRecoveryState, QuantumAuditReport, ShamirShare } from '../types';
 import { QrModal } from './QrModal';
 import { auditQuantumResistance, generateShamirSecretShares, reconstructShamirSecret } from '../services/aiSentinel';
+import { decryptJson, isEncryptedEnvelope } from '../lib/crypto';
 
 interface VaultViewProps {
   vaults: VaultAccount[];
   socialRecovery: SocialRecoveryState;
   onGenerateAddress: (name: string) => void;
   onClaimFaucet: (vaultId: string) => void;
-  onExportEncrypted: () => void;
+  onExportEncrypted: (passphrase: string) => Promise<void>;
   onImportEncrypted: (importedData?: VaultAccount[]) => void;
   onApproveRecoveryGuardian: (guardianId: string) => void;
   onTriggerRecovery: () => void;
@@ -55,6 +56,13 @@ export const VaultView: React.FC<VaultViewProps> = ({
   const [importError, setImportError] = useState<string | null>(null);
   const [toastNotice, setToastNotice] = useState<string | null>(null);
   const [showLegacyImportView, setShowLegacyImportView] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportPass, setExportPass] = useState('');
+  const [exportPassConfirm, setExportPassConfirm] = useState('');
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportBusy, setExportBusy] = useState(false);
+  const [importPass, setImportPass] = useState('');
+  const [importBusy, setImportBusy] = useState(false);
 
   const [isScanningQuantum, setIsScanningQuantum] = useState(false);
   const [quantumReport, setQuantumReport] = useState<QuantumAuditReport | null>(null);
@@ -92,7 +100,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
       const report = auditQuantumResistance(addr);
       setQuantumReport(report);
       setIsScanningQuantum(false);
-      showToast('Quantum Cryptanalysis completed: Vault key is mathematically impervious.');
+      showToast('Key analysis complete. Note: Ed25519 is not post-quantum secure; this is an entropy heuristic only.');
     }, 1200);
   };
 
@@ -118,32 +126,41 @@ export const VaultView: React.FC<VaultViewProps> = ({
     reader.onload = (event) => {
       const content = event.target?.result as string;
       setImportJsonText(content);
-      processImport(content);
+      try {
+        if (!isEncryptedEnvelope(JSON.parse(content))) processImport(content);
+      } catch {
+        setImportError('Invalid JSON file.');
+      }
     };
     reader.readAsText(file);
   };
 
-  const processImport = (jsonStr: string) => {
+  const processImport = async (jsonStr: string) => {
     setImportError(null);
+    setImportBusy(true);
     try {
-      const parsed = JSON.parse(jsonStr);
+      let parsed: unknown = JSON.parse(jsonStr);
+      if (isEncryptedEnvelope(parsed)) {
+        if (!importPass) throw new Error('This backup is encrypted. Enter its passphrase first.');
+        parsed = await decryptJson(parsed, importPass);
+      }
       let incomingVaults: VaultAccount[] = [];
+      const obj = parsed as { vaults?: unknown } | null;
 
       if (Array.isArray(parsed)) {
         incomingVaults = parsed;
-      } else if (parsed && Array.isArray(parsed.vaults)) {
-        incomingVaults = parsed.vaults;
+      } else if (obj && Array.isArray(obj.vaults)) {
+        incomingVaults = obj.vaults as VaultAccount[];
       } else {
-        throw new Error('Unrecognized format: Expected { schema, encryption, vaults: [...] } or an array of vaults.');
+        throw new Error('Unrecognized format: expected an encrypted backup or { vaults: [...] }.');
       }
 
       if (incomingVaults.length === 0) {
         throw new Error('No vault accounts found in backup payload.');
       }
 
-      // Basic structure validation
       for (const v of incomingVaults) {
-        if (!v.address || typeof v.address !== 'string') {
+        if (!v || typeof v.address !== 'string' || !v.address) {
           throw new Error('Malformed vault entry: Missing or invalid address field.');
         }
       }
@@ -151,15 +168,38 @@ export const VaultView: React.FC<VaultViewProps> = ({
       onImportEncrypted(incomingVaults);
       setIsImporting(false);
       setImportJsonText('');
-      showToast(`Successfully verified & restored ${incomingVaults.length} vaults from backup.`);
+      setImportPass('');
+      showToast(`Restored ${incomingVaults.length} vaults from backup.`);
     } catch (err: unknown) {
       setImportError(err instanceof Error ? err.message : 'Invalid JSON file.');
+    } finally {
+      setImportBusy(false);
     }
   };
 
-  const handleExportWithToast = () => {
-    onExportEncrypted();
-    showToast(`Exported ${vaults.length} vaults in encrypted AES-256-GCM / PBKDF2 format.`);
+  const handleExportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setExportError(null);
+    if (exportPass.length < 8) {
+      setExportError('Passphrase must be at least 8 characters.');
+      return;
+    }
+    if (exportPass !== exportPassConfirm) {
+      setExportError('Passphrases do not match.');
+      return;
+    }
+    setExportBusy(true);
+    try {
+      await onExportEncrypted(exportPass);
+      setIsExporting(false);
+      setExportPass('');
+      setExportPassConfirm('');
+      showToast(`Exported ${vaults.length} vaults, encrypted with AES-256-GCM (PBKDF2-SHA256).`);
+    } catch (err: unknown) {
+      setExportError(err instanceof Error ? err.message : 'Export failed.');
+    } finally {
+      setExportBusy(false);
+    }
   };
 
   const handleToggleShareIndex = (idx: number) => {
@@ -214,7 +254,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
             Sovereign Keypair & Multi-Address Vault
           </h2>
           <p className="text-xs text-slate-300 max-w-2xl mt-1 leading-relaxed">
-            Non-custodial, user controlled vault for Stellar & Nexus tracking with Ed25519 quantum resistant keys and autonomous AML verification.
+            Non-custodial, user controlled vault for Stellar & Nexus tracking with Ed25519 keys and autonomous AML verification.
           </p>
         </div>
 
@@ -243,8 +283,8 @@ export const VaultView: React.FC<VaultViewProps> = ({
           </div>
 
           <button
-            onClick={handleExportWithToast}
-            title="Export encrypted vault backup to decentralized format"
+            onClick={() => { setExportError(null); setIsExporting(true); }}
+            title="Export a passphrase-encrypted vault backup"
             className="flex items-center space-x-1 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-slate-700 transition"
           >
             <Download className="w-3.5 h-3.5" />
@@ -319,6 +359,42 @@ export const VaultView: React.FC<VaultViewProps> = ({
         </div>
       )}
 
+      {/* Export Encrypted Vault Backup Modal */}
+      {isExporting && (
+        <div role="dialog" aria-modal="true" aria-labelledby="export-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <form onSubmit={handleExportSubmit} className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <h3 id="export-title" className="text-base font-bold text-white flex items-center gap-2">
+              <Download className="w-4 h-4 text-blue-400" />
+              Encrypt Vault Backup
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              The backup is encrypted in your browser with AES-256-GCM using a key derived from your passphrase (PBKDF2-SHA256, 600,000 iterations). There is no recovery if you forget it.
+            </p>
+            {exportError && (
+              <div role="alert" className="p-3 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs">{exportError}</div>
+            )}
+            <div>
+              <label htmlFor="export-pass" className="block text-xs font-medium text-slate-300 mb-1">Passphrase</label>
+              <input id="export-pass" type="password" autoComplete="new-password" value={exportPass} onChange={(e) => setExportPass(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label htmlFor="export-pass2" className="block text-xs font-medium text-slate-300 mb-1">Confirm passphrase</label>
+              <input id="export-pass2" type="password" autoComplete="new-password" value={exportPassConfirm} onChange={(e) => setExportPassConfirm(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button type="button" onClick={() => { setIsExporting(false); setExportPass(''); setExportPassConfirm(''); }}
+                className="px-4 py-2 rounded-xl bg-slate-800 text-xs font-medium text-slate-300 hover:bg-slate-700">Cancel</button>
+              <button type="submit" disabled={exportBusy}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white disabled:opacity-40 transition">
+                {exportBusy ? 'Encrypting…' : 'Encrypt & Download'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Import Encrypted Vault Backup Modal */}
       {isImporting && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
@@ -337,7 +413,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
             </div>
             
             <p className="text-xs text-slate-400 leading-relaxed">
-              Upload a previously exported <code className="text-blue-300">nexus_pioneer_vault_backup_*.json</code> file or paste the encrypted JSON payload. All keys are parsed and decrypted strictly client-side.
+              Upload a previously exported <code className="text-blue-300">nexus_pioneer_vault_backup_*.json</code> file or paste the encrypted JSON payload. Decryption happens strictly client-side in your browser.
             </p>
 
             {importError && (
@@ -378,6 +454,20 @@ export const VaultView: React.FC<VaultViewProps> = ({
               />
             </div>
 
+            <div>
+              <label htmlFor="import-pass" className="block text-xs font-medium text-slate-300 mb-1">
+                Backup passphrase (if encrypted)
+              </label>
+              <input
+                id="import-pass"
+                type="password"
+                autoComplete="off"
+                value={importPass}
+                onChange={(e) => setImportPass(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 type="button"
@@ -389,10 +479,10 @@ export const VaultView: React.FC<VaultViewProps> = ({
               <button
                 type="button"
                 onClick={() => processImport(importJsonText)}
-                disabled={!importJsonText.trim()}
+                disabled={!importJsonText.trim() || importBusy}
                 className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white disabled:opacity-40 transition"
               >
-                Verify & Restore
+                {importBusy ? 'Decrypting…' : 'Verify & Restore'}
               </button>
             </div>
           </div>
@@ -830,7 +920,7 @@ export const VaultView: React.FC<VaultViewProps> = ({
 
               <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Shor Resistance</span>
-                <span className="text-lg font-mono font-black text-amber-300">&gt;{quantumReport.shorResistanceYears} Years</span>
+                <span className="text-lg font-mono font-black text-amber-300">{quantumReport.shorResistanceYears > 0 ? `>${quantumReport.shorResistanceYears} Years` : 'Shor-vulnerable'}</span>
                 <span className="text-[9px] text-slate-500 block">Post-quantum safe</span>
               </div>
             </div>

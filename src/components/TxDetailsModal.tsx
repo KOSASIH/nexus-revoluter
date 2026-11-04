@@ -37,7 +37,7 @@ export const TxDetailsModal: React.FC<TxDetailsModalProps> = ({ tx, onClose }) =
         zkProofAuditId: 'ARHN-SNARK-' + tx.id.slice(3, 11).toUpperCase()
       },
       signature: {
-        algorithm: 'Ed25519-QuantumResistant',
+        algorithm: 'Ed25519',
         signatureHex: '9f81a7b03c948e21a84f' + tx.id.slice(3) + '4819e0b94c'
       }
     };

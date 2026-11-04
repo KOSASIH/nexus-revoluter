@@ -21,6 +21,7 @@ import {
   Terminal
 } from 'lucide-react';
 import { BridgeReleaseRequest, HeaderAttribution } from '../types';
+import { secureHex } from '../lib/crypto';
 
 interface BridgeViewProps {
   bridgeRequests: BridgeReleaseRequest[];
@@ -79,7 +80,7 @@ export const BridgeView: React.FC<BridgeViewProps> = ({
         mpcValid,
         timelockValid,
         satisfactionMargin: smtReserveCollateral - smtCirculationDemand,
-        proofCertificate: `Z3-SMT-PROOF-0x${Math.random().toString(16).slice(2, 10).toUpperCase()}-QED`,
+        proofCertificate: `Z3-SMT-PROOF-0x${secureHex(8).toUpperCase()}-QED`,
         modelDnf: `(model (define-fun solvency () Bool ${solvencyValid}) (define-fun mpc_quorum () Bool ${mpcValid}) (define-fun timelock () Bool ${timelockValid}))`
       });
       setIsSolvingSmt(false);

@@ -20,6 +20,7 @@ import { SentinelNode, SelfHealingEvent } from '../types';
 import { INITIAL_SELF_HEALING_LOGS } from '../data/initialData';
 import { simulateSelfHealingRemediation } from '../services/aiSentinel';
 import { MempoolViewer } from './MempoolViewer';
+import { secureHex } from '../lib/crypto';
 
 interface P2pViewProps {
   sentinels: SentinelNode[];
@@ -61,7 +62,7 @@ export const P2pView: React.FC<P2pViewProps> = ({ sentinels }) => {
 
   const handleEmitGossipPacket = (originId: string = 'node-fra') => {
     const originNode = sentinels.find(n => n.id === originId) || sentinels[0];
-    const dummyHash = '0x' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...';
+    const dummyHash = '0x' + secureHex(16) + '...';
     const packet = {
       hash: dummyHash,
       slot: 4920195 + Math.floor(Math.random() * 50),

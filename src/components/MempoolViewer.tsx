@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Database, Zap, Clock, ShieldCheck, ArrowRight, CheckCircle2, SlidersHorizontal } from 'lucide-react';
+import { secureHex } from '../lib/crypto';
 
 interface MempoolTx {
   txId: string;
@@ -72,7 +73,7 @@ export const MempoolViewer: React.FC = () => {
         // Replenish with new pending transactions
         setPendingTxs([
           {
-            txId: '0x' + Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('') + '...',
+            txId: '0x' + secureHex(12) + '...',
             from: 'GDZX94K2...KOSASIH88',
             to: 'GABR72K1...REVOLUTER01',
             amount: 88.0,

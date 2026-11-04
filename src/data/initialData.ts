@@ -28,7 +28,7 @@ export const INITIAL_VAULTS: VaultAccount[] = [
     legacyIouBalance: 314.15,
     isPrimary: true,
     role: 'primary',
-    keyType: 'Ed25519-QuantumResistant',
+    keyType: 'Ed25519',
     createdAt: '2025-01-15',
     vaultAgeDays: 412
   },
@@ -41,7 +41,7 @@ export const INITIAL_VAULTS: VaultAccount[] = [
     legacyIouBalance: 0,
     isPrimary: false,
     role: 'reserve',
-    keyType: 'Ed25519-QuantumResistant',
+    keyType: 'Ed25519',
     createdAt: '2025-02-01',
     vaultAgeDays: 320
   },
@@ -54,7 +54,7 @@ export const INITIAL_VAULTS: VaultAccount[] = [
     legacyIouBalance: 5000.00,
     isPrimary: false,
     role: 'bridge',
-    keyType: 'Ed25519-QuantumResistant',
+    keyType: 'Ed25519',
     createdAt: '2025-02-18',
     vaultAgeDays: 245
   }

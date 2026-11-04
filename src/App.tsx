@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { 
   INITIAL_VAULTS,
   INITIAL_SENTINELS,
@@ -32,17 +32,19 @@ import {
 } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
-import { VaultView } from './components/VaultView';
-import { TransactionView } from './components/TransactionView';
-import { P2pView } from './components/P2pView';
-import { BridgeView } from './components/BridgeView';
-import { ZkComplianceView } from './components/ZkComplianceView';
-import { SanoView } from './components/SanoView';
-import { DaoView } from './components/DaoView';
-import { TreasuryView } from './components/TreasuryView';
-import { GuardView } from './components/GuardView';
+const VaultView = lazy(() => import('./components/VaultView').then((m) => ({ default: m.VaultView })));
+const TransactionView = lazy(() => import('./components/TransactionView').then((m) => ({ default: m.TransactionView })));
+const P2pView = lazy(() => import('./components/P2pView').then((m) => ({ default: m.P2pView })));
+const BridgeView = lazy(() => import('./components/BridgeView').then((m) => ({ default: m.BridgeView })));
+const ZkComplianceView = lazy(() => import('./components/ZkComplianceView').then((m) => ({ default: m.ZkComplianceView })));
+const SanoView = lazy(() => import('./components/SanoView').then((m) => ({ default: m.SanoView })));
+const DaoView = lazy(() => import('./components/DaoView').then((m) => ({ default: m.DaoView })));
+const TreasuryView = lazy(() => import('./components/TreasuryView').then((m) => ({ default: m.TreasuryView })));
+const GuardView = lazy(() => import('./components/GuardView').then((m) => ({ default: m.GuardView })));
 import { AiSentinelHud } from './components/AiSentinelHud';
-import { GodChainView } from './components/GodChainView';
+import { ErrorBoundary } from './components/ErrorBoundary';
+const GodChainView = lazy(() => import('./components/GodChainView').then((m) => ({ default: m.GodChainView })));
+import { secureHex, encryptJson } from './lib/crypto';
 
 
 export const App: React.FC = () => {
@@ -122,7 +124,7 @@ export const App: React.FC = () => {
 
   // Module 1 Handlers: Vault & Faucet
   const handleGenerateAddress = (name: string) => {
-    const randomHex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
+    const randomHex = secureHex(32).toUpperCase();
     const newVault: VaultAccount = {
       id: `vault-${Date.now()}`,
       name,
@@ -131,7 +133,7 @@ export const App: React.FC = () => {
       xlmBalance: 50.0,
       isPrimary: false,
       role: 'primary',
-      keyType: 'Ed25519-QuantumResistant',
+      keyType: 'Ed25519',
       createdAt: new Date().toISOString().split('T')[0],
       vaultAgeDays: 1
     };
@@ -149,7 +151,7 @@ export const App: React.FC = () => {
     const targetVault = vaults.find(v => v.id === vaultId) || vaults[0];
 
     // Log transaction
-    const newTxId = 'tx_faucet_' + Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    const newTxId = 'tx_faucet_' + secureHex(12);
     const newTx: Transaction = {
       id: newTxId,
       from: 'GCXP449102847192847291847192847192847NPASBRIDGE',
@@ -173,31 +175,27 @@ export const App: React.FC = () => {
       id: `aud-00${treasuryAudit.length + 1}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
       prevHash: prevAudit ? prevAudit.entryHash.slice(0, 16) + '...' : '0x0000000000000000',
-      entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      entryHash: '0x' + secureHex(40),
       movementType: 'ESCROW_ALLOCATION',
       amount: 100.0,
       asset: 'π NXS',
       destination: `Faucet Allocation to ${targetVault.name}`,
-      proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+      proofSignature: 'ed25519_sig_valid_0x' + secureHex(8)
     };
     setTreasuryAudit(prev => [newAuditEntry, ...prev]);
   };
 
-  const handleExportEncrypted = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(
-      JSON.stringify({
-        schema: 'Sovereign-Pioneer-Vault-V1',
-        encryption: 'AES-256-GCM-PBKDF2',
-        vaults,
-        exportedAt: new Date().toISOString()
-      }, null, 2)
-    );
+  const handleExportEncrypted = async (passphrase: string) => {
+    const envelope = await encryptJson({ vaults }, passphrase);
+    const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `nexus_pioneer_vault_backup_${Date.now()}.json`);
+    downloadAnchor.href = url;
+    downloadAnchor.download = `nexus_pioneer_vault_backup_${Date.now()}.json`;
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+    URL.revokeObjectURL(url);
   };
 
   const handleImportEncrypted = (importedVaults?: VaultAccount[]) => {
@@ -208,7 +206,7 @@ export const App: React.FC = () => {
           if (!existingMap.has(v.address)) {
             existingMap.set(v.address, {
               ...v,
-              id: v.id || `vault-imp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+              id: v.id || `vault-imp-${Date.now()}-${secureHex(5)}`
             });
           }
         }
@@ -274,7 +272,7 @@ export const App: React.FC = () => {
       return v;
     }));
 
-    const newTxId = 'tx_' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    const newTxId = 'tx_' + secureHex(16);
     const newTx: Transaction = {
       id: newTxId,
       from: tx.from,
@@ -299,12 +297,12 @@ export const App: React.FC = () => {
       id: `aud-00${treasuryAudit.length + 1}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
       prevHash: prevAudit ? prevAudit.entryHash.slice(0, 16) + '...' : '0x0000000000000000',
-      entryHash: '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      entryHash: '0x' + secureHex(40),
       movementType: 'FEE_COLLECTION',
       amount: 0.0001,
       asset: 'π NXS',
       destination: 'Stellar SCP Quorum Fee Pool',
-      proofSignature: 'ed25519_sig_valid_0x' + Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+      proofSignature: 'ed25519_sig_valid_0x' + secureHex(8)
     };
     setTreasuryAudit(prev => [newAuditEntry, ...prev]);
   };
@@ -342,7 +340,7 @@ export const App: React.FC = () => {
       requiredSignatures: 3,
       currentSignatures: 1,
       formalVerificationStatus: 'PROVEN_SAFE',
-      formalProofHash: 'Z3_SOLVER_QAP_0x' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+      formalProofHash: 'Z3_SOLVER_QAP_0x' + secureHex(16),
       status: 'pending',
       signers: [
         { id: 'sig-1', name: 'Frankfurt MPC Custodian', pubKey: '0xfa102...', signed: true, role: 'Validator' },
@@ -420,6 +418,8 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ErrorBoundary resetKey={activeTab}>
+        <Suspense fallback={<div role="status" aria-live="polite" className="py-24 text-center text-xs text-slate-500 font-mono">Loading module…</div>}>
         {activeTab === 'god-chain' && (
           <GodChainView
             dimensions={dimensions}
@@ -502,6 +502,8 @@ export const App: React.FC = () => {
         {activeTab === 'guard' && (
           <GuardView />
         )}
+        </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Sovereign Footer */}

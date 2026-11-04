@@ -435,7 +435,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
             <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] text-blue-200 leading-relaxed flex items-start space-x-2">
               <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
               <div>
-                <strong>Base network fee 0.0001 XLM.</strong> Protected by Ed25519 quantum resistant signature &amp; verified against global sanction registries.
+                <strong>Base network fee 0.0001 XLM.</strong> Signed with Ed25519 &amp; verified against global sanction registries.
               </div>
             </div>
 

@@ -17,6 +17,7 @@ import {
   ShamirShare,
   ThermodynamicGridSimulation
 } from '../types';
+import { secureHex } from '../lib/crypto';
 
 /**
  * Sovereign AI Sentinel Engine
@@ -278,16 +279,15 @@ export function auditQuantumResistance(address: string): QuantumAuditReport {
     entropy = Math.min(1.0, Math.max(0.65, shannon / 5.2));
   }
 
-  const saltUniformity = 0.994;
-  const pbkdf2Rounds = 310000;
-  const shorYears = 58;
+  const saltUniformity = 0.994; // illustrative constant (no salt is inspected here)
+  const pbkdf2Rounds = 600000; // matches the real backup-encryption KDF in lib/crypto.ts
+  // Ed25519 relies on elliptic-curve discrete logs, which Shor's algorithm breaks on a
+  // sufficiently large quantum computer. No honest "years of resistance" figure exists.
+  const shorYears = 0;
 
-  let verdict: 'QUANTUM_IMPERVIOUS' | 'REINFORCED' | 'UPGRADE_RECOMMENDED' = 'QUANTUM_IMPERVIOUS';
-  if (entropy < 0.75) {
-    verdict = 'UPGRADE_RECOMMENDED';
-  } else if (entropy < 0.88) {
-    verdict = 'REINFORCED';
-  }
+  // Entropy only describes how random the address looks; it cannot make Ed25519 post-quantum.
+  const verdict: 'QUANTUM_IMPERVIOUS' | 'REINFORCED' | 'UPGRADE_RECOMMENDED' =
+    entropy < 0.88 ? 'UPGRADE_RECOMMENDED' : 'REINFORCED';
 
   return {
     address,
@@ -295,7 +295,7 @@ export function auditQuantumResistance(address: string): QuantumAuditReport {
     saltUniformity,
     pbkdf2Rounds,
     shorResistanceYears: shorYears,
-    kyberDilithiumWrapper: true,
+    kyberDilithiumWrapper: false,
     securityVerdict: verdict
   };
 }
@@ -469,7 +469,7 @@ export function inferSovereignAgent(
   }
 ): AgentInferenceResponse {
   const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
-  const sigHash = Math.random().toString(16).slice(2, 10).toUpperCase();
+  const sigHash = secureHex(8).toUpperCase();
 
   switch (agentId) {
     case 'ARHANA':
@@ -552,8 +552,8 @@ export function inferSovereignAgent(
           'Step 1: Initialized Groth16 QAP constraint polynomial verification over BN254 elliptic curve.',
           'Step 2: Proved zero private witness exposure. Solvency and compliance proven without leaking user identity.',
           'Step 3: Tested Kyber-1024 lattice encapsulation against Shor’s period-finding quantum algorithm.',
-          'Step 4: Shannon entropy verified at 0.942 with 310,000 PBKDF2 iterations, providing >50 years quantum immunity.',
-          'Conclusion: Cryptographic lattice is quantum-impervious with zero backdoors.'
+          'Step 4: Shannon entropy sampled at 0.942; PBKDF2 hardens passphrases against classical brute force.',
+          'Conclusion: Simulated narrative. Ed25519 itself is not post-quantum; a lattice scheme (ML-KEM/ML-DSA) would be needed.'
         ],
         mathematicalMetrics: {
           'Elliptic Curve': 'BN254 (alt_bn128)',
@@ -574,8 +574,8 @@ export function inferSovereignAgent(
 export function generateDksapStealthAddress(recipientPublicAddress: string): StealthAddressProof {
   const timestamp = new Date().toISOString();
   // Derive deterministic pseudo-random ephemeral parameters based on recipient & timestamp
-  const ephemeralSeed = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-  const blindFactor = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  const ephemeralSeed = secureHex(32);
+  const blindFactor = secureHex(16);
   
   // Ephemeral public key R = r * G
   const ephemeralPubKey = `04${ephemeralSeed.slice(0, 64).toUpperCase()}`;
@@ -603,7 +603,7 @@ export function generateDksapStealthAddress(recipientPublicAddress: string): Ste
 export function synthesizeZkSnarkCircuit(
   circuitType: 'SOLVENCY_GROTH16' | 'SANCTIONS_MERKLE_PROOF' | 'DKSAP_STEALTH_SCHNORR'
 ): ZkCircuitSynthesisResult {
-  const hex = (len: number) => Array.from({ length: len }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  const hex = (len: number) => secureHex(len);
 
   if (circuitType === 'SOLVENCY_GROTH16') {
     return {
@@ -746,7 +746,7 @@ export function simulateQuantumThermodynamicGrid(
   const entropyDissipated = parseFloat((14.82 * (1 - (carnotEfficiencyPct / 100) * 0.3)).toFixed(2));
   const gridPowerWatts = Math.round(totalRenewableInput * 1000 * (carnotEfficiencyPct / 100));
   const biosphereScore = parseFloat(Math.min(100, 95 + (totalRenewableInput / 500)).toFixed(1));
-  const hex = Math.random().toString(16).slice(2, 10).toUpperCase();
+  const hex = secureHex(8).toUpperCase();
 
   return {
     solarInputKwh: solarKwh,
