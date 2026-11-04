@@ -45,6 +45,7 @@ import { AiSentinelHud } from './components/AiSentinelHud';
 import { ErrorBoundary } from './components/ErrorBoundary';
 const GodChainView = lazy(() => import('./components/GodChainView').then((m) => ({ default: m.GodChainView })));
 import { secureHex, encryptJson } from './lib/crypto';
+import { usePersistentState, isRecordArray, clearAllPersisted } from './lib/persist';
 
 
 export const App: React.FC = () => {
@@ -52,16 +53,16 @@ export const App: React.FC = () => {
   const [network, setNetwork] = useState<string>('nexus-ledger');
 
   // Application Data States
-  const [vaults, setVaults] = useState<VaultAccount[]>(INITIAL_VAULTS);
-  const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
+  const [vaults, setVaults] = usePersistentState<VaultAccount[]>('vaults', INITIAL_VAULTS, isRecordArray<VaultAccount>(['id', 'address']));
+  const [transactions, setTransactions] = usePersistentState<Transaction[]>('transactions', INITIAL_TRANSACTIONS, isRecordArray<Transaction>(['id']));
   const [sentinels] = useState<SentinelNode[]>(INITIAL_SENTINELS);
-  const [bridgeRequests, setBridgeRequests] = useState<BridgeReleaseRequest[]>(INITIAL_BRIDGE_REQUESTS);
+  const [bridgeRequests, setBridgeRequests] = usePersistentState<BridgeReleaseRequest[]>('bridge', INITIAL_BRIDGE_REQUESTS, isRecordArray<BridgeReleaseRequest>(['id']));
   const [proofOfReserve] = useState<ProofOfReserve>(INITIAL_PROOF_OF_RESERVE);
   const [zkScreening] = useState<ZkComplianceScreening>(INITIAL_ZK_SCREENING);
   const [headerAttributions] = useState<HeaderAttribution[]>(INITIAL_HEADER_ATTRIBUTIONS);
   const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>(INITIAL_SOCIAL_RECOVERY);
-  const [proposals, setProposals] = useState<DaoProposal[]>(INITIAL_DAO_PROPOSALS);
-  const [treasuryAudit, setTreasuryAudit] = useState<TreasuryAuditEntry[]>(INITIAL_TREASURY_AUDIT);
+  const [proposals, setProposals] = usePersistentState<DaoProposal[]>('proposals', INITIAL_DAO_PROPOSALS, isRecordArray<DaoProposal>(['id']));
+  const [treasuryAudit, setTreasuryAudit] = usePersistentState<TreasuryAuditEntry[]>('treasury', INITIAL_TREASURY_AUDIT, isRecordArray<TreasuryAuditEntry>(['id']));
   const [dimensions, setDimensions] = useState<DimensionVector[]>(INITIAL_DIMENSIONS);
   const [superCalculators] = useState<SuperCalculator[]>(INITIAL_SUPER_CALCULATORS);
   const [qThermo, setQThermo] = useState<QThermoMetrics>(INITIAL_Q_THERMO);
@@ -396,6 +397,12 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:rounded-lg focus:bg-blue-600 focus:text-white focus:text-xs focus:font-semibold"
+      >
+        Skip to main content
+      </a>
       {/* Global Application Header with Trademark Firewall Banner */}
       <Header
         currentNetwork={network}
@@ -417,7 +424,7 @@ export const App: React.FC = () => {
       <AiSentinelHud sentinels={sentinels} />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" role="tabpanel" aria-labelledby={`tab-${activeTab}`} tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 focus:outline-none">
         <ErrorBoundary resetKey={activeTab}>
         <Suspense fallback={<div role="status" aria-live="polite" className="py-24 text-center text-xs text-slate-500 font-mono">Loading module…</div>}>
         {activeTab === 'god-chain' && (
@@ -517,6 +524,14 @@ export const App: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center space-x-4 text-[11px] font-mono shrink-0">
+            <button
+              type="button"
+              onClick={() => { clearAllPersisted(); window.location.reload(); }}
+              className="underline underline-offset-2 hover:text-slate-300"
+              title="Clear data saved in this browser and restore the demo defaults"
+            >
+              Reset local data
+            </button>
             <span className="text-blue-400 font-bold">SOVEREIGN MONITOR • NPAS V2.0</span>
             <span>Ed25519 & ZK-SNARK</span>
             <span>Byzantine Quorum 67%</span>
